@@ -1,0 +1,23 @@
+{
+    "name": "netcore/module-admin",
+    "description": "",
+    "type": "module",
+    "authors": [
+        {
+            "name": "Jānis Blaus",
+            "email": "janis@netcore.lv"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Modules\\Admin\\": ""
+        }
+    },
+    "require": {
+        "php": ">=5.5",
+        "kalnoy/nestedset": "^4.2",
+        "dimsav/laravel-translatable": "^7.3",
+        "hieu-le/active": "^3.4"
+    },
+    "minimum-stability": "dev"
+}

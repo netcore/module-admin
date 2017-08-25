@@ -1,0 +1,17 @@
+{
+    "name": "Admin",
+    "alias": "admin",
+    "description": "",
+    "keywords": [],
+    "active": 1,
+    "order": 0,
+    "providers": [
+        "Modules\\Admin\\Providers\\AdminServiceProvider",
+        "Dimsav\\Translatable\\TranslatableServiceProvider"
+    ],
+    "aliases": {},
+    "files": [
+        "start.php"
+    ],
+    "requires": []
+}
