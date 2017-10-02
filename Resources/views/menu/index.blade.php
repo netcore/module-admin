@@ -16,9 +16,9 @@
             <tbody>
             @foreach( $menus as $menu )
                 <tr>
-                    <td>{{$menu->name}}</td>
+                    <td>{{ $menu->name }}</td>
                     <td>
-                        <a href="{{route('admin::menus.show', $menu->id)}}" class="btn">Edit</a>
+                        <a href="{{ route('admin::menu.show', $menu->id) }}" class="btn">Edit</a>
                     </td>
                 </tr>
             @endforeach

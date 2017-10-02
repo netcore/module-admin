@@ -6,20 +6,20 @@ Route::group(['middleware' => 'web', 'prefix' => 'admin', 'namespace' => 'Module
 
         Route::get('/', [
             'uses' => 'AdminController@index',
-            'as'   => 'admin::dashboards.index'
+            'as'   => 'admin::dashboard.index'
         ]);
 
         Route::get('/menus', [
-            'uses' => 'MenusController@index',
-            'as'   => 'admin::menus.index'
+            'uses' => 'MenuController@index',
+            'as'   => 'admin::menu.index'
         ]);
         Route::get('/menus/{id}', [
-            'uses' => 'MenusController@show',
-            'as'   => 'admin::menus.show'
+            'uses' => 'MenuController@show',
+            'as'   => 'admin::menu.show'
         ]);
         Route::post('/menus/{id}/save-order', [
-            'uses' => 'MenusController@saveOrder',
-            'as'   => 'admin::menus.save-order'
+            'uses' => 'MenuController@saveOrder',
+            'as'   => 'admin::menu.save-order'
         ]);
     });
 
