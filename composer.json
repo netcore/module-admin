@@ -16,7 +16,7 @@
     "require": {
         "php": ">=5.5",
         "kalnoy/nestedset": "^4.2",
-        "dimsav/laravel-translatable": "^7.3",
+        "dimsav/laravel-translatable": "^8.0",
         "hieu-le/active": "^3.4",
         "laravelcollective/html": "^5.4.0",
         "doctrine/dbal": "^2.6"
