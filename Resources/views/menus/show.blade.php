@@ -49,7 +49,7 @@
     <script>
         $(document).ready(function () {
             $('.dd').nestable().on('change', function (e) {
-                $.post('{{route('admin::menu.save-order', $menu->id)}}', {
+                $.post('{{route('admin::menus.save-order', $menu->id)}}', {
                     order: JSON.stringify($('.dd').nestable('serialize')),
                 }, function (data) {
                     toastr.success("Menu order updated");

@@ -7,7 +7,7 @@ use Kalnoy\Nestedset\NodeTrait;
 
 class MenuItem extends Model
 {
-    protected $fillable = ['name','icon','type','value','module','is_active'];
+    protected $fillable = ['name','icon','type','value','module','is_active', 'active_resolver'];
 
     use NodeTrait;
 

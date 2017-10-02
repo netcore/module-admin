@@ -31,7 +31,12 @@ class AdminMenuViewComposer{
                 $url    = 'javascript:;';
 
                 if( $item->type == 'route' ){
-                    $active = (active_class(if_route($item->value)));
+                    $active = (active_class(
+                        if_route_pattern(
+                            [$item->active_resolver ? $item->active_resolver : $item->value]
+                        )
+                    ));
+
                     $url    = route($item->value);
                 }
 

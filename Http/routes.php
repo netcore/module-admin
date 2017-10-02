@@ -1,28 +1,25 @@
 <?php
 
-use Modules\Admin\Http\Middleware\Admin\canAuthorizeInAdmin;
-use Modules\Admin\Http\Middleware\Admin\isAdmin;
-
 Route::group(['middleware' => 'web', 'prefix' => 'admin', 'namespace' => 'Modules\Admin\Http\Controllers'], function()
 {
-    Route::group(['middleware' => isAdmin::class], function () {
+    Route::group(['middleware' => 'auth.admin'], function () {
 
         Route::get('/', [
             'uses' => 'AdminController@index',
-            'as'   => 'admin::dashboard.index'
+            'as'   => 'admin::dashboards.index'
         ]);
 
-        Route::get('/menu', [
+        Route::get('/menus', [
             'uses' => 'MenusController@index',
-            'as'   => 'admin::menu.index'
+            'as'   => 'admin::menus.index'
         ]);
-        Route::get('/menu/{id}', [
+        Route::get('/menus/{id}', [
             'uses' => 'MenusController@show',
-            'as'   => 'admin::menu.show'
+            'as'   => 'admin::menus.show'
         ]);
-        Route::post('/menu/{id}/save-order', [
+        Route::post('/menus/{id}/save-order', [
             'uses' => 'MenusController@saveOrder',
-            'as'   => 'admin::menu.save-order'
+            'as'   => 'admin::menus.save-order'
         ]);
     });
 
@@ -45,7 +42,7 @@ Route::group(['middleware' => 'web', 'prefix' => 'admin', 'namespace' => 'Module
     ]);
 
     //custom middleware to disallow common users from authorizing
-    Route::group(['middleware' => canAuthorizeInAdmin::class], function () {
+    Route::group(['middleware' => 'can.admin'], function () {
         Route::post('/login',[
             'uses' => 'Auth\LoginController@login',
             'as'   => 'admin::auth.login'

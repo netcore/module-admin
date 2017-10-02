@@ -17,7 +17,9 @@
         "php": ">=5.5",
         "kalnoy/nestedset": "^4.2",
         "dimsav/laravel-translatable": "^7.3",
-        "hieu-le/active": "^3.4"
+        "hieu-le/active": "^3.4",
+        "laravelcollective/html": "^5.4.0",
+        "doctrine/dbal": "^2.6"
     },
     "minimum-stability": "dev"
 }

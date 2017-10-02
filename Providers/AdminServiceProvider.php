@@ -5,6 +5,7 @@ namespace Modules\Admin\Providers;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Database\Eloquent\Factory;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Foundation\AliasLoader;
 
 class AdminServiceProvider extends ServiceProvider
 {
@@ -20,13 +21,16 @@ class AdminServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot()
+    public function boot(\Illuminate\Routing\Router $router, \Illuminate\Contracts\Http\Kernel $kernel)
     {
-        $this->registerTranslations();
+        //$this->registerTranslations();
         $this->registerConfig();
         $this->registerViews();
-        $this->registerFactories();
-        $this->registerBladeExtenders();
+        //$this->registerFactories();
+        //$this->registerBladeExtenders();
+        $this->registerMiddlewares($router, $kernel);
+
+
     }
 
     /**
@@ -37,6 +41,10 @@ class AdminServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->register(\HieuLe\Active\ActiveServiceProvider::class);
+        $this->app->register(\Collective\Html\HtmlServiceProvider::class);
+
+        AliasLoader::getInstance()->alias('Form', \Collective\Html\FormFacade::class);
+        AliasLoader::getInstance()->alias('Html', \Collective\Html\HtmlFacade::class);
     }
 
     /**
@@ -114,5 +122,20 @@ class AdminServiceProvider extends ServiceProvider
     public function registerBladeExtenders()
     {
 
+    }
+
+    public function registerMiddlewares($router, $kernel)
+    {
+        //global middleware
+        //$kernel->prependMiddleware(\Path\To\Your\Middleware\custom_auth::class);
+        //$kernel->pushMiddleware(\Path\To\Your\Middleware\custom_auth::class);
+
+        //router middleware
+        //$router->middleware('can.admin', \Modules\Admin\Http\Middleware\Admin\canAuthorizeInAdmin::class);
+        //$router->middleware('auth.admin', \Modules\Admin\Http\Middleware\Admin\isAdmin::class);
+
+        //
+        $router->aliasMiddleware('can.admin', \Modules\Admin\Http\Middleware\Admin\canAuthorizeInAdmin::class);
+        $router->aliasMiddleware('auth.admin', \Modules\Admin\Http\Middleware\Admin\isAdmin::class);
     }
 }

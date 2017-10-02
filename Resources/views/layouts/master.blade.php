@@ -20,7 +20,6 @@
 
     <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/holder/2.9.0/holder.js"></script>
     <script src="/assets/admin/pace/pace.min.js"></script>
-    <script src="/assets/admin/demo/demo.js"></script>
     <style>
         @media (min-width: 992px){
             .px-nav{
@@ -54,7 +53,7 @@
     <ul class="px-nav-content">
         <li class="px-nav-box p-a-3 b-b-1" id="demo-px-nav-box">
             <img src="{{auth()->user()->gravatar()}}" alt="" class="pull-xs-left m-r-2 border-round" style="width: 54px; height: 54px;">
-            <div class="font-size-16"><span class="font-weight-light">Welcome,<br> </span><strong>{{auth()->user()->firstname}}</strong></div>
+            <div class="font-size-16"><span class="font-weight-light">Welcome,<br> </span><strong>{{auth()->user()->first_name}}</strong></div>
         </li>
 
         {{-- AdminMenuViewComposer --}}
@@ -66,7 +65,7 @@
 <nav class="navbar px-navbar">
     <!-- Header -->
     <div class="navbar-header">
-        <a class="navbar-brand px-demo-brand" href="{{route('admin::dashboard.index')}}"><span class="px-demo-logo bg-primary"><span class="px-demo-logo-1"></span><span class="px-demo-logo-2"></span><span class="px-demo-logo-3"></span><span class="px-demo-logo-4"></span><span class="px-demo-logo-5"></span><span class="px-demo-logo-6"></span><span class="px-demo-logo-7"></span><span class="px-demo-logo-8"></span><span class="px-demo-logo-9"></span></span>{{ config('app.name') }}</a>
+        <a class="navbar-brand px-demo-brand" href="{{route('admin::dashboards.index')}}"><span class="px-demo-logo bg-primary"><span class="px-demo-logo-1"></span><span class="px-demo-logo-2"></span><span class="px-demo-logo-3"></span><span class="px-demo-logo-4"></span><span class="px-demo-logo-5"></span><span class="px-demo-logo-6"></span><span class="px-demo-logo-7"></span><span class="px-demo-logo-8"></span><span class="px-demo-logo-9"></span></span>{{ config('app.name') }}</a>
     </div>
 
     <!-- Navbar togglers -->
