@@ -19,12 +19,11 @@ $(document).ready(function () {
             confirmButtonText: "Delete!",
             closeOnConfirm: true
         }, function () {
-
-            $.post(btn.attr('href'), {"_method": "DELETE"}, function (response) {
+            $.post(btn.attr('href'), {"_method": "DELETE"}).done(function (response) {
                 if (response.state == 'success') {
                     window.setTimeout(function () {
                         swal("Success", "Data successfully deleted!", "success");
-                    }, 500)
+                    }, 300)
 
                     if (btn.data('id')) {
                         if ($('.object' + btn.data('id')).length) {
@@ -33,15 +32,15 @@ $(document).ready(function () {
                         else {
                             btn.closest('tr').remove();
                         }
-
                     }
                 }
 
                 if (response.state == 'error') {
                     swal("Error", response.message, "error");
                 }
-
-            }, 'json');
+            }).fail(function () {
+                swal("Error", "Server error!", "error");
+            });
         });
     });
 });
