@@ -16,7 +16,8 @@
     <link rel="stylesheet" href="/assets/admin/css/pixeladmin.min.css">
     <link rel="stylesheet" href="/assets/admin/css/widgets.min.css">
     <link rel="stylesheet" href="/assets/admin/css/themes/{{ config('admin.theme') }}.min.css">
-    <link rel="stylesheet" href="/assets/admin/demo/demo.css">
+    <link rel="stylesheet" href="/assets/admin/css/sweetalert.min.css">
+    <link rel="stylesheet" href="/assets/admin/css/netcore.css">
 
     <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/holder/2.9.0/holder.js"></script>
     <script src="/assets/admin/pace/pace.min.js"></script>
@@ -166,43 +167,13 @@
 
 <!-- jQuery -->
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-<script>
-    $.ajaxSetup({
-        headers: {'X-CSRF-Token': '{{ csrf_token() }}'}
-    });
-</script>
 <script src="/assets/admin/js/bootstrap.min.js"></script>
 <script src="/assets/admin/js/pixeladmin.min.js"></script>
-
-<script type="text/javascript">
-    // -------------------------------------------------------------------------
-    // Initialize DEMO
-
-    $(function () {
-        var file = String(document.location).split('/').pop();
-
-        // Remove unnecessary file parts
-        file = file.replace(/(\.html).*/i, '$1');
-
-        if (!/.html$/i.test(file)) {
-            file = 'index.html';
-        }
-
-        // Activate current nav item
-        $('body > .px-nav')
-            .find('.px-nav-item > a[href="' + file + '"]')
-            .parent()
-            .addClass('active');
-
-        $('body > .px-nav').pxNav();
-        $('body > .px-footer').pxFooter();
-
-        $('#navbar-notifications').perfectScrollbar();
-        $('#navbar-messages').perfectScrollbar();
-    });
+<script src="/assets/admin/js/sweetalert.min.js"></script>
+<script>
+    var csrf_token = '{{ csrf_token() }}';
 </script>
-
+<script src="/assets/admin/js/netcore.js"></script>
 @yield('scripts')
-
 </body>
 </html>
