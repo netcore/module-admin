@@ -9,6 +9,8 @@ class MenuItem extends Model
 {
     protected $fillable = ['name','icon','type','value','module','is_active', 'active_resolver'];
 
+    protected $appends = ['url', 'active'];
+
     use NodeTrait;
 
     /**
@@ -16,5 +18,37 @@ class MenuItem extends Model
      */
     public function menu() {
         return $this->belongsTo(Menu::class);
+    }
+
+    /**
+     * @return mixed|string
+     */
+    public function getUrlAttribute(){
+        $url = 'javascript:;';
+
+        if ($this->type == 'route' ){
+            $url = route($this->value);
+        } elseif($this->type == 'url'){
+            $url = $this->value;
+        }
+
+        return $url;
+    }
+
+    /**
+     * @return string
+     */
+    public function getActiveAttribute(){
+        $active = '';
+
+        if($this->type == 'route' ){
+            $active = (active_class(
+                if_route_pattern(
+                    [$this->active_resolver ? $this->active_resolver : $this->value]
+                )
+            ));
+        }
+
+        return $active;
     }
 }

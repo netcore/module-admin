@@ -42,6 +42,32 @@
                 padding-left: 275px;
             }
         }
+
+        [v-cloak] .v-cloak--block {
+            display: block!important;
+        }
+
+        [v-cloak] .v-cloak--inline {
+            display: inline!important;
+        }
+
+        [v-cloak] .v-cloak--inlineBlock {
+            display: inline-block!important;
+        }
+
+        [v-cloak] .v-cloak--hidden {
+            display: none!important;
+        }
+
+        [v-cloak] .v-cloak--invisible {
+            visibility: hidden!important;
+        }
+
+        .v-cloak--block,
+        .v-cloak--inline,
+        .v-cloak--inlineBlock {
+            display: none!important;
+        }
     </style>
     @yield('styles')
 </head>
@@ -63,7 +89,20 @@
         </li>
 
         {{-- AdminMenuViewComposer --}}
-        {!! $leftAdminMenu !!}
+        <input type="hidden" class="left-admin-menu-items" value="{{$leftAdminMenu->toJson()}}">
+        <div id="left-admin-menu" v-cloak class="left-admin-menu">
+            <div class="v-cloak--block text-center" style="padding-top:20px">
+                <i class="fa fa-refresh fa-spin fa-2x"></i>
+            </div>
+            <div class="v-cloak--hidden">
+                <template v-if="menu_items.length > 0">
+                    <menu-items :items="menu_items"></menu-items>
+                </template>
+                <template v-else>
+                    <span style="padding-left:10px">No menu items</span>
+                </template>
+            </div>
+        </div>
     </ul>
 </nav>
 
@@ -158,6 +197,31 @@
     <span class="text-muted">Copyright © {{ date('Y') }} {{ config('app.name') }}. All rights reserved. Development from <a href="http://netcore.lv/">netcore</a>.</span>
 </footer>
 
+<div id="menu-items" style="display:none">
+    <div>
+        <li v-for="item in items" class="px-nav-item" :class="{'px-nav-dropdown': item.children.length > 0, 'active': item.active}">
+            <template v-if="item.type == 'separator' || item.type == 'empty'">
+                <hr>
+            </template>
+            <template v-else>
+                <a :href="item.url" :target="item.target">
+                    <i v-if="item.icon" class="px-nav-icon" :class="item.icon"></i>
+                    <span class="px-nav-label" v-html="item.name"></span>
+                </a>
+                <ul v-if="item.children" class="px-nav-dropdown-menu">
+                    <menu-items :items="item.children"></menu-items>
+                </ul>
+            </template>
+        </li>
+    </div>
+</div>
+
+<div id="select2-template" style="display: none">
+    <select :data-placeholder="placeholder">
+        <slot></slot>
+    </select>
+</div>
+
 <!-- ==============================================================================
 |
 |  SCRIPTS
@@ -166,7 +230,16 @@
 
 <!-- jQuery -->
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
+<!-- Vue.Js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.4.4/vue.js"></script>
+
+<!-- Vue Validate -->
+<script src="https://cdn.jsdelivr.net/npm/vee-validate@latest/dist/vee-validate.js"></script>
+
 <script>
+    Vue.use(VeeValidate);
+
     $.ajaxSetup({
         headers: {'X-CSRF-Token': '{{ csrf_token() }}'}
     });
@@ -199,6 +272,79 @@
 
         $('#navbar-notifications').perfectScrollbar();
         $('#navbar-messages').perfectScrollbar();
+    });
+
+    // -------------------------------------------------------------------------
+    // Initialize Vue Select2 Plugin
+
+    Vue.component('select2', {
+        props: {
+            options: {
+                type: Object,
+                default: function(){
+                    return {};
+                }
+            },
+            data: {
+                type: Array
+            },
+            value: {},
+            placeholder: {}
+        },
+        template: '#select2-template',
+        mounted: function () {
+            var vm = this;
+
+            this.options.data = this.data;
+
+            $(this.$el)
+                .select2(this.options)
+                .val(this.value)
+                .trigger('change')
+                .on('change', function () {
+                    vm.$emit('input', this.value)
+                })
+        },
+        watch: {
+            value: function (value) {
+                $(this.$el).val(value).trigger('change');
+            },
+            options: function (options) {
+                $(this.$el).empty().select2({ data: options })
+            }
+        },
+        destroyed: function () {
+            $(this.$el).off().select2('destroy')
+        }
+    });
+
+    // -------------------------------------------------------------------------
+    // Initialize leftAdminMenu
+
+    var leftAdminMenu;
+
+    jQuery(document).ready(function(){
+        Vue.component('menu-items', {
+            props: ['items'],
+            template: "#menu-items",
+            delimiters: ['<%', '%>']
+        });
+
+        leftAdminMenu = new Vue({
+            el: '#left-admin-menu',
+            data: {
+                menu_items: []
+            },
+            created: function(){
+                var self = this;
+                var items = JSON.parse(jQuery('.left-admin-menu-items').val());
+
+                jQuery.each(items, function(key, item){
+                    Vue.set(self.menu_items, key, item);
+                });
+            },
+            delimiters: ['<%', '%>']
+        });
     });
 </script>
 

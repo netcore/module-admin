@@ -5,6 +5,7 @@ namespace Modules\Admin\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Route;
 use Modules\Admin\Models\Menu;
 use Modules\Admin\Models\MenuItem;
 
@@ -18,6 +19,8 @@ class MenuController extends Controller
     public function index()
     {
         $menus = Menu::all();
+
+
 
         return view('admin::menu.index', compact('menus'));
     }
@@ -53,7 +56,26 @@ class MenuController extends Controller
         $menu = Menu::findOrFail($id);
         $items = $menu->items()->defaultOrder()->get()->toTree();
 
-        return view('admin::menu.show', compact('menu', 'items'));
+        $routes = [];
+
+        foreach (Route::getRoutes() as $route){
+            if($route->getName()) $routes[] = $route->getName();
+        }
+
+        $routes = collect($routes);
+
+        $icons = [];
+
+        foreach (getFontAwesomeList() as $key => $value){
+            $icons[] = [
+                'id' => $key,
+                'text' => '<i class="fa '.$key.'"></i> '.$key
+            ];
+        }
+
+        $icons = collect($icons);
+
+        return view('admin::menu.show', compact('menu', 'items', 'routes', 'icons'));
     }
 
     /**
@@ -92,12 +114,55 @@ class MenuController extends Controller
      */
     public function saveOrder(Request $request)
     {
-        $order = $request->get('order', null);
+        $order = $request->get('order', []);
 
         $newArray = json_decode($order, true);
 
         if (is_array($newArray)) {
             MenuItem::rebuildTree($newArray);
         }
+    }
+
+    /**
+     * @param Request $request
+     */
+    public function saveMenuItem(Request $request, $id){
+        $menu = Menu::findOrFail($id);
+
+        $menuItem = MenuItem::find($request->get('id', 0));
+
+        if(!$menuItem){
+            $menuItem = new MenuItem();
+        }
+
+        $menuItem->name = $request->get('name') ? $request->get('name') : '';
+        $menuItem->module = $request->get('module') ? $request->get('module') : '';
+        $menuItem->icon = $request->get('icon') ? $request->get('icon') : '';
+        $menuItem->type = $request->get('type');
+        $menuItem->value = $request->get('value');
+        $menuItem->target = $request->get('target', '_self');
+        $menuItem->is_active = $request->get('is_active', 0);
+        $menuItem->menu_id = $menu->id;
+        $menuItem->save();
+
+        return response()->json([
+            'status' => 'success',
+            'item'   => $menuItem
+        ]);
+    }
+
+    public function deleteMenuItem(Request $request, $id, $itemId){
+        $response = ['status' => 'error'];
+
+        $menu = Menu::findOrFail($id);
+
+        $menuItem = $menu->items()->where('id', $itemId)->first();
+        if($menuItem){
+            $menuItem->delete();
+
+            $response = ['status' => 'success'];
+        }
+
+        return response()->json($response);
     }
 }

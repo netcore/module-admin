@@ -24,58 +24,33 @@ class AdminMenuViewComposer{
          * https://www.hieule.info/products/laravel-active-version-3-released
          */
         $pixelAdminMenu = function ($items) use (&$pixelAdminMenu) {
-            $tree = '';
+            $menuItems = [];
+
 
             foreach ($items as $item) {
-                $active = '';
-                $url    = 'javascript:;';
-
-                if( $item->type == 'route' ){
-                    $active = (active_class(
-                        if_route_pattern(
-                            [$item->active_resolver ? $item->active_resolver : $item->value]
-                        )
-                    ));
-
-                    $url    = route($item->value);
-                }
-
                 //@TODO: submenu item resolvers for active class
-                $tree .= '<li class="px-nav-item' . ($item->children->count() ? ' px-nav-dropdown' : '') . ' ' . $active . '">';
 
-                    $tree .= '<a href="' . $url . '">';
-
-                        if( $item->icon ){
-                            $tree .= '<i class="px-nav-icon ' . $item->icon . '"></i>';
-                        }
-
-                        $tree .= '<span class="px-nav-label">' . $item->name . '</span>';
-
-                    $tree .= '</a>';
-
-                    //submenus
-                    if( $item->children->count() ){
-                        $tree .= '<ul class="px-nav-dropdown-menu">';
-                        $tree .= $pixelAdminMenu($item->children);
-                        $tree .= '</ul>';
-                    }
-
-
-                $tree .= '</li>';
-
+                $menuItems[] = [
+                    'id' => $item->id,
+                    'name' => $item->name,
+                    'icon' => $item->icon,
+                    'type' => $item->type,
+                    'target' => $item->target,
+                    'url' => $item->url,
+                    'active' => $item->active,
+                    'children' => $item->children->count() ? $pixelAdminMenu($item->children) : []
+                ];
             }
 
-            $tree .= '';
-
-            return $tree;
+            return $menuItems;
         };
 
-        if( $items = $menu->items()->defaultOrder()->get() ){
+        if( $items = $menu->items()->where('is_active', 1)->defaultOrder()->get() ){
             $leftAdminMenu = $pixelAdminMenu(
                 $items->toTree()
             );
         }
 
-        $view->with('leftAdminMenu', $leftAdminMenu);
+        $view->with('leftAdminMenu', collect($leftAdminMenu));
     }
 }
