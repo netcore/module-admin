@@ -18,6 +18,7 @@
     <link rel="stylesheet" href="/assets/admin/css/themes/{{ config('admin.theme') }}.min.css">
     <link rel="stylesheet" href="/assets/admin/css/sweetalert.min.css">
     <link rel="stylesheet" href="/assets/admin/css/netcore.css">
+    <link rel="stylesheet" href="/assets/admin/css/switchery.min.css">
 
     <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/holder/2.9.0/holder.js"></script>
     <script src="/assets/admin/pace/pace.min.js"></script>
@@ -170,6 +171,7 @@
 <script src="/assets/admin/js/bootstrap.min.js"></script>
 <script src="/assets/admin/js/pixeladmin.min.js"></script>
 <script src="/assets/admin/js/sweetalert.min.js"></script>
+<script src="/assets/admin/js/switchery.min.js"></script>
 <script>
     var csrf_token = '{{ csrf_token() }}';
 </script>
