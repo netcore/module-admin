@@ -224,7 +224,7 @@
 </div>
 
 <div id="select2-template" style="display: none">
-    <select :data-placeholder="placeholder">
+    <select :id="id" :name="name" :data-placeholder="placeholder">
         <slot></slot>
     </select>
 </div>
@@ -240,6 +240,9 @@
 
 <!-- Vue.Js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.4.4/vue.js"></script>
+
+<!-- Vue2Filters -->
+<script src="https://cdn.jsdelivr.net/npm/vue2-filters/dist/vue2-filters.min.js"></script>
 
 <!-- Vue Validate -->
 <script src="https://cdn.jsdelivr.net/npm/vee-validate@latest/dist/vee-validate.js"></script>
@@ -299,7 +302,9 @@
                 type: Array
             },
             value: {},
-            placeholder: {}
+            placeholder: {},
+            name: {},
+            id: {}
         },
         template: '#select2-template',
         mounted: function () {
@@ -335,6 +340,9 @@
                     vm.$emit('change');
 
                     vm.$emit('input', this.value)
+                })
+                .on('select2:select', function(){
+                    vm.$emit('select');
                 })
         },
         watch: {

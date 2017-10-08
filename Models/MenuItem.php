@@ -30,7 +30,7 @@ class MenuItem extends Model
         $url = 'javascript:;';
 
         if ($this->type == 'route' ){
-            $url = route($this->value);
+            $url = route($this->value, (array) $this->parameters);
         } elseif($this->type == 'url'){
             $url = $this->value;
         }
@@ -53,5 +53,9 @@ class MenuItem extends Model
         }
 
         return $active;
+    }
+
+    public function getParametersAttribute($value){
+        return (object) json_decode($value);
     }
 }

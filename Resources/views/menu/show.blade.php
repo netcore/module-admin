@@ -54,7 +54,7 @@
 
                     <div class="panel-body" style="padding:20px;">
                         <div class="form-group">
-                            <select2 :data="menu_types" :placeholder="'Please Select'" v-model="services.edit.type" :disabled="services.edit.id > 0"></select2>
+                            <select2 :data="menu_types" :placeholder="'Please Select'" v-on:select="services.edit.clear()" v-model="services.edit.type" :disabled="services.edit.id > 0"></select2>
                         </div>
                         <hr>
 
@@ -73,7 +73,11 @@
                             </div>
                             <div class="form-group">
                                 <label>Route</label>
-                                <select2 :data="all_routes" :placeholder="'Please Select'" v-model="services.edit.value"></select2>
+                                <select2 :data="getRouteList()" :placeholder="'Please Select'" v-on:select="services.edit.checkParameters()" v-model="services.edit.value"></select2>
+                            </div>
+                            <div v-for="(param, index) in services.edit.parameters" class="form-group">
+                                <label><% index | capitalize %></label>
+                                <input type="text" class="form-control" v-model="services.edit.parameters[index]">
                             </div>
                             <div class="form-group">
                                 <label>Target</label>
@@ -199,6 +203,8 @@
         $(document).ready(function () {
 
             var EditorService = function(parent, params){
+                var self = this;
+
                 if(typeof params === 'undefined') params = {};
 
                 this.$parent = parent;
@@ -214,6 +220,14 @@
                 this.url = params.value ? params.value : '';
                 this.target = params.target ? params.target : '_self';
                 this.is_active = params.is_active ? params.is_active : 0;
+
+                Vue.nextTick(function(){
+                    if(params.parameters){
+                        Vue.set(self, 'parameters', params.parameters);
+                    } else {
+                        self.parameters = {};
+                    }
+                });
             };
 
             EditorService.prototype = {
@@ -231,7 +245,8 @@
                         value: this.value,
                         url: this.url,
                         target: this.target,
-                        is_active: this.is_active
+                        is_active: this.is_active,
+                        parameters: this.parameters
                     };
 
                     switch(newMenuItem.type) {
@@ -304,6 +319,19 @@
                 },
                 validate: function(fields){
 
+                },
+                checkParameters: function(){
+                    var self = this;
+
+                    var route = this.$parent.all_routes[this.value];
+
+                    if(route){
+                        this.parameters = {};
+
+                        route.parameters.forEach(function(param){
+                            Vue.set(self.parameters, param, '')
+                        });
+                    }
                 }
             };
 
@@ -343,7 +371,7 @@
                         id: 'separator',
                         text: 'Separator'
                     }],
-                    all_routes: [],
+                    all_routes: {},
                     all_icons: [],
                     menu_items: [],
                     services: {
@@ -363,8 +391,9 @@
 
                     jQuery.each(routes, function(key, route){
                         Vue.set(self.all_routes, key, {
-                            id: route,
-                            text: route
+                            id: route.name,
+                            name: route.name,
+                            parameters: route.parameters
                         });
                     });
 
@@ -377,6 +406,18 @@
                     Vue.set(self.services, 'edit', new EditorService(self))
                 },
                 methods: {
+                    getRouteList: function(){
+                        var routeList = [];
+
+                        jQuery.each(this.all_routes, function(key, route){
+                            routeList.push({
+                                id: route.name,
+                                text: route.name
+                            });
+                        });
+
+                        return routeList;
+                    },
                     findItem: function(id, items){
                         var self = this;
                         var findableItem = false;
@@ -403,93 +444,98 @@
                     deleteItem: function(item){
                         var self = this;
 
-                        bootbox.confirm("Are you sure you want to delete this menu item? ", function(confirmed){
-                            if(confirmed){
-                                var deleteRequest = function(id){
-                                    return jQuery.post('{{url('admin/menus/'.$menu->id.'/delete-item')}}/'+id);
+                        swal({
+                            title: 'Warning',
+                            text: "Are you sure you want to delete this menu item?",
+                            type: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: "#DD6B55",
+                            cancelButtonColor: '#8c8b89',
+                            confirmButtonText: 'Yes, delete it!'
+                        }).then(function () {
+                            var deleteRequest = function(id){
+                                return jQuery.post('{{url('admin/menus/'.$menu->id.'/delete-item')}}/'+id);
+                            };
+
+                            var deleteThis = function(id, items){
+                                items.forEach(function(deletableItem, deletableKey){
+                                    if(deletableItem){
+                                        if(deletableItem.id === item.id){
+                                            items.splice(deletableKey, 1);
+                                        } else {
+                                            if(deletableItem.children.length > 0){
+                                                deleteThis(id, deletableItem.children);
+                                            }
+                                        }
+                                    }
+                                });
+                            };
+
+
+                            if(item.children.length > 0){
+                                var inputOptions = {
+                                    0: '-- Delete Child Items'
                                 };
 
-                                var deleteThis = function(id, items){
-                                    items.forEach(function(deletableItem, deletableKey){
-                                        if(deletableItem){
-                                            if(deletableItem.id === item.id){
-                                                items.splice(deletableKey, 1);
-                                            } else {
-                                                if(deletableItem.children.length > 0){
-                                                    deleteThis(id, deletableItem.children);
-                                                }
+                                var getMenuItems = function(level, items){
+                                    items.forEach(function(otherItem){
+                                        if(otherItem.id !== item.id && otherItem.type !== 'separator' && otherItem.type !== 'empty'){
+                                            inputOptions[otherItem.id] = Array(level).join('--')+' '+otherItem.name;
+
+                                            if(otherItem.children){
+                                                getMenuItems(level+1, otherItem.children);
                                             }
                                         }
                                     });
                                 };
 
+                                getMenuItems(1, self.menu_items);
 
-                                if(item.children.length > 0){
-                                    var inputOptions = [{
-                                        text: '-- Delete Child Items',
-                                        value: 0
-                                    }];
-
-                                    var getMenuItems = function(level, items){
-                                        items.forEach(function(otherItem){
-                                            if(otherItem.id !== item.id && otherItem.type !== 'separator' && otherItem.type !== 'empty'){
-                                                inputOptions.push({
-                                                    text: Array(level).join('--')+' '+otherItem.name,
-                                                    value: otherItem.id
+                                swal({
+                                    title: 'Where should we move the child items?',
+                                    input: 'select',
+                                    inputOptions: inputOptions,
+                                    inputClass: 'form-control',
+                                    showCancelButton: true,
+                                    confirmButtonColor: "#DD6B55",
+                                    cancelButtonColor: '#8c8b89'
+                                }).then(function (result) {
+                                    if(result){
+                                        if(result > 0){
+                                            var newParent = self.findItem(parseInt(result), self.menu_items);
+                                            if(newParent){
+                                                item.children.forEach(function(child){
+                                                    newParent.children.push(child);
                                                 });
-
-                                                if(otherItem.children){
-                                                    getMenuItems(level+1, otherItem.children);
-                                                }
                                             }
-                                        });
-                                    };
 
-                                    getMenuItems(1, self.menu_items);
+                                            item.children = [];
 
-                                    bootbox.prompt({
-                                        value: 0,
-                                        title: 'Where should we move the child items?',
-                                        inputType: 'select',
-                                        inputOptions: inputOptions,
-                                        callback: function (result) {
-                                            if(result){
-                                                if(result > 0){
-                                                    var newParent = self.findItem(parseInt(result), self.menu_items);
-                                                    if(newParent){
-                                                        item.children.forEach(function(child){
-                                                            newParent.children.push(child);
-                                                        });
+                                            self.saveOrder().done(function(){
+                                                deleteRequest(item.id).done(function(response){
+                                                    if(response.status === 'success'){
+                                                        deleteThis(item.id, self.menu_items);
                                                     }
-
-                                                    item.children = [];
-
-                                                    self.saveOrder().done(function(){
-                                                        deleteRequest(item.id).done(function(response){
-                                                            if(response.status === 'success'){
-                                                                deleteThis(item.id, self.menu_items);
-                                                            }
-                                                        });
-                                                    });
-                                                } else {
-                                                    deleteRequest(item.id).done(function(response){
-                                                       if(response.status === 'success'){
-                                                           deleteThis(item.id, self.menu_items);
-                                                       }
-                                                    });
+                                                });
+                                            });
+                                        } else {
+                                            deleteRequest(item.id).done(function(response){
+                                                if(response.status === 'success'){
+                                                    deleteThis(item.id, self.menu_items);
                                                 }
-                                            }
+                                            });
                                         }
-                                    });
-                                } else {
-                                    deleteRequest(item.id).done(function(response){
-                                        if(response.status === 'success'){
-                                            deleteThis(item.id, self.menu_items);
-                                        }
-                                    });
-                                }
+                                    }
+                                });
+                            } else {
+                                deleteRequest(item.id).done(function(response){
+                                    if(response.status === 'success'){
+                                        deleteThis(item.id, self.menu_items);
+                                    }
+                                });
                             }
                         });
+
                     },
                     editItem: function(item){
                         this.services.edit = new EditorService(this, item);

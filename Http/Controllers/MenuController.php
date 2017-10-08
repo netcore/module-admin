@@ -150,6 +150,7 @@ class MenuController extends Controller
         $menuItem->value = $request->get('value');
         $menuItem->target = $request->get('target', '_self');
         $menuItem->is_active = $request->get('is_active', 0);
+        $menuItem->parameters = json_encode($request->get('parameters') ? $request->get('parameters') : []);
         $menuItem->menu_id = $menu->id;
         $menuItem->save();
 
