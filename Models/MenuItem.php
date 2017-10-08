@@ -33,6 +33,8 @@ class MenuItem extends Model
             $url = route($this->value, (array) $this->parameters);
         } elseif($this->type == 'url'){
             $url = $this->value;
+        } elseif($this->type == 'page'){
+            $url = $this->value;
         }
 
         return $url;

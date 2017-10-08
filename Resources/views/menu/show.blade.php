@@ -462,6 +462,10 @@
                                     if(deletableItem){
                                         if(deletableItem.id === item.id){
                                             items.splice(deletableKey, 1);
+
+                                            if(self.services.edit.id === item.id){
+                                                self.services.edit.cancel();
+                                            }
                                         } else {
                                             if(deletableItem.children.length > 0){
                                                 deleteThis(id, deletableItem.children);
