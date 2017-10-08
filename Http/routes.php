@@ -13,13 +13,25 @@ Route::group(['middleware' => 'web', 'prefix' => 'admin', 'namespace' => 'Module
             'uses' => 'MenuController@index',
             'as'   => 'admin::menu.index'
         ]);
+
         Route::get('/menus/{id}', [
             'uses' => 'MenuController@show',
             'as'   => 'admin::menu.show'
         ]);
+
         Route::post('/menus/{id}/save-order', [
             'uses' => 'MenuController@saveOrder',
             'as'   => 'admin::menu.save-order'
+        ]);
+
+        Route::post('/menus/{id}/save-item', [
+            'uses' => 'MenuController@saveMenuItem',
+            'as'   => 'admin::menu.save-item'
+        ]);
+
+        Route::post('/menus/{id}/delete-item/{itemId}', [
+            'uses' => 'MenuController@deleteMenuItem',
+            'as'   => 'admin::menu.delete-item'
         ]);
     });
 
