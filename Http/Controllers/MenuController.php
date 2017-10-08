@@ -68,8 +68,9 @@ class MenuController extends Controller
 
         foreach (getFontAwesomeList() as $key => $value){
             $icons[] = [
-                'id' => $key,
-                'text' => '<i class="fa '.$key.'"></i> '.$key
+                'id' => $value,
+                'text' => $value,
+                'html' => '<i class="fa '.$value.'"></i> '.$value
             ];
         }
 

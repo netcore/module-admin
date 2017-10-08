@@ -70,6 +70,11 @@
         .v-cloak--inlineBlock {
             display: none!important;
         }
+
+        /* Hide search box when not needed */
+        .no-search .select2-search {
+            display:none
+        }
     </style>
     @yield('styles')
 </head>
@@ -207,7 +212,7 @@
             </template>
             <template v-else>
                 <a :href="item.url" :target="item.target">
-                    <i v-if="item.icon" class="px-nav-icon" :class="item.icon"></i>
+                    <i v-if="item.icon" class="px-nav-icon fa" :class="item.icon"></i>
                     <span class="px-nav-label" v-html="item.name"></span>
                 </a>
                 <ul v-if="item.children" class="px-nav-dropdown-menu">
@@ -276,11 +281,33 @@
 
             this.options.data = this.data;
 
+            if(this.data.length <= 10){
+                this.options.dropdownCssClass = 'no-search';
+            }
+
+            this.options.templateResult = function(data){
+                if(data.html){
+                    return data.html;
+                } else {
+                    return data.text;
+                }
+            };
+
+            this.options.escapeMarkup = function(m){
+                return m;
+            };
+
+            this.options.templateSelection = function(data) {
+                return data.text;
+            };
+
             $(this.$el)
                 .select2(this.options)
                 .val(this.value)
                 .trigger('change')
                 .on('change', function () {
+                    vm.$emit('change');
+
                     vm.$emit('input', this.value)
                 })
         },

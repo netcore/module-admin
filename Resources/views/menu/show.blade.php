@@ -54,11 +54,11 @@
 
                     <div class="panel-body" style="padding:20px;">
                         <div class="form-group">
-                            <select2 :data="menu_types" :placeholder="'Please Select'" v-model="services.edit.type" v-on:change="services.edit.clear()" :disabled="services.edit.id > 0"></select2>
+                            <select2 :data="menu_types" :placeholder="'Please Select'" v-model="services.edit.type" :disabled="services.edit.id > 0"></select2>
                         </div>
                         <hr>
 
-                        <template v-if="services.edit.type == 'route'">
+                        <div v-show="services.edit.type == 'route'">
                             <div class="form-group">
                                 <label>Name</label>
                                 <input type="text" class="form-control" v-model="services.edit.name">
@@ -79,8 +79,8 @@
                                 <label>Target</label>
                                 <select2 :data="[{id: '_self', text: '_self'}, {id: '_blank', text: '_blank'}]" v-model="services.edit.target"></select2>
                             </div>
-                        </template>
-                        <template v-if="services.edit.type == 'url'">
+                        </div>
+                        <div v-show="services.edit.type == 'url'">
                             <div class="form-group">
                                 <label>Name</label>
                                 <input type="text" class="form-control" v-model="services.edit.name">
@@ -97,8 +97,8 @@
                                 <label>Target</label>
                                 <select2 :data="[{id: '_self', text: '_self'}, {id: '_blank', text: '_blank'}]" v-model="services.edit.target"></select2>
                             </div>
-                        </template>
-                        <template v-if="services.edit.type == 'page'">
+                        </div>
+                        <div v-show="services.edit.type == 'page'">
                             <div class="form-group">
                                 <label>Name</label>
                                 <input type="text" class="form-control" v-model="services.edit.name">
@@ -115,7 +115,7 @@
                                 <label>Target</label>
                                 <select2 :data="[{id: '_self', text: '_self'}, {id: '_blank', text: '_blank'}]" v-model="services.edit.target"></select2>
                             </div>
-                        </template>
+                        </div>
 
                         <div v-if="services.edit.type != ''">
                             <div class="form-group">
@@ -173,7 +173,7 @@
                     </div>
                     <div class="dd-handle">
                         <span v-if="item.icon">
-                            <i :class="item.icon"></i>
+                            <i class="fa" :class="item.icon"></i>
                         </span>
                         <span v-html="item.name"></span>
                         {{--<small class="url"></small>--}}
@@ -342,6 +342,14 @@
                     menu_items: [],
                     services: {
                         edit: false
+                    },
+                    select2: {
+                        templateResult: function(data){
+                            return data.html;
+                        },
+                        escapeMarkup: function(m) {
+                            return m;
+                        }
                     }
                 },
                 created: function(){
