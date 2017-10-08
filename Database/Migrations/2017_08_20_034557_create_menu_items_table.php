@@ -14,7 +14,7 @@ class CreateMenuItemsTable extends Migration
      */
     public function up()
     {
-        Schema::create('menu_items', function (Blueprint $table) {
+        Schema::create('netcore_admin__menu_items', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
             $table->string('module')->nullable()->index();
@@ -38,6 +38,6 @@ class CreateMenuItemsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('menu_items');
+        Schema::dropIfExists('netcore_admin__menu_items');
     }
 }

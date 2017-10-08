@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Menu extends Model
 {
+    protected $table = 'netcore_admin__menu';
+
     protected $fillable = ['name'];
 
     /**
