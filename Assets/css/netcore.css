@@ -2,6 +2,10 @@
  * Netcore custom css
  */
 
+.vertical-align-middle{
+    vertical-align: middle !important;
+}
+
 .panel-heading-btn {
     float: right;
 }

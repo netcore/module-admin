@@ -6,6 +6,37 @@ $(document).ready(function () {
         }
     });
 
+    /**
+     * @TOOD - all messages should be translatable
+     */
+
+    // Init switchery
+    $('.changeable-state').each(function(i, switcher) {
+        new Switchery(switcher);
+    });
+
+    $(document).on('change', '.changeable-state', function () {
+        var id = $(this).data('id');
+        var model = $(this).data('model');
+        var whereColumn = $(this).data('where');
+        var column = $(this).data('column');
+
+        $.post('/admin/switch-active', {
+            id: id,
+            model: model,
+            where: whereColumn,
+            column: column,
+            _token: csrf_token
+        }, function (response) {
+            if (response.state == 'success') {
+                swal("Success", "Status has been changed", "success");
+            }
+            if (response.state == 'error') {
+                swal("Error!", response.message, "error");
+            }
+        });
+    });
+    
     $('body').on('click', '.confirm-delete', function (e) {
         e.preventDefault();
         var btn = $(this);
