@@ -87,7 +87,7 @@
                             </div>
                             <div class="form-group">
                                 <label>URL:</label>
-                                <input type="text" class="form-control" v-model="services.edit.value">
+                                <input type="text" class="form-control" v-model="services.edit.url">
                             </div>
                             <div class="form-group">
                                 <label>Icon</label>
@@ -105,7 +105,7 @@
                             </div>
                             <div class="form-group">
                                 <label>URL:</label>
-                                <input type="text" class="form-control" v-model="services.edit.value">
+                                <input type="text" class="form-control" v-model="services.edit.url">
                             </div>
                             <div class="form-group">
                                 <label>Icon</label>
@@ -211,6 +211,7 @@
                 this.icon = params.icon ? params.icon : '';
                 this.type = params.type ? params.type : '';
                 this.value = params.value ? params.value : '';
+                this.url = params.value ? params.value : '';
                 this.target = params.target ? params.target : '_self';
                 this.is_active = params.is_active ? params.is_active : 0;
             };
@@ -228,6 +229,7 @@
                         icon: this.icon,
                         type: this.type,
                         value: this.value,
+                        url: this.url,
                         target: this.target,
                         is_active: this.is_active
                     };
@@ -240,11 +242,15 @@
                             if(newMenuItem.name === '' && !newMenuItem.name.trim()){
                                 newMenuItem.name = newMenuItem.value;
                             }
+
+                            newMenuItem.value = newMenuItem.url;
                             break;
                         case 'page':
                             if(newMenuItem.name === '' && !newMenuItem.name.trim()){
                                 newMenuItem.name = newMenuItem.value;
                             }
+
+                            newMenuItem.value = newMenuItem.url;
                             break;
                         default:
                             newMenuItem.value = 'javascript:;';
@@ -342,14 +348,6 @@
                     menu_items: [],
                     services: {
                         edit: false
-                    },
-                    select2: {
-                        templateResult: function(data){
-                            return data.html;
-                        },
-                        escapeMarkup: function(m) {
-                            return m;
-                        }
                     }
                 },
                 created: function(){

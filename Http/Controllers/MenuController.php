@@ -59,7 +59,14 @@ class MenuController extends Controller
         $routes = [];
 
         foreach (Route::getRoutes() as $route){
-            if($route->getName()) $routes[] = $route->getName();
+            if(in_array('GET', $route->methods())){
+                if($route->getName()) {
+                    $routes[] = [
+                        'name' => $route->getName(),
+                        'parameters' => $route->parameterNames()
+                    ];
+                }
+            }
         }
 
         $routes = collect($routes);
