@@ -23,7 +23,7 @@ class CreateMenuItemsTable extends Migration
             $table->string('value')->nullable();
             $table->string('target')->nullable();
             $table->integer('menu_id')->unsigned();
-            $table->foreign('menu_id')->references('id')->on('menus')->onDelete('cascade');
+            $table->foreign('menu_id')->references('id')->on('netcore_admin__menus')->onDelete('cascade');
             $table->string('active_resolver')->nullable();
             $table->boolean('is_active')->default(0);
             NestedSet::columns($table);
