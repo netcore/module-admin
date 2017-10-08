@@ -24,14 +24,18 @@ class MenuTableSeeder extends Seeder
                     'icon'   => 'ion-ios-pulse-strong',
                     'type'   => 'route',
                     'value'  => 'admin::dashboard.index',
-                    'module' => 'Admin'
+                    'module' => 'Admin',
+                    'is_active' => 1,
+                    'parameters' => json_encode([])
                 ],
                 [
                     'name'   => 'Menus',
                     'icon'   => 'ion-navicon-round',
                     'type'   => 'route',
                     'value'  => 'admin::menu.index',
-                    'module' => 'Admin'
+                    'module' => 'Admin',
+                    'is_active' => 1,
+                    'parameters' => json_encode([])
                 ]
             ],
             'topleftAdminMenu' => [
@@ -40,14 +44,16 @@ class MenuTableSeeder extends Seeder
                     //'icon'   => 'ion-android-unlock',
                     'type'   => 'url',
                     'value'  => '/',
-                    //'module' => 'User'
+                    //'module' => 'User',
+                    'parameters' => json_encode([])
                 ],
             ],
             'main' => [
                 [
                     'name'  => 'Home',
                     'type'  => 'url',
-                    'value' => '/'
+                    'value' => '/',
+                    'parameters' => json_encode([])
                 ]
             ]
         ];

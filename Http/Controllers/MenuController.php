@@ -61,7 +61,7 @@ class MenuController extends Controller
         foreach (Route::getRoutes() as $route){
             if(in_array('GET', $route->methods())){
                 if($route->getName()) {
-                    $routes[] = [
+                    $routes[$route->getName()] = [
                         'name' => $route->getName(),
                         'parameters' => $route->parameterNames()
                     ];

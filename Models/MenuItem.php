@@ -10,7 +10,7 @@ class MenuItem extends Model
     protected $table = 'netcore_admin__menu_items';
 
 
-    protected $fillable = ['name','icon','type','value','module','is_active', 'active_resolver', 'parent_id'];
+    protected $fillable = ['name','icon','type','value','module','is_active', 'active_resolver', 'parent_id', 'parameters'];
 
     protected $appends = ['url', 'active'];
 
