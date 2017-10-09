@@ -792,3 +792,10 @@ if(!function_exists('getFontAwesomeList')){
         ];
     }
 }
+
+if(!function_exists('versionedAsset')) {
+    function versionedAsset($asset) {
+        $version = @filemtime(public_path($asset)) ?: time();
+        return asset($asset) . '?v=' . $version;
+    }
+}
