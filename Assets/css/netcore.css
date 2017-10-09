@@ -6,6 +6,21 @@
     vertical-align: middle !important;
 }
 
+.inline{
+    display: inline !important;
+}
+
+.inline-block{
+    display: inline-block !important;
+}
+
+textarea{
+    width:100%;
+    border-radius:3px;
+    border: 1px solid #d6d6d6;
+    padding:10px;
+}
+
 .panel-heading-btn {
     float: right;
 }
