@@ -206,7 +206,7 @@
 
 <div id="menu-items" style="display:none">
     <div>
-        <li v-for="item in items" class="px-nav-item" :class="{'px-nav-dropdown': item.children.length > 0, 'active': item.active}">
+        <li v-for="item in items" class="px-nav-item" :class="{'px-nav-dropdown': item.children.length > 0, 'active': item.active, 'px-open': item.child_active}">
             <template v-if="item.type == 'separator' || item.type == 'empty'">
                 <hr>
             </template>
@@ -215,7 +215,7 @@
                     <i v-if="item.icon" class="px-nav-icon fa" :class="item.icon"></i>
                     <span class="px-nav-label" v-html="item.name"></span>
                 </a>
-                <ul v-if="item.children" class="px-nav-dropdown-menu">
+                <ul v-if="item.children" class="px-nav-dropdown-menu" :class="{'px-open': item.child_active}">
                     <menu-items :items="item.children"></menu-items>
                 </ul>
             </template>
@@ -380,6 +380,24 @@
                 var items = JSON.parse(jQuery('.left-admin-menu-items').val());
 
                 jQuery.each(items, function(key, item){
+                    item.child_active = false;
+
+                    var isActive = function(items){
+                        items.forEach(function(childItem){
+                            if(childItem.active){
+                                item.child_active = true;
+                            } else {
+                                if(childItem.children.length > 0){
+                                    isActive(childItem.children)
+                                }
+                            }
+                        });
+                    };
+
+                    if(item.children.length > 0){
+                        isActive(item.children);
+                    }
+
                     Vue.set(self.menu_items, key, item);
                 });
             },

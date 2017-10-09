@@ -684,6 +684,25 @@
 
                                 items.forEach(function(item, key){
                                     if(item.is_active){
+
+                                        item.child_active = false;
+
+                                        var isActive = function(items){
+                                            items.forEach(function(childItem){
+                                                if(childItem.active){
+                                                    item.child_active = true;
+                                                } else {
+                                                    if(childItem.children.length > 0){
+                                                        isActive(childItem.children)
+                                                    }
+                                                }
+                                            });
+                                        };
+
+                                        if(item.children.length > 0){
+                                            isActive(item.children);
+                                        }
+
                                         menuItems.push({
                                             id: item.id,
                                             name: item.name,
@@ -692,6 +711,7 @@
                                             url: item.url,
                                             target: item.target,
                                             active: item.active,
+                                            child_active: item.child_active,
                                             children: item.children ? getNewMenuItems(item.children) : []
                                         });
                                     }
