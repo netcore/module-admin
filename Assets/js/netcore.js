@@ -47,9 +47,8 @@ $(document).ready(function () {
             type: "warning",
             showCancelButton: true,
             confirmButtonColor: "#DD6B55",
-            confirmButtonText: "Delete!",
-            closeOnConfirm: true
-        }, function () {
+            confirmButtonText: "Delete!"
+        }).then(function(){
             $.post(btn.attr('href'), {"_method": "DELETE"}).done(function (response) {
                 if (response.state == 'success') {
                     window.setTimeout(function () {
