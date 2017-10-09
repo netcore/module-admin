@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Route;
+use Modules\Admin\Http\Requests\SaveMenuItemRequest;
 use Modules\Admin\Models\Menu;
 use Modules\Admin\Models\MenuItem;
 
@@ -134,7 +135,7 @@ class MenuController extends Controller
     /**
      * @param Request $request
      */
-    public function saveMenuItem(Request $request, $id){
+    public function saveMenuItem(SaveMenuItemRequest $request, $id){
         $menu = Menu::findOrFail($id);
 
         $menuItem = MenuItem::find($request->get('id', 0));

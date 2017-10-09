@@ -59,25 +59,30 @@
                         <hr>
 
                         <div v-show="services.edit.type == 'route'">
-                            <div class="form-group">
+                            <div class="form-group" :class="{'has-error': services.edit.errors.name.visible}">
                                 <label>Name</label>
                                 <input type="text" class="form-control" v-model="services.edit.name">
+                                <span v-if="services.edit.errors.name.visible" class="help-block"><% services.edit.errors.name.value %></span>
                             </div>
-                            <div class="form-group">
+                            <div class="form-group" :class="{'has-error': services.edit.errors.module.visible}">
                                 <label>Module</label>
                                 <input type="text" class="form-control" v-model="services.edit.module">
+                                <span v-if="services.edit.errors.module.visible" class="help-block"><% services.edit.errors.module.value %></span>
                             </div>
-                            <div class="form-group">
+                            <div class="form-group" :class="{'has-error': services.edit.errors.icon.visible}">
                                 <label>Icon</label>
                                 <select2 :data="all_icons" :placeholder="'Please Select'" v-model="services.edit.icon"></select2>
+                                <span v-if="services.edit.errors.icon.visible" class="help-block"><% services.edit.errors.icon.value %></span>
                             </div>
-                            <div class="form-group">
+                            <div class="form-group" :class="{'has-error': services.edit.errors.value.visible}">
                                 <label>Route</label>
                                 <select2 :data="getRouteList()" :placeholder="'Please Select'" v-on:select="services.edit.checkParameters()" v-model="services.edit.value"></select2>
+                                <span v-if="services.edit.errors.value.visible" class="help-block"><% services.edit.errors.value.value %></span>
                             </div>
-                            <div v-for="(param, index) in services.edit.parameters" class="form-group">
+                            <div v-for="(param, index) in services.edit.parameters" class="form-group" :class="{'has-error': services.edit.errors.parameters[index].visible}">
                                 <label><% index | capitalize %></label>
                                 <input type="text" class="form-control" v-model="services.edit.parameters[index]">
+                                <span v-if="services.edit.errors.parameters[index].visible" class="help-block"><% services.edit.errors.parameters[index].value %></span>
                             </div>
                             <div class="form-group">
                                 <label>Target</label>
@@ -89,9 +94,10 @@
                                 <label>Name</label>
                                 <input type="text" class="form-control" v-model="services.edit.name">
                             </div>
-                            <div class="form-group">
+                            <div class="form-group" :class="{'has-error': services.edit.errors.url.visible}">
                                 <label>URL:</label>
                                 <input type="text" class="form-control" v-model="services.edit.url">
+                                <span v-if="services.edit.errors.url.visible" class="help-block"><% services.edit.errors.url.value %></span>
                             </div>
                             <div class="form-group">
                                 <label>Icon</label>
@@ -107,9 +113,10 @@
                                 <label>Name</label>
                                 <input type="text" class="form-control" v-model="services.edit.name">
                             </div>
-                            <div class="form-group">
+                            <div class="form-group" :class="{'has-error': services.edit.errors.url.visible}">
                                 <label>URL:</label>
                                 <input type="text" class="form-control" v-model="services.edit.url">
+                                <span v-if="services.edit.errors.url.visible" class="help-block"><% services.edit.errors.url.value %></span>
                             </div>
                             <div class="form-group">
                                 <label>Icon</label>
@@ -219,22 +226,55 @@
                 this.value = params.value ? params.value : '';
                 this.url = params.value ? params.value : '';
                 this.target = params.target ? params.target : '_self';
-                this.is_active = params.is_active ? params.is_active : 0;
+                this.is_active = params.is_active ? params.is_active : 1;
 
-                Vue.nextTick(function(){
-                    if(params.parameters){
-                        Vue.set(self, 'parameters', params.parameters);
-                    } else {
-                        self.parameters = {};
-                    }
-                });
+                this.errors = {
+                    name: {
+                        visible: false,
+                        value: ''
+                    },
+                    module: {
+                        visible: false,
+                        value: ''
+                    },
+                    icon: {
+                        visible: false,
+                        value: ''
+                    },
+                    type: {
+                        visible: false,
+                        value: ''
+                    },
+                    value: {
+                        visible: false,
+                        value: ''
+                    },
+                    url: {
+                        visible: false,
+                        value: ''
+                    },
+                    parameters: {}
+                };
+
+                if(params.parameters){
+                    Vue.set(self, 'parameters', params.parameters);
+
+                    jQuery.each(params.parameters, function(key, param){
+                        Vue.set(self.errors.parameters, key, {
+                            visible: false,
+                            value:  ''
+                        });
+                    });
+                } else {
+                    self.parameters = {};
+                }
             };
 
             EditorService.prototype = {
                 save: function(){
                     var self = this;
 
-                    self.loading = true;
+                    self.clearErrors();
 
                     var newMenuItem = {
                         id: this.id,
@@ -249,63 +289,78 @@
                         parameters: this.parameters
                     };
 
+                    var validate;
+
                     switch(newMenuItem.type) {
                         case 'route':
-                            //do nothing
+                            validate = self.validate(['name', 'module', 'value', 'parameters']);
                             break;
                         case 'url':
+                            validate = self.validate(['url']);
+
                             if(newMenuItem.name === '' && !newMenuItem.name.trim()){
-                                newMenuItem.name = newMenuItem.value;
+                                newMenuItem.name = newMenuItem.url;
                             }
 
                             newMenuItem.value = newMenuItem.url;
                             break;
                         case 'page':
+                            validate = self.validate(['url']);
+
                             if(newMenuItem.name === '' && !newMenuItem.name.trim()){
-                                newMenuItem.name = newMenuItem.value;
+                                newMenuItem.name = newMenuItem.url;
                             }
 
                             newMenuItem.value = newMenuItem.url;
                             break;
                         default:
+                            validate = true;
                             newMenuItem.value = 'javascript:;';
                     }
 
-                    jQuery.post('{{route('admin::menu.save-item', $menu->id)}}', newMenuItem, function(response){
-                        if(response.status !== 'success'){
-                            toastr.error('Something went wrong...');
-                            return false;
-                        }
+                    if(validate) {
+                        self.loading = true;
 
-                        if(newMenuItem.id){
-                            var item = self.$parent.findItem(newMenuItem.id, self.$parent.menu_items);
+                        jQuery.post('{{route('admin::menu.save-item', $menu->id)}}', newMenuItem, function(response){
+                            if(response.status !== 'success'){
+                                self.loading = false;
+                                toastr.error('Something went wrong...');
+                                return false;
+                            }
 
-                            if(item){
-                                item.name = response.item.name;
-                                item.module = response.item.module;
-                                item.icon = response.item.icon;
-                                item.type = response.item.type;
-                                item.value = response.item.value;
-                                item.target = response.item.target;
-                                item.is_active = parseInt(response.item.is_active);
+                            if(newMenuItem.id){
+                                var item = self.$parent.findItem(newMenuItem.id, self.$parent.menu_items);
 
+                                if(item){
+                                    item.name = response.item.name;
+                                    item.module = response.item.module;
+                                    item.icon = response.item.icon;
+                                    item.type = response.item.type;
+                                    item.value = response.item.value;
+                                    item.target = response.item.target;
+                                    item.is_active = parseInt(response.item.is_active);
+
+                                    self.$parent.services.edit = new EditorService(self.$parent);
+
+                                    toastr.success("Menu item updated");
+                                } else {
+                                    toastr.error('Something went wrong...');
+                                }
+                            } else {
+                                response.item.children = [];
+
+                                self.$parent.menu_items.push(response.item);
                                 self.$parent.services.edit = new EditorService(self.$parent);
 
-                                toastr.success("Menu item updated");
-                            } else {
-                                toastr.error('Something went wrong...');
+                                toastr.success("Menu item added");
                             }
-                        } else {
-                            response.item.children = [];
 
-                            self.$parent.menu_items.push(response.item);
-                            self.$parent.services.edit = new EditorService(self.$parent);
-
-                            toastr.success("Menu item added");
-                        }
-
-                        self.loading = false;
-                    });
+                            self.loading = false;
+                        }).fail(function(){
+                            toastr.error('Something went wrong...');
+                            self.loading = false;
+                        });
+                    }
                 },
                 cancel: function(){
                     this.$parent.services.edit = new EditorService(this.$parent);
@@ -318,7 +373,49 @@
                     });
                 },
                 validate: function(fields){
+                    var self = this;
+                    var valid = true;
 
+                    if(typeof fields === 'undefined') throw Error('Missing fields');
+
+                    fields.forEach(function(field){
+                        if(field === 'parameters'){
+                            jQuery.each(self.errors.parameters, function(key, parameter){
+                                if(self.parameters[key] !== '' && self.parameters[key].trim()){
+                                    parameter.visible = false;
+                                } else {
+                                    parameter.visible = true;
+                                    parameter.value = 'This field is required';
+                                    valid = false;
+                                }
+                            });
+                        } else {
+                            if(self[field] !== '' && self[field].trim()){
+                                self.errors[field].visible = false;
+                            } else {
+                                self.errors[field].visible = true;
+                                self.errors[field].value = 'This field is required';
+                                valid = false;
+                            }
+                        }
+                    });
+
+                    return valid;
+                },
+                clearErrors: function(field){
+                    if(typeof field !== 'undefined'){
+                        this.errors[field].visible = false;
+                    } else {
+                        jQuery.each(this.errors, function(key, field){
+                            if(key === 'parameters'){
+                                jQuery.each(field, function(key, parameter){
+                                    parameter.visible = false;
+                                });
+                            } else {
+                                field.visible = false;
+                            }
+                        });
+                    }
                 },
                 checkParameters: function(){
                     var self = this;
@@ -329,7 +426,14 @@
                         this.parameters = {};
 
                         route.parameters.forEach(function(param){
-                            Vue.set(self.parameters, param, '')
+                            Vue.set(self.parameters, param, '');
+
+                            self.errors.parameters = {};
+
+                            Vue.set(self.errors.parameters, param, {
+                                visible: false,
+                                value: ''
+                            })
                         });
                     }
                 }

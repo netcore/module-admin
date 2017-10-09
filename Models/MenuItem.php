@@ -57,6 +57,10 @@ class MenuItem extends Model
         return $active;
     }
 
+    /**
+     * @param $value
+     * @return object
+     */
     public function getParametersAttribute($value){
         return (object) json_decode($value);
     }
