@@ -634,7 +634,7 @@
                                             });
                                         }
                                     }
-                                });
+                                }).catch(swal.noop);
                             } else {
                                 deleteRequest(item.id).done(function(response){
                                     if(response.status === 'success'){
@@ -642,7 +642,7 @@
                                     }
                                 });
                             }
-                        });
+                        }).catch(swal.noop);
 
                     },
                     editItem: function(item){

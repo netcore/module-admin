@@ -71,6 +71,6 @@ $(document).ready(function () {
             }).fail(function () {
                 swal("Error", "Server error!", "error");
             });
-        });
+        }).catch(swal.noop);
     });
 });
