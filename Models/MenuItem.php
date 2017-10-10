@@ -4,6 +4,7 @@ namespace Modules\Admin\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Kalnoy\Nestedset\NodeTrait;
+use Nwidart\Modules\Facades\Module;
 
 class MenuItem extends Model
 {
@@ -21,6 +22,14 @@ class MenuItem extends Model
      */
     public function menu() {
         return $this->belongsTo(Menu::class);
+    }
+
+    public function scopeActive($query)
+    {
+        $modules = Module::disabled();
+        $disabledModules = array_keys($modules);
+
+        return $query->whereNotIn('module', $disabledModules);
     }
 
     /**

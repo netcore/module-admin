@@ -48,7 +48,7 @@ class Menu extends Model
         };
 
         $itemTree = [];
-        if($items = $this->items()->where('is_active', 1)->defaultOrder()->get() ){
+        if($items = $this->items()->active()->where('is_active', 1)->defaultOrder()->get() ){
             $itemTree = $tree(
                 $items->toTree()
             );

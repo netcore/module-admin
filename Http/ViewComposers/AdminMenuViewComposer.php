@@ -2,6 +2,7 @@
 namespace Modules\Admin\Http\ViewComposers;
 use Illuminate\View\View;
 use Modules\Admin\Models\Menu;
+use Nwidart\Modules\Facades\Module;
 
 class AdminMenuViewComposer{
 
