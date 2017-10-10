@@ -6,6 +6,4 @@
     <p>
         This view is loaded from module: {!! config('admin.name') !!}
     </p>
-@stop
-
-
+@endsection
