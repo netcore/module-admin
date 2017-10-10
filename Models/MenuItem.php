@@ -24,6 +24,10 @@ class MenuItem extends Model
         return $this->belongsTo(Menu::class);
     }
 
+    /**
+     * @param $query
+     * @return mixed
+     */
     public function scopeActive($query)
     {
         $modules = Module::disabled();
