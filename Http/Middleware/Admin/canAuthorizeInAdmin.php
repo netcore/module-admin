@@ -24,7 +24,7 @@ class canAuthorizeInAdmin
         //we allow to pass this athorization request only by registred users who has admin role
         if( $username = $request->get( $loginUsername, null ) ){
             if( $user = $userModel::where($loginUsername,'=',$username)->first() ){
-                if( $user->isAdmin() ){
+                if( $user->hasPermission($request) ){
                     return $next($request);
                 }
             }
