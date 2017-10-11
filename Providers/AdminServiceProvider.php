@@ -42,7 +42,6 @@ class AdminServiceProvider extends ServiceProvider
     {
         $this->app->register(\HieuLe\Active\ActiveServiceProvider::class);
         $this->app->register(\Collective\Html\HtmlServiceProvider::class);
-        $this->app->register(\Codesleeve\LaravelStapler\Providers\L5ServiceProvider::class);
 
         AliasLoader::getInstance()->alias('Form', \Collective\Html\FormFacade::class);
         AliasLoader::getInstance()->alias('Html', \Collective\Html\HtmlFacade::class);
