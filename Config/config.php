@@ -5,7 +5,7 @@ return [
     //module name
     'name'  => 'Admin',
 
-    'theme' => 'candy-red',
+    'theme' => env('ADMIN_THEME', 'candy-red'),
 
     //default login field to work with
     'login' => [
