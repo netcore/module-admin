@@ -79,7 +79,9 @@
     @yield('styles')
 </head>
 <body>
-<nav class="px-nav px-nav-left">
+<input type="hidden" class="left-admin-menu-items" value="{{$leftAdminMenu->toJson()}}">
+
+<nav id="left-admin-menu" v-cloak class="px-nav px-nav-left">
     <button type="button" class="px-nav-toggle" data-toggle="px-nav">
         <span class="px-nav-toggle-arrow"></span>
         <span class="navbar-toggle-icon"></span>
@@ -96,20 +98,26 @@
         </li>
 
         {{-- AdminMenuViewComposer --}}
-        <input type="hidden" class="left-admin-menu-items" value="{{$leftAdminMenu->toJson()}}">
-        <div id="left-admin-menu" v-cloak class="left-admin-menu">
-            <div class="v-cloak--block text-center" style="padding-top:20px">
-                <i class="fa fa-refresh fa-spin fa-2x"></i>
-            </div>
-            <div class="v-cloak--hidden">
-                <template v-if="menu_items.length > 0">
-                    <menu-items :items="menu_items"></menu-items>
+
+        <template v-if="menu_items.length > 0">
+            <li v-for="item in menu_items" class="px-nav-item" :class="{'px-nav-dropdown': item.children.length > 0, 'active': item.active, 'px-open': item.child_active}">
+                <template v-if="item.type == 'separator' || item.type == 'empty'">
+                    <hr>
                 </template>
                 <template v-else>
-                    <span style="padding-left:10px">No menu items</span>
+                    <a :href="item.url" :target="item.target">
+                        <i v-if="item.icon" class="px-nav-icon fa" :class="item.icon"></i>
+                        <span class="px-nav-label" v-html="item.name"></span>
+                    </a>
+                    <template v-if="item.children">
+                        <menu-child-items :item="item"></menu-child-items>
+                    </template>
                 </template>
-            </div>
-        </div>
+            </li>
+        </template>
+        <template v-else>
+            <span style="padding-left:10px">No menu items</span>
+        </template>
     </ul>
 </nav>
 
@@ -204,27 +212,27 @@
     <span class="text-muted">Copyright © {{ date('Y') }} {{ config('app.name') }}. All rights reserved. Development from <a href="http://netcore.lv/">netcore</a>.</span>
 </footer>
 
-<div id="menu-items" style="display:none">
-    <div>
-        <li v-for="item in items" class="px-nav-item" :class="{'px-nav-dropdown': item.children.length > 0, 'active': item.active, 'px-open': item.child_active}">
-            <template v-if="item.type == 'separator' || item.type == 'empty'">
+<div id="menu-child-items" style="display:none">
+    <ul class="px-nav-dropdown-menu" :class="{'px-open': item.child_active}">
+        <li v-for="menuItem in item.children" class="px-nav-item" :class="{'px-nav-dropdown': menuItem.children.length > 0, 'active': menuItem.active, 'px-open': menuItem.child_active}">
+            <template v-if="menuItem.type == 'separator' || menuItem.type == 'empty'">
                 <hr>
             </template>
             <template v-else>
-                <a :href="item.url" :target="item.target">
-                    <i v-if="item.icon" class="px-nav-icon fa" :class="item.icon"></i>
-                    <span class="px-nav-label" v-html="item.name"></span>
+                <a :href="menuItem.url" :target="menuItem.target">
+                    <i v-if="menuItem.icon" class="px-nav-icon fa" :class="menuItem.icon"></i>
+                    <span class="px-nav-label" v-html="menuItem.name"></span>
                 </a>
-                <ul v-if="item.children" class="px-nav-dropdown-menu" :class="{'px-open': item.child_active}">
-                    <menu-items :items="item.children"></menu-items>
-                </ul>
+                <template v-if="menuItem.children">
+                    <menu-child-items :item="menuItem"></menu-child-items>
+                </template>
             </template>
         </li>
-    </div>
+    </ul>
 </div>
 
 <div id="select2-template" style="display: none">
-    <select :id="id" :name="name" :data-placeholder="placeholder">
+    <select :id="id" :name="name" :data-placeholder="placeholder" :multiple="multiple">
         <slot></slot>
     </select>
 </div>
@@ -255,6 +263,7 @@
 <script src="/assets/admin/js/pixeladmin.min.js"></script>
 <script src="/assets/admin/js/sweetalert.min.js"></script>
 <script src="/assets/admin/js/switchery.min.js"></script>
+<script src="/assets/admin/js/switchery.min.js"></script>
 <script>
     var csrf_token = '{{ csrf_token() }}';
 </script>
@@ -265,22 +274,21 @@
     // Initialize DEMO
 
     $(function () {
-        var file = String(document.location).split('/').pop();
+        $.each($('body > .px-nav .px-nav-item a'), function(i, el) {
 
-        // Remove unnecessary file parts
-        file = file.replace(/(\.html).*/i, '$1');
+            var href = $(el).attr('href');
 
-        if (!/.html$/i.test(file)) {
-            file = 'index.html';
-        }
+            url = currentURI.replace(/^.*\/\/[^\/]+/, '').substr(1);
+            href = href.replace(/^.*\/\/[^\/]+/, '').substr(1);
 
-        // Activate current nav item
-        $('body > .px-nav')
-            .find('.px-nav-item > a[href="' + file + '"]')
-            .parent()
-            .addClass('active');
+            var urlSegments = url.split('/');
+            var hrefSegments = href.split('/');
 
-        $('body > .px-nav').pxNav();
+            if( urlSegments[1] === hrefSegments[1] ) {
+                $(el).parent().addClass('active');
+            }
+        });
+
         $('body > .px-footer').pxFooter();
 
         $('#navbar-notifications').perfectScrollbar();
@@ -289,6 +297,7 @@
 
     // -------------------------------------------------------------------------
     // Initialize Vue Select2 Plugin
+    // TODO should probably move to a separate .vue file
 
     Vue.component('select2', {
         props: {
@@ -304,53 +313,85 @@
             value: {},
             placeholder: {},
             name: {},
-            id: {}
+            id: {},
+            multiple: {}
+        },
+        data: function(){
+            return {
+                parsed_options: {}
+            }
         },
         template: '#select2-template',
         mounted: function () {
             var vm = this;
 
-            this.options.data = this.data;
+            this.parsed_options = this.parseOptions(this.options);
+
+            this.parsed_options.data = this.data;
 
             if(this.data.length <= 10){
-                this.options.dropdownCssClass = 'no-search';
+                this.parsed_options.dropdownCssClass = 'no-search';
             }
 
-            this.options.templateResult = function(data){
-                if(data.html){
-                    return data.html;
-                } else {
-                    return data.text;
-                }
-            };
-
-            this.options.escapeMarkup = function(m){
-                return m;
-            };
-
-            this.options.templateSelection = function(data) {
-                return data.text;
-            };
-
             $(this.$el)
-                .select2(this.options)
+                .select2(this.parsed_options)
                 .val(this.value)
                 .trigger('change')
-                .on('change', function () {
+                .on('change', function (e) {
                     vm.$emit('change');
 
-                    vm.$emit('input', this.value)
+                    vm.$emit('input', $(vm.$el).val())
                 })
                 .on('select2:select', function(){
-                    vm.$emit('select');
+                    vm.$emit('select', $(vm.$el).val());
                 })
+        },
+        methods: {
+            parseOptions: function(options){
+                options.templateResult = function(data){
+                    if(data.html){
+                        return data.html;
+                    } else {
+                        return data.text;
+                    }
+                };
+
+                options.escapeMarkup = function(m){
+                    return m;
+                };
+
+                options.templateSelection = function(data) {
+                    return data.text;
+                };
+
+                return options;
+            }
         },
         watch: {
             value: function (value) {
-                $(this.$el).val(value).trigger('change');
+                if(this.multiple){
+                    if (Array.from(value).sort().join(",") !== Array.from($(this.$el).val()).sort().join(",")){
+                        $(this.$el).val(value).trigger('change');
+                    }
+                } else {
+                    $(this.$el).val(value).trigger('change');
+                }
             },
             options: function (options) {
-                $(this.$el).empty().select2({ data: options })
+                this.parsed_options = this.parseOptions(options);
+
+                this.parsed_options.data = this.data;
+
+                if(this.data.length <= 10){
+                    this.parsed_options.dropdownCssClass = 'no-search';
+                }
+
+                $(this.$el).empty().select2(this.parsed_options);
+            },
+            data: function(data){
+                this.parsed_options.data = data;
+
+                $(this.$el).select2(this.parsed_options)
             }
         },
         destroyed: function () {
@@ -364,9 +405,9 @@
     var leftAdminMenu;
 
     jQuery(document).ready(function(){
-        Vue.component('menu-items', {
-            props: ['items'],
-            template: "#menu-items",
+        Vue.component('menu-child-items', {
+            props: ['item'],
+            template: "#menu-child-items",
             delimiters: ['<%', '%>']
         });
 
@@ -399,6 +440,10 @@
                     }
 
                     Vue.set(self.menu_items, key, item);
+                });
+
+                Vue.nextTick(function(){
+                    $('body > .px-nav').pxNav();
                 });
             },
             delimiters: ['<%', '%>']
