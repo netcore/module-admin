@@ -53,6 +53,15 @@ Route::group(['middleware' => 'web', 'prefix' => 'admin', 'namespace' => 'Module
         'as'   => 'admin::auth.request'
     ]);
 
+    /**
+     * Custom routes
+     */
+    Route::post('/switch-active', [
+        'uses' => 'SwitchActiveController@switchActive',
+        'as'   => 'admin::switch-active'
+    ]);
+
+
     //custom middleware to disallow common users from authorizing
     Route::group(['middleware' => 'can.admin'], function () {
         Route::post('/login',[
