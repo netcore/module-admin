@@ -29,7 +29,11 @@ $(document).ready(function () {
             _token: csrf_token
         }, function (response) {
             if (response.state == 'success') {
-                swal("Success", "Status has been changed", "success");
+
+                $.growl.notice({
+                    title : 'Success!',
+                    message : 'Status changed'
+                });
             }
             if (response.state == 'error') {
                 swal("Error!", response.message, "error");
