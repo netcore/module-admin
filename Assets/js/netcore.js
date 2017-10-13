@@ -30,7 +30,7 @@ $(document).ready(function () {
         }, function (response) {
             if (response.state == 'success') {
 
-                $.growl.notice({
+                $.growl({
                     title : 'Success!',
                     message : 'Status changed'
                 });
