@@ -144,10 +144,17 @@ class MenuController extends Controller
             $menuItem = new MenuItem();
         }
 
+        $type = $request->get('type');
+
+        $module = '';
+        if($type == 'route'){
+            $module = ucfirst(preg_replace('/(.+)\:\:(.+)\.(.+)/', '$2', $request->get('value')));
+        }
+
         $menuItem->name = $request->get('name') ? $request->get('name') : '';
-        $menuItem->module = $request->get('module') ? $request->get('module') : '';
+        $menuItem->module = $module;
         $menuItem->icon = $request->get('icon') ? $request->get('icon') : '';
-        $menuItem->type = $request->get('type');
+        $menuItem->type = $type;
         $menuItem->value = $request->get('value');
         $menuItem->target = $request->get('target', '_self');
         $menuItem->is_active = $request->get('is_active', 0);

@@ -8,6 +8,11 @@
             min-height:10px;
             padding-top:10px;
         }
+
+        .dd-actions {
+            margin-top: 12px;
+            margin-right: 12px;
+        }
     </style>
 @append
 
@@ -63,11 +68,6 @@
                                 <label>Name</label>
                                 <input type="text" class="form-control" v-model="services.edit.name">
                                 <span v-if="services.edit.errors.name.visible" class="help-block"><% services.edit.errors.name.value %></span>
-                            </div>
-                            <div class="form-group" :class="{'has-error': services.edit.errors.module.visible}">
-                                <label>Module</label>
-                                <input type="text" class="form-control" v-model="services.edit.module">
-                                <span v-if="services.edit.errors.module.visible" class="help-block"><% services.edit.errors.module.value %></span>
                             </div>
                             <div class="form-group" :class="{'has-error': services.edit.errors.icon.visible}">
                                 <label>Icon</label>
@@ -177,7 +177,7 @@
                 </template>
                 <template v-else>
                     <div class="pull-right">
-                        <div class="btn-group pull-right">
+                        <div class="dd-actions btn-group pull-right">
                             <button type="button" class="btn btn-sm btn-primary" v-on:click="editItem(item)">Edit</button>
                             <button type="button" class="btn btn-sm btn-danger" v-on:click="deleteItem(item)">Delete</button>
                         </div>
@@ -220,7 +220,6 @@
 
                 this.id = params.id ? params.id : 0;
                 this.name = params.name ? params.name : '';
-                this.module = params.module ? params.module : '';
                 this.icon = params.icon ? params.icon : '';
                 this.type = params.type ? params.type : '';
                 this.value = params.value ? params.value : '';
@@ -230,10 +229,6 @@
 
                 this.errors = {
                     name: {
-                        visible: false,
-                        value: ''
-                    },
-                    module: {
                         visible: false,
                         value: ''
                     },
@@ -279,7 +274,6 @@
                     var newMenuItem = {
                         id: this.id,
                         name: this.name,
-                        module: this.module,
                         icon: this.icon,
                         type: this.type,
                         value: this.value,
@@ -293,7 +287,7 @@
 
                     switch(newMenuItem.type) {
                         case 'route':
-                            validate = self.validate(['name', 'module', 'value', 'parameters']);
+                            validate = self.validate(['name', 'value', 'parameters']);
                             break;
                         case 'url':
                             validate = self.validate(['url']);
@@ -333,7 +327,6 @@
 
                                 if(item){
                                     item.name = response.item.name;
-                                    item.module = response.item.module;
                                     item.icon = response.item.icon;
                                     item.type = response.item.type;
                                     item.value = response.item.value;

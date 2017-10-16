@@ -21,7 +21,6 @@ class SaveMenuItemRequest extends FormRequest
                 case 'route':
                     $rules = [
                         'name' => 'required',
-                        'module' => 'required',
                         'value' => 'required',
                     ];
 
