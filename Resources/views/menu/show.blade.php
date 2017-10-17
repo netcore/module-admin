@@ -128,7 +128,7 @@
                             </div>
                         </div>
 
-                        <div v-if="services.edit.type != ''">
+                        <div v-if="services.edit.type != '' && services.edit.type">
                             <div class="form-group">
                                 <label>State</label>
                                 <select2 :data="[{id: '1', text: 'Enabled'}, {id: '0', text: 'Disabled'}]" v-model="services.edit.is_active"></select2>
