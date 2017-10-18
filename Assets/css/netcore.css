@@ -6,12 +6,28 @@
     vertical-align: middle !important;
 }
 
+.text-align-center{
+    text-align: center;
+}
+
+.text-align-right{
+    text-align: right;
+}
+
+.text-align-left{
+    text-align: left;
+}
+
 .inline{
     display: inline !important;
 }
 
 .inline-block{
     display: inline-block !important;
+}
+
+.no-margin{
+    margin:0px !important;
 }
 
 textarea{
