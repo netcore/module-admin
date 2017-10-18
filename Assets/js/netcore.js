@@ -99,6 +99,18 @@ $(document).ready(function () {
             cancelButtonText: $(btn).data('cancel-button-text') || 'Cancel'
         }).then(function(){
 
+            var url = btn.data('href');
+
+            // Without ajax
+            if(!url) {
+                var fadeOutSelector = btn.data('fade-out-selector');
+                if ( fadeOutSelector && $(fadeOutSelector).length ) {
+                    $(fadeOutSelector).fadeOut();
+                }
+                return;
+            }
+
+            // With ajax
             $.ajax({
                 url: btn.data('href'),
                 type: btn.data('method'),
