@@ -3,7 +3,10 @@
 namespace Modules\Admin\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 use Kalnoy\Nestedset\NodeTrait;
+use Modules\Content\Models\Channel;
+use Modules\Content\Models\Entry;
 use Nwidart\Modules\Facades\Module;
 
 class MenuItem extends Model
@@ -47,7 +50,32 @@ class MenuItem extends Model
         } elseif($this->type == 'url'){
             $url = $this->value;
         } elseif($this->type == 'page'){
-            $url = $this->value;
+
+            /**
+             * Quick and dirty
+             *
+             * TODO should be changed to some global url getter method when module-content is ready
+             */
+
+            $url = url('/');
+
+            $entry = Entry::whereIsActive(1)->find($this->value);
+            if($entry){
+                $entryTranslation = $entry->translations->first();
+                $entrySlug = $entryTranslation ? $entryTranslation->slug : '';
+
+                $url = url($entrySlug);
+
+                if($entry->channel_id){
+                    $channel = Channel::find($entry->channel_id);
+                    if($channel){
+                        $channelTranslation = $channel->translations->first();
+                        $channelSlug = $channelTranslation ? $channelTranslation->slug : '';
+
+                        $url = url($channelSlug.'/'.$entrySlug);
+                    }
+                }
+            }
         }
 
         return $url;
