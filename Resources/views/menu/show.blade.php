@@ -28,6 +28,7 @@
                 <input class="loaded-items" type="hidden" value="{{$items->toJson()}}">
                 <input class="all-routes" type="hidden" value="{{$routes->toJson()}}">
                 <input class="all-icons" type="hidden" value="{{$icons->toJson()}}">
+                <input class="all-pages" type="hidden" value="{{$pages->toJson()}}">
             </div>
 
             <div class="col-md-8">
@@ -94,14 +95,14 @@
                                 <label>Name</label>
                                 <input type="text" class="form-control" v-model="services.edit.name">
                             </div>
+                            <div class="form-group">
+                                <label>Icon</label>
+                                <select2 :data="all_icons" :placeholder="'Please Select'" v-model="services.edit.icon"></select2>
+                            </div>
                             <div class="form-group" :class="{'has-error': services.edit.errors.url.visible}">
                                 <label>URL:</label>
                                 <input type="text" class="form-control" v-model="services.edit.url">
                                 <span v-if="services.edit.errors.url.visible" class="help-block"><% services.edit.errors.url.value %></span>
-                            </div>
-                            <div class="form-group">
-                                <label>Icon</label>
-                                <select2 :data="all_icons" :placeholder="'Please Select'" v-model="services.edit.icon"></select2>
                             </div>
                             <div class="form-group">
                                 <label>Target</label>
@@ -109,18 +110,19 @@
                             </div>
                         </div>
                         <div v-show="services.edit.type == 'page'">
-                            <div class="form-group">
+                            <div class="form-group" :class="{'has-error': services.edit.errors.name.visible}">
                                 <label>Name</label>
                                 <input type="text" class="form-control" v-model="services.edit.name">
-                            </div>
-                            <div class="form-group" :class="{'has-error': services.edit.errors.url.visible}">
-                                <label>URL:</label>
-                                <input type="text" class="form-control" v-model="services.edit.url">
-                                <span v-if="services.edit.errors.url.visible" class="help-block"><% services.edit.errors.url.value %></span>
+                                <span v-if="services.edit.errors.name.visible" class="help-block"><% services.edit.errors.name.value %></span>
                             </div>
                             <div class="form-group">
                                 <label>Icon</label>
                                 <select2 :data="all_icons" :placeholder="'Please Select'" v-model="services.edit.icon"></select2>
+                            </div>
+                            <div class="form-group" :class="{'has-error': services.edit.errors.page_id.visible}">
+                                <label>Page</label>
+                                <select2 :data="getPageList()" :placeholder="'Please Select'" v-model="services.edit.page_id"></select2>
+                                <span v-if="services.edit.errors.page_id.visible" class="help-block"><% services.edit.errors.page_id.value %></span>
                             </div>
                             <div class="form-group">
                                 <label>Target</label>
@@ -224,6 +226,7 @@
                 this.type = params.type ? params.type : '';
                 this.value = params.value ? params.value : '';
                 this.url = params.value ? params.value : '';
+                this.page_id = params.value ? params.value.toString() : '';
                 this.target = params.target ? params.target : '_self';
                 this.is_active = params.is_active ? params.is_active : 1;
 
@@ -245,6 +248,10 @@
                         value: ''
                     },
                     url: {
+                        visible: false,
+                        value: ''
+                    },
+                    page_id: {
                         visible: false,
                         value: ''
                     },
@@ -278,6 +285,7 @@
                         type: this.type,
                         value: this.value,
                         url: this.url,
+                        page_id: this.page_id,
                         target: this.target,
                         is_active: this.is_active,
                         parameters: this.parameters
@@ -299,13 +307,9 @@
                             newMenuItem.value = newMenuItem.url;
                             break;
                         case 'page':
-                            validate = self.validate(['url']);
+                            validate = self.validate(['page_id', 'name']);
 
-                            if(newMenuItem.name === '' && !newMenuItem.name.trim()){
-                                newMenuItem.name = newMenuItem.url;
-                            }
-
-                            newMenuItem.value = newMenuItem.url;
+                            newMenuItem.value = newMenuItem.page_id;
                             break;
                         default:
                             validate = true;
@@ -469,6 +473,7 @@
                         text: 'Separator'
                     }],
                     all_routes: {},
+                    all_pages: {},
                     all_icons: [],
                     menu_items: [],
                     services: {
@@ -500,6 +505,12 @@
                         Vue.set(self.all_icons, key, icon);
                     });
 
+                    var pages = JSON.parse(jQuery('.all-pages').val());
+
+                    jQuery.each(pages, function(key, page){
+                        Vue.set(self.all_pages, key, page);
+                    });
+
                     Vue.set(self.services, 'edit', new EditorService(self))
                 },
                 methods: {
@@ -514,6 +525,18 @@
                         });
 
                         return routeList;
+                    },
+                    getPageList: function(){
+                        var pageList = [];
+
+                        jQuery.each(this.all_pages, function(key, page){
+                            pageList.push({
+                                id: page.id.toString(),
+                                text: page.text
+                            });
+                        });
+
+                        return pageList;
                     },
                     findItem: function(id, items){
                         var self = this;

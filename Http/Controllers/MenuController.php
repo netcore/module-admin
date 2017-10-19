@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Route;
 use Modules\Admin\Http\Requests\SaveMenuItemRequest;
 use Modules\Admin\Models\Menu;
 use Modules\Admin\Models\MenuItem;
+use Modules\Content\Models\Entry;
+use Nwidart\Modules\Facades\Module;
 
 class MenuController extends Controller
 {
@@ -72,6 +74,7 @@ class MenuController extends Controller
 
         $routes = collect($routes);
 
+
         $icons = [];
 
         foreach (getFontAwesomeList() as $key => $value){
@@ -84,7 +87,19 @@ class MenuController extends Controller
 
         $icons = collect($icons);
 
-        return view('admin::menu.show', compact('menu', 'items', 'routes', 'icons'));
+        $pages = collect([]);
+        if(Module::has('Content')){
+            $pages = Entry::whereIsActive(1)->get()->map(function($entry){
+                $firstTranslation = $entry->translations->first();
+                $title = $firstTranslation ? $firstTranslation->title : '';
+                return [
+                    'id' => $entry->id,
+                    'text' => $title
+                ];
+            });
+        }
+
+        return view('admin::menu.show', compact('menu', 'items', 'routes', 'icons', 'pages'));
     }
 
     /**
