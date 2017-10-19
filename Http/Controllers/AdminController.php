@@ -14,7 +14,9 @@ class AdminController extends Controller
      */
     public function index()
     {
-        return view('admin::index');
+        $google_analytics_client_id = setting()->get('google-analytics-client-id');
+
+        return view('admin::index', compact('google_analytics_client_id'));
     }
 
     /**
