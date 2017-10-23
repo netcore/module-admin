@@ -237,6 +237,10 @@
     </select>
 </div>
 
+@if($mediaModule && $mediaModule->enabled())
+    @include('media::_partials.file-manager')
+@endif
+
 <!-- ==============================================================================
 |
 |  SCRIPTS
@@ -268,6 +272,9 @@
     var csrf_token = '{{ csrf_token() }}';
 </script>
 <script src="/assets/admin/js/netcore.js"></script>
+@if($mediaModule && $mediaModule->enabled())
+    <script src="/assets/media/js/media.js"></script>
+@endif
 
 <script>
     // -------------------------------------------------------------------------
