@@ -100,7 +100,7 @@
         {{-- AdminMenuViewComposer --}}
 
         <template v-if="menu_items.length > 0">
-            <li v-for="item in menu_items" class="px-nav-item" :class="{'px-nav-dropdown': item.children.length > 0, 'active': item.active, 'px-open': item.child_active}">
+            <li v-for="item in menu_items" class="px-nav-item" :class="{'px-nav-dropdown': item.children.length > 0, 'active': item.active, 'px-open': item.child_active, 'js-file-manager': item.module == 'Media'}">
                 <template v-if="item.type == 'separator' || item.type == 'empty'">
                     <hr>
                 </template>
