@@ -89,9 +89,7 @@ class MenuItem extends Model
 
         if($this->type == 'route' ){
             $active = (active_class(
-                if_route_pattern(
-                    [$this->active_resolver ? $this->active_resolver : $this->value]
-                )
+                if_route_pattern($this->active_resolver ? explode(',', $this->active_resolver) : [$this->value])
             ));
         }
 
