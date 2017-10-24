@@ -699,7 +699,7 @@
                                 var menuItems = [];
 
                                 items.forEach(function(item, key){
-                                    if(item.is_active){
+                                    if(parseInt(item.is_active)){
 
                                         item.child_active = false;
 
