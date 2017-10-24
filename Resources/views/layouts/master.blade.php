@@ -100,7 +100,7 @@
         {{-- AdminMenuViewComposer --}}
 
         <template v-if="menu_items.length > 0">
-            <li v-for="item in menu_items" class="px-nav-item" :class="{'px-nav-dropdown': item.children.length > 0, 'active': item.active, 'px-open': item.child_active}">
+            <li v-for="item in menu_items" class="px-nav-item" :class="{'px-nav-dropdown': item.children.length > 0, 'active': item.active, 'px-open': item.child_active, 'js-file-manager': item.module == 'Media'}">
                 <template v-if="item.type == 'separator' || item.type == 'empty'">
                     <hr>
                 </template>
@@ -145,46 +145,46 @@
 
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="px-demo-navbar-collapse">
-        <ul class="nav navbar-nav">
-            <li class="dropdown">
-                <a href class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-                   aria-expanded="false"><i class="fa fa-bookmark m-r-1"></i>Links</a>
-                <ul class="dropdown-menu">
-                    <li class="dropdown-toggle">
-                        <a href>Products</a>
-                        <ul class="dropdown-menu">
-                            <li><a href="#">All</a></li>
-                            <li><a href="#">Popular</a></li>
-                            <li><a href="#">Recent</a></li>
-                            <li><a href="#">Featured</a></li>
-                            <li class="divider"></li>
-                            <li><a href="#"><i class="fa fa-plus m-r-1"></i>Add product</a></li>
-                        </ul>
-                    </li>
-                    <li class="dropdown-toggle">
-                        <a href>Users</a>
-                        <ul class="dropdown-menu">
-                            <li><a href="#">All</a></li>
-                            <li><a href="#">Recent</a></li>
-                            <li><a href="#">Banned</a></li>
-                            <li class="divider"></li>
-                            <li><a href="#"><i class="fa fa-user-plus m-r-1"></i>Create user</a></li>
-                        </ul>
-                    </li>
-                    <li class="dropdown-toggle">
-                        <a href>Blog</a>
-                        <ul class="dropdown-menu">
-                            <li><a href="#">All</a></li>
-                            <li><a href="#">Popular</a></li>
-                            <li class="divider"></li>
-                            <li><a href="#"><i class="fa fa-edit m-r-1"></i>New blog post</a></li>
-                        </ul>
-                    </li>
-                    <li class="divider"></li>
-                    <li><a href="#">Overview</a></li>
-                </ul>
-            </li>
-        </ul>
+        {{--<ul class="nav navbar-nav">--}}
+            {{--<li class="dropdown">--}}
+                {{--<a href class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"--}}
+                   {{--aria-expanded="false"><i class="fa fa-bookmark m-r-1"></i>Links</a>--}}
+                {{--<ul class="dropdown-menu">--}}
+                    {{--<li class="dropdown-toggle">--}}
+                        {{--<a href>Products</a>--}}
+                        {{--<ul class="dropdown-menu">--}}
+                            {{--<li><a href="#">All</a></li>--}}
+                            {{--<li><a href="#">Popular</a></li>--}}
+                            {{--<li><a href="#">Recent</a></li>--}}
+                            {{--<li><a href="#">Featured</a></li>--}}
+                            {{--<li class="divider"></li>--}}
+                            {{--<li><a href="#"><i class="fa fa-plus m-r-1"></i>Add product</a></li>--}}
+                        {{--</ul>--}}
+                    {{--</li>--}}
+                    {{--<li class="dropdown-toggle">--}}
+                        {{--<a href>Users</a>--}}
+                        {{--<ul class="dropdown-menu">--}}
+                            {{--<li><a href="#">All</a></li>--}}
+                            {{--<li><a href="#">Recent</a></li>--}}
+                            {{--<li><a href="#">Banned</a></li>--}}
+                            {{--<li class="divider"></li>--}}
+                            {{--<li><a href="#"><i class="fa fa-user-plus m-r-1"></i>Create user</a></li>--}}
+                        {{--</ul>--}}
+                    {{--</li>--}}
+                    {{--<li class="dropdown-toggle">--}}
+                        {{--<a href>Blog</a>--}}
+                        {{--<ul class="dropdown-menu">--}}
+                            {{--<li><a href="#">All</a></li>--}}
+                            {{--<li><a href="#">Popular</a></li>--}}
+                            {{--<li class="divider"></li>--}}
+                            {{--<li><a href="#"><i class="fa fa-edit m-r-1"></i>New blog post</a></li>--}}
+                        {{--</ul>--}}
+                    {{--</li>--}}
+                    {{--<li class="divider"></li>--}}
+                    {{--<li><a href="#">Overview</a></li>--}}
+                {{--</ul>--}}
+            {{--</li>--}}
+        {{--</ul>--}}
 
         <ul class="nav navbar-nav navbar-right">
             <li class="dropdown">
@@ -237,6 +237,10 @@
     </select>
 </div>
 
+@if($mediaModule && $mediaModule->enabled())
+    @include('media::_partials.file-manager')
+@endif
+
 <!-- ==============================================================================
 |
 |  SCRIPTS
@@ -268,6 +272,9 @@
     var csrf_token = '{{ csrf_token() }}';
 </script>
 <script src="/assets/admin/js/netcore.js"></script>
+@if($mediaModule && $mediaModule->enabled())
+    <script src="/assets/media/js/media.js"></script>
+@endif
 
 <script>
     // -------------------------------------------------------------------------

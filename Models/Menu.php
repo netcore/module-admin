@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Menu extends Model
 {
+
     protected $table = 'netcore_admin__menus';
 
     protected $fillable = ['name'];
@@ -13,14 +14,16 @@ class Menu extends Model
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function items() {
+    public function items()
+    {
         return $this->hasMany(MenuItem::class);
     }
 
     /**
      * @return array
      */
-    public function getItemTree(){
+    public function getItemTree()
+    {
         $tree = function ($items) use (&$tree) {
             $menuItems = [];
 
@@ -33,13 +36,14 @@ class Menu extends Model
                 //@TODO: submenu item resolvers for active class
 
                 $menuItems[] = [
-                    'id' => $item->id,
-                    'name' => $item->name,
-                    'icon' => $item->icon,
-                    'type' => $item->type,
-                    'target' => $item->target,
-                    'url' => $item->url,
-                    'active' => $item->active,
+                    'id'       => $item->id,
+                    'name'     => $item->name,
+                    'icon'     => $item->icon,
+                    'type'     => $item->type,
+                    'target'   => $item->target,
+                    'url'      => $item->url,
+                    'active'   => $item->active,
+                    'module'   => $item->module,
                     'children' => $item->children->count() ? $tree($item->children) : []
                 ];
             }
@@ -48,7 +52,7 @@ class Menu extends Model
         };
 
         $itemTree = [];
-        if($items = $this->items()->active()->where('is_active', 1)->defaultOrder()->get() ){
+        if ($items = $this->items()->active()->where('is_active', 1)->defaultOrder()->get()) {
             $itemTree = $tree(
                 $items->toTree()
             );
