@@ -37,14 +37,7 @@ trait BootStapler
         static::saving(function ($model) {
             foreach ($model->staplerConfig as $name => $config) {
                 if ($model->isDirty($name . '_file_name') && !is_null($model->{$name . '_file_name'})) {
-
-                    $imageObject = $model->{$name};
-
-                    if(!$imageObject) {
-                        continue;
-                    }
-
-                    $pathInfo = pathinfo($imageObject->originalFileName());
+                    $pathInfo = pathinfo($model->{$name}->originalFileName());
 
                     if (isset($pathInfo['extension'])) {
                         $newFilename = time() . '.' . $pathInfo['extension'];
