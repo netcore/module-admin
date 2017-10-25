@@ -194,7 +194,7 @@
                     <span class="hidden-md">{{ auth()->user()->fullname }}</span>
                 </a>
                 <ul class="dropdown-menu">
-                    <li><a href="javascript:;">Account</a></li>
+                    <li><a href="{{ route('user::users.edit', auth()->id()) }}">Account</a></li>
                     <li class="divider"></li>
                     <li><a href="{{ route('admin::auth.logout') }}"><i class="dropdown-icon fa fa-power-off"></i>&nbsp;&nbsp;Log Out</a></li>
                 </ul>
