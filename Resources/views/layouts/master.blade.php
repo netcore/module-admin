@@ -19,6 +19,7 @@
     <link rel="stylesheet" href="/assets/admin/css/sweetalert.min.css">
     <link rel="stylesheet" href="/assets/admin/css/netcore.css">
     <link rel="stylesheet" href="/assets/admin/css/switchery.min.css">
+    <link href="/assets/admin/plugins/x-editable/css/bootstrap-editable.css" rel="stylesheet">
 
     <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/holder/2.9.0/holder.js"></script>
     <script src="/assets/admin/pace/pace.min.js"></script>
@@ -77,6 +78,7 @@
         }
     </style>
     @yield('styles')
+    <script>var init = [];</script>
 </head>
 <body>
 <input type="hidden" class="left-admin-menu-items" value="{{$leftAdminMenu->toJson()}}">
@@ -146,44 +148,44 @@
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="px-demo-navbar-collapse">
         {{--<ul class="nav navbar-nav">--}}
-            {{--<li class="dropdown">--}}
-                {{--<a href class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"--}}
-                   {{--aria-expanded="false"><i class="fa fa-bookmark m-r-1"></i>Links</a>--}}
-                {{--<ul class="dropdown-menu">--}}
-                    {{--<li class="dropdown-toggle">--}}
-                        {{--<a href>Products</a>--}}
-                        {{--<ul class="dropdown-menu">--}}
-                            {{--<li><a href="#">All</a></li>--}}
-                            {{--<li><a href="#">Popular</a></li>--}}
-                            {{--<li><a href="#">Recent</a></li>--}}
-                            {{--<li><a href="#">Featured</a></li>--}}
-                            {{--<li class="divider"></li>--}}
-                            {{--<li><a href="#"><i class="fa fa-plus m-r-1"></i>Add product</a></li>--}}
-                        {{--</ul>--}}
-                    {{--</li>--}}
-                    {{--<li class="dropdown-toggle">--}}
-                        {{--<a href>Users</a>--}}
-                        {{--<ul class="dropdown-menu">--}}
-                            {{--<li><a href="#">All</a></li>--}}
-                            {{--<li><a href="#">Recent</a></li>--}}
-                            {{--<li><a href="#">Banned</a></li>--}}
-                            {{--<li class="divider"></li>--}}
-                            {{--<li><a href="#"><i class="fa fa-user-plus m-r-1"></i>Create user</a></li>--}}
-                        {{--</ul>--}}
-                    {{--</li>--}}
-                    {{--<li class="dropdown-toggle">--}}
-                        {{--<a href>Blog</a>--}}
-                        {{--<ul class="dropdown-menu">--}}
-                            {{--<li><a href="#">All</a></li>--}}
-                            {{--<li><a href="#">Popular</a></li>--}}
-                            {{--<li class="divider"></li>--}}
-                            {{--<li><a href="#"><i class="fa fa-edit m-r-1"></i>New blog post</a></li>--}}
-                        {{--</ul>--}}
-                    {{--</li>--}}
-                    {{--<li class="divider"></li>--}}
-                    {{--<li><a href="#">Overview</a></li>--}}
-                {{--</ul>--}}
-            {{--</li>--}}
+        {{--<li class="dropdown">--}}
+        {{--<a href class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"--}}
+        {{--aria-expanded="false"><i class="fa fa-bookmark m-r-1"></i>Links</a>--}}
+        {{--<ul class="dropdown-menu">--}}
+        {{--<li class="dropdown-toggle">--}}
+        {{--<a href>Products</a>--}}
+        {{--<ul class="dropdown-menu">--}}
+        {{--<li><a href="#">All</a></li>--}}
+        {{--<li><a href="#">Popular</a></li>--}}
+        {{--<li><a href="#">Recent</a></li>--}}
+        {{--<li><a href="#">Featured</a></li>--}}
+        {{--<li class="divider"></li>--}}
+        {{--<li><a href="#"><i class="fa fa-plus m-r-1"></i>Add product</a></li>--}}
+        {{--</ul>--}}
+        {{--</li>--}}
+        {{--<li class="dropdown-toggle">--}}
+        {{--<a href>Users</a>--}}
+        {{--<ul class="dropdown-menu">--}}
+        {{--<li><a href="#">All</a></li>--}}
+        {{--<li><a href="#">Recent</a></li>--}}
+        {{--<li><a href="#">Banned</a></li>--}}
+        {{--<li class="divider"></li>--}}
+        {{--<li><a href="#"><i class="fa fa-user-plus m-r-1"></i>Create user</a></li>--}}
+        {{--</ul>--}}
+        {{--</li>--}}
+        {{--<li class="dropdown-toggle">--}}
+        {{--<a href>Blog</a>--}}
+        {{--<ul class="dropdown-menu">--}}
+        {{--<li><a href="#">All</a></li>--}}
+        {{--<li><a href="#">Popular</a></li>--}}
+        {{--<li class="divider"></li>--}}
+        {{--<li><a href="#"><i class="fa fa-edit m-r-1"></i>New blog post</a></li>--}}
+        {{--</ul>--}}
+        {{--</li>--}}
+        {{--<li class="divider"></li>--}}
+        {{--<li><a href="#">Overview</a></li>--}}
+        {{--</ul>--}}
+        {{--</li>--}}
         {{--</ul>--}}
 
         <ul class="nav navbar-nav navbar-right">
@@ -275,6 +277,8 @@
 @if($mediaModule && $mediaModule->enabled())
     <script src="/assets/media/js/media.js"></script>
 @endif
+
+<script src="/assets/admin/plugins/x-editable/js/bootstrap-editable.min.js"></script>
 
 <script>
     // -------------------------------------------------------------------------
@@ -455,6 +459,15 @@
             },
             delimiters: ['<%', '%>']
         });
+
+        if (typeof init !== 'undefined') {
+            $.each(init, function (index, f) {
+                f();
+            });
+        }
+
+        $.fn.editableform.buttons = '<button type="submit" class="btn btn-primary btn-xs editable-submit">Save</button>' +
+            '<button type="button" class="btn btn-xs editable-cancel">Cancel</button>';
     });
 </script>
 
