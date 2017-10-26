@@ -799,3 +799,15 @@ if(!function_exists('versionedAsset')) {
         return asset($asset) . '?v=' . $version;
     }
 }
+
+/**
+ * @param      $key
+ * @param null $default
+ * @return mixed
+ */
+if(!function_exists('input')) {
+    function input($key, $default = null)
+    {
+        return \Illuminate\Support\Facades\Input::get($key, $default);
+    }
+}
