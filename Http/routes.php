@@ -68,14 +68,6 @@ Route::group(['middleware' => 'web', 'prefix' => 'admin', 'namespace' => 'Module
             'uses' => 'Auth\LoginController@login',
             'as'   => 'admin::auth.login'
         ]);
-        Route::post('/auth/reset',[
-            'uses' => 'Auth\ResetPasswordController@reset',
-            'as'   => 'admin::auth.reset'
-        ]);
-        Route::post('/auth/request',[
-            'uses' => 'Auth\ForgotPasswordController@sendResetLinkEmail',
-            'as'   => 'admin::auth.request'
-        ]);
     });
 
     //EOF Auth routes ----------------------------------------------------------------------------------------
