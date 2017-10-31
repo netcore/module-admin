@@ -228,7 +228,7 @@
                 this.url = params.value ? params.value : '';
                 this.page_id = params.value ? params.value.toString() : '';
                 this.target = params.target ? params.target : '_self';
-                this.is_active = params.is_active ? params.is_active : 1;
+                this.is_active = typeof params.is_active !== 'undefined' ? params.is_active : 1;
 
                 this.errors = {
                     name: {
