@@ -3,6 +3,9 @@ $(document).ready(function () {
     $.ajaxSetup({
         headers: {
             'X-CSRF-Token': csrf_token,
+        },
+        error: function(jqXHR, exception) {
+            toastr.error("Something went wrong, while processing your request");
         }
     });
 

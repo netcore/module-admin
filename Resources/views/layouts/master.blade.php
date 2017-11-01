@@ -249,6 +249,16 @@
 |
 =============================================================================== -->
 
+<script>
+    // -------------------------------------------------------------------------
+    // Catch all unhandled errors
+
+    window.addEventListener('error', function (e) {
+        toastr.error("Whoops! Something went wrong...");
+    });
+
+</script>
+
 <!-- jQuery -->
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 
@@ -281,6 +291,7 @@
 <script src="/assets/admin/plugins/x-editable/js/bootstrap-editable.min.js"></script>
 
 <script>
+
     // -------------------------------------------------------------------------
     // Initialize DEMO
 

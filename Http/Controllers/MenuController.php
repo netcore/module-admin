@@ -21,11 +21,10 @@ class MenuController extends Controller
      */
     public function index()
     {
-        $menus = Menu::all();
+        $adminMenus = Menu::where('type', 'admin')->get();
+        $publicMenus = Menu::where('type', 'public')->get();
 
-
-
-        return view('admin::menu.index', compact('menus'));
+        return view('admin::menu.index', compact('adminMenus', 'publicMenus'));
     }
 
     /**
