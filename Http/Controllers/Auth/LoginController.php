@@ -27,6 +27,13 @@ class LoginController extends Controller
      */
     public function __construct()
     {
+        // TODO we should implement helper function
+        // to check whether a module is available or not
+        $contentModuleActivated = class_exists('\Modules\Content\Models\Entry');
+        if($contentModuleActivated) {
+            $this->redirectTo = '/admin/content';
+        }
+
         $this->middleware('guest')->except('logout');
     }
 
