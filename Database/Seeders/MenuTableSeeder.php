@@ -35,6 +35,7 @@ class MenuTableSeeder extends Seeder
                     'value'  => 'admin::menu.index',
                     'module' => 'Admin',
                     'is_active' => 1,
+                    'active_resolver' => 'admin::menu.*',
                     'parameters' => json_encode([])
                 ]
             ],
