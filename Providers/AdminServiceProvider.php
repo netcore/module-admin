@@ -58,9 +58,12 @@ class AdminServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__.'/../Config/config.php' => config_path('admin.php'),
         ], 'config');
+
         $this->mergeConfigFrom(
             __DIR__.'/../Config/config.php', 'admin'
         );
+
+        config()->set('breadcrumbs.view', 'admin::_partials._breadcrumbs');
     }
 
     /**
