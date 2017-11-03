@@ -16,4 +16,6 @@ if (!app()->routesAreCached()) {
     require __DIR__ . '/Http/routes.php';
 }
 
+require __DIR__ . '/Http/breadcrumbs.php';
+
 view()->composer('admin::layouts.master', \Modules\Admin\Http\ViewComposers\AdminMenuViewComposer::class);

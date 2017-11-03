@@ -1,7 +1,9 @@
 {
     "name": "netcore/module-admin",
-    "description": "",
+    "description": "Administration panel base.",
+    "keywords": ["laravel", "netcore", "modules", "admin"],
     "type": "module",
+    "license": "MIT",
     "authors": [
         {
             "name": "Jānis Blaus",
@@ -14,13 +16,15 @@
         }
     },
     "require": {
-        "php": ">=5.5",
+        "php": ">=7.0",
+        "illuminate/support": "5.5.x",
         "kalnoy/nestedset": "^4.2",
         "dimsav/laravel-translatable": "^8.0",
         "hieu-le/active": "^3.4",
         "laravelcollective/html": "^5.4.0",
         "doctrine/dbal": "^2.6",
-        "codesleeve/laravel-stapler": "1.0.*"
+        "codesleeve/laravel-stapler": "1.0.*",
+        "davejamesmiller/laravel-breadcrumbs": "^4.2"
     },
     "minimum-stability": "dev"
 }

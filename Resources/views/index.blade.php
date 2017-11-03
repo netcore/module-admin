@@ -67,6 +67,8 @@
 @endsection
 
 @section('content')
+    {!! Breadcrumbs::render('admin') !!}
+
     @if (isset($google_analytics_client_id) && !empty($google_analytics_client_id))
         <div class="Dashboard">
             <div id="embed-api-auth-container"></div>

@@ -42,6 +42,7 @@ class AdminServiceProvider extends ServiceProvider
     {
         $this->app->register(\HieuLe\Active\ActiveServiceProvider::class);
         $this->app->register(\Collective\Html\HtmlServiceProvider::class);
+        $this->app->register(\DaveJamesMiller\Breadcrumbs\BreadcrumbsServiceProvider::class);
 
         AliasLoader::getInstance()->alias('Form', \Collective\Html\FormFacade::class);
         AliasLoader::getInstance()->alias('Html', \Collective\Html\HtmlFacade::class);
