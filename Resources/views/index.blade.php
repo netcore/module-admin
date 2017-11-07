@@ -134,7 +134,7 @@
                     metrics: 'ga:sessions',
                     dimensions: 'ga:date',
                     'start-date': '30daysAgo',
-                    'end-date': 'yesterday'
+                    'end-date': 'today'
                 },
                 chart: {
                     container: 'chart-container',
