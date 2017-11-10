@@ -14,7 +14,8 @@ use Nwidart\Modules\Facades\Module;
 
 class MenuItem extends Model
 {
-    use Translatable, SyncTranslations, NodeTrait;
+    //use Translatable, SyncTranslations, NodeTrait;
+    use NodeTrait;
 
     protected $table = 'netcore_admin__menu_items';
 
