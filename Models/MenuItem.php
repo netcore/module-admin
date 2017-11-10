@@ -2,23 +2,37 @@
 
 namespace Modules\Admin\Models;
 
+use Dimsav\Translatable\Translatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
 use Kalnoy\Nestedset\NodeTrait;
+use Modules\Admin\Translations\MenuItemTranslation;
+use Modules\Admin\Traits\SyncTranslations;
 use Modules\Content\Models\Channel;
 use Modules\Content\Models\Entry;
 use Nwidart\Modules\Facades\Module;
 
 class MenuItem extends Model
 {
-    protected $table = 'netcore_admin__menu_items';
+    use Translatable, SyncTranslations, NodeTrait;
 
+    protected $table = 'netcore_admin__menu_items';
 
     protected $fillable = ['name','icon','type','value','module','is_active', 'active_resolver', 'parent_id', 'parameters'];
 
     protected $appends = ['url', 'active'];
 
-    use NodeTrait;
+    /**
+     * @var string
+     */
+    public $translationModel = MenuItemTranslation::class;
+
+    /**
+     * @var array
+     */
+    public $translatedAttributes = [
+        'name',
+    ];
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
