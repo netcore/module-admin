@@ -29,8 +29,6 @@ class AdminServiceProvider extends ServiceProvider
         //$this->registerFactories();
         //$this->registerBladeExtenders();
         $this->registerMiddlewares($router, $kernel);
-
-
     }
 
     /**
@@ -56,12 +54,10 @@ class AdminServiceProvider extends ServiceProvider
     protected function registerConfig()
     {
         $this->publishes([
-            __DIR__.'/../Config/config.php' => config_path('admin.php'),
+            __DIR__ . '/../Config/config.php' => config_path('netcore/module-admin.php'),
         ], 'config');
 
-        $this->mergeConfigFrom(
-            __DIR__.'/../Config/config.php', 'admin'
-        );
+        $this->mergeConfigFrom(__DIR__ . '/../Config/config.php', 'admin');
 
         config()->set('breadcrumbs.view', 'admin::_partials._breadcrumbs');
     }
@@ -75,7 +71,7 @@ class AdminServiceProvider extends ServiceProvider
     {
         $viewPath = resource_path('views/modules/admin');
 
-        $sourcePath = __DIR__.'/../Resources/views';
+        $sourcePath = __DIR__ . '/../Resources/views';
 
         $this->publishes([
             $sourcePath => $viewPath
@@ -98,7 +94,7 @@ class AdminServiceProvider extends ServiceProvider
         if (is_dir($langPath)) {
             $this->loadTranslationsFrom($langPath, 'admin');
         } else {
-            $this->loadTranslationsFrom(__DIR__ .'/../Resources/lang', 'admin');
+            $this->loadTranslationsFrom(__DIR__ . '/../Resources/lang', 'admin');
         }
     }
 
@@ -108,7 +104,7 @@ class AdminServiceProvider extends ServiceProvider
      */
     public function registerFactories()
     {
-        if (! app()->environment('production')) {
+        if (!app()->environment('production')) {
             app(Factory::class)->load(__DIR__ . '/Database/factories');
         }
     }
@@ -125,7 +121,7 @@ class AdminServiceProvider extends ServiceProvider
 
     public function registerBladeExtenders()
     {
-
+        //
     }
 
     public function registerMiddlewares($router, $kernel)
