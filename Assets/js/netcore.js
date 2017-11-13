@@ -295,3 +295,50 @@ var Netcore = (function(){
     };
 })();
 
+$(function () {
+    $('.js-form-submit').on('submit', function (e) {
+        e.preventDefault();
+
+        var form = $(this);
+        var data = form.serializeArray();
+        var dangerAlert = form.find('.alert-danger');
+        var successAlert = form.find('.alert-success');
+
+        successAlert.addClass('hidden').empty();
+        dangerAlert.addClass('hidden').empty();
+
+        $.ajax({
+            type: 'POST',
+            url: form.attr('action'),
+            data: data,
+            success: function (response) {
+                if (successAlert !== undefined) {
+                    successAlert.hide().removeClass('hidden').text(response.message).fadeIn();
+                }
+
+                if (response.redirect !== undefined) {
+                    setTimeout(function () {
+                        window.location = response.redirect;
+                    }, 1000);
+                }
+
+                form.find('input[type="submit"]').prop('disabled', false);
+            },
+            error: function (response) {
+                var errors = response.responseJSON.errors;
+                var errorList = '';
+                $.each(errors, function (field, error) {
+                    console.log(error);
+                    errorList += error[0] + '<br>';
+                });
+                if (dangerAlert !== undefined) {
+                    dangerAlert.hide().removeClass('hidden').html(errorList).fadeIn();
+                }
+                form.find('input[type="submit"]').prop('disabled', false);
+            },
+            beforeSend: function () {
+                form.find('input[type="submit"]').prop('disabled', true);
+            }
+        });
+    });
+});
