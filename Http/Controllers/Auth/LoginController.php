@@ -8,6 +8,7 @@ use Illuminate\Routing\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Nwidart\Modules\Facades\Module;
 
 class LoginController extends Controller
 {
@@ -27,10 +28,8 @@ class LoginController extends Controller
      */
     public function __construct()
     {
-        // TODO we should implement helper function
-        // to check whether a module is available or not
-        $contentModuleActivated = class_exists('\Modules\Content\Models\Entry');
-        if($contentModuleActivated) {
+        $module = Module::find('content');
+        if ($module && $module->enabled()) {
             $this->redirectTo = '/admin/content';
         }
 
