@@ -3,10 +3,10 @@
         <li class="dd-item" data-id="{{ $item->id }}">
             <div class="pull-right">
                 <div class="btn-sm btn-danger pull-right delete">
-                    Delete
+                    <i class="fa fa-trash"></i> Delete
                 </div>
                 <div class="btn-sm btn-primary pull-right edit">
-                    Edit
+                    <i class="fa fa-edit"></i> Edit
                 </div>
             </div>
             <div class="dd-handle">

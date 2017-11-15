@@ -79,7 +79,7 @@ class AdminServiceProvider extends ServiceProvider
 
         $this->loadViewsFrom(array_merge(array_map(function ($path) {
             return $path . '/modules/admin';
-        }, \Config::get('view.paths')), [$sourcePath]), 'admin');
+        }, config('view.paths')), [$sourcePath]), 'admin');
     }
 
     /**

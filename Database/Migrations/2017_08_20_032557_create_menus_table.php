@@ -16,6 +16,7 @@ class CreateMenusTable extends Migration
         Schema::create('netcore_admin__menus', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name')->unique();
+            $table->string('type')->default('admin');
             $table->timestamps();
         });
     }

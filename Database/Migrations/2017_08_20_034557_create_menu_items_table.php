@@ -16,18 +16,25 @@ class CreateMenuItemsTable extends Migration
     {
         Schema::create('netcore_admin__menu_items', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('name');
             $table->string('module')->nullable()->index();
             $table->string('icon')->nullable();
             $table->string('type')->nullable();
-            $table->string('value')->nullable();
             $table->string('target')->nullable();
             $table->integer('menu_id')->unsigned();
             $table->foreign('menu_id')->references('id')->on('netcore_admin__menus')->onDelete('cascade');
             $table->string('active_resolver')->nullable();
             $table->boolean('is_active')->default(0);
             NestedSet::columns($table);
+            $table->text('parameters')->nullable();
             $table->timestamps();
+        });
+        Schema::create('netcore_admin__menu_item_translations', function (Blueprint $table) {
+            $table->increments('id');
+            $table->integer('menu_item_id')->unsigned();
+            $table->foreign('menu_item_id')->references('id')->on('netcore_admin__menu_items')->onDelete('cascade');
+            $table->string('locale')->index();
+            $table->string('name');
+            $table->string('value')->nullable();
         });
     }
 
@@ -38,6 +45,7 @@ class CreateMenuItemsTable extends Migration
      */
     public function down()
     {
+        Schema::dropIfExists('netcore_admin__menu_item_translations');
         Schema::dropIfExists('netcore_admin__menu_items');
     }
 }

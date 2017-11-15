@@ -5,8 +5,8 @@
 
     <style>
         .dd-list {
-            min-height:10px;
-            padding-top:10px;
+            min-height: 10px;
+            padding-top: 10px;
         }
 
         .dd-actions {
@@ -16,19 +16,17 @@
     </style>
 @append
 
-
 @section('content')
-
     <div id="menu-edit-container" v-cloak class="row">
         <div class="v-cloak--block text-center" style="padding-top:20px">
             <i class="fa fa-refresh fa-spin fa-3x"></i>
         </div>
         <div class="v-cloak--hidden">
             <div id="variables" style="display: none">
-                <input class="loaded-items" type="hidden" value="{{$items->toJson()}}">
-                <input class="all-routes" type="hidden" value="{{$routes->toJson()}}">
-                <input class="all-icons" type="hidden" value="{{$icons->toJson()}}">
-                <input class="all-pages" type="hidden" value="{{$pages->toJson()}}">
+                <input class="loaded-items" type="hidden" value="{{ $items->toJson() }}">
+                <input class="all-routes" type="hidden" value="{{ $routes->toJson() }}">
+                <input class="all-icons" type="hidden" value="{{ $icons->toJson() }}">
+                <input class="all-pages" type="hidden" value="{{ $pages->toJson() }}">
             </div>
 
             <div class="col-md-8">
@@ -40,7 +38,10 @@
                     <div class="panel-body" style="padding:20px;">
                         <div class="dd">
                             <template v-if="menu_items.length > 0">
-                                <draggable-menu-items :items="menu_items" v-on:change="saveOrder" v-on:delete-item="deleteItem" v-on:edit-item="editItem"></draggable-menu-items>
+                                <draggable-menu-items :items="menu_items" v-on:change="saveOrder"
+                                                      v-on:delete-item="deleteItem"
+                                                      v-on:edit-item="editItem">
+                                </draggable-menu-items>
                             </template>
                             <template v-else>
                                 No menu items
@@ -60,7 +61,10 @@
 
                     <div class="panel-body" style="padding:20px;">
                         <div class="form-group">
-                            <select2 :data="menu_types" :placeholder="'Please Select'" v-on:select="services.edit.clear()" v-model="services.edit.type" :disabled="services.edit.id > 0"></select2>
+                            <select2 :data="menu_types" :placeholder="'Please Select'"
+                                     v-on:select="services.edit.clear()" v-model="services.edit.type"
+                                     :disabled="services.edit.id > 0">
+                            </select2>
                         </div>
                         <hr>
 
@@ -72,41 +76,75 @@
                             </div>
                             <div class="form-group" :class="{'has-error': services.edit.errors.icon.visible}">
                                 <label>Icon</label>
-                                <select2 :data="all_icons" :placeholder="'Please Select'" v-model="services.edit.icon"></select2>
+                                <select2 :data="all_icons" :placeholder="'Please Select'"
+                                         v-model="services.edit.icon">
+                                </select2>
                                 <span v-if="services.edit.errors.icon.visible" class="help-block"><% services.edit.errors.icon.value %></span>
                             </div>
                             <div class="form-group" :class="{'has-error': services.edit.errors.value.visible}">
                                 <label>Route</label>
-                                <select2 :data="getRouteList()" :placeholder="'Please Select'" v-on:select="services.edit.checkParameters()" v-model="services.edit.value"></select2>
+                                <select2 :data="getRouteList()" :placeholder="'Please Select'"
+                                         v-on:select="services.edit.checkParameters()"
+                                         v-model="services.edit.value">
+                                </select2>
                                 <span v-if="services.edit.errors.value.visible" class="help-block"><% services.edit.errors.value.value %></span>
                             </div>
-                            <div v-for="(param, index) in services.edit.parameters" class="form-group" :class="{'has-error': services.edit.errors.parameters[index].visible}">
+                            <div v-for="(param, index) in services.edit.parameters" class="form-group"
+                                 :class="{'has-error': services.edit.errors.parameters[index].visible}">
                                 <label><% index | capitalize %></label>
                                 <input type="text" class="form-control" v-model="services.edit.parameters[index]">
                                 <span v-if="services.edit.errors.parameters[index].visible" class="help-block"><% services.edit.errors.parameters[index].value %></span>
                             </div>
                             <div class="form-group">
                                 <label>Target</label>
-                                <select2 :data="[{id: '_self', text: '_self'}, {id: '_blank', text: '_blank'}]" v-model="services.edit.target"></select2>
+                                <select2 :data="[{id: '_self', text: '_self'}, {id: '_blank', text: '_blank'}]"
+                                         v-model="services.edit.target">
+                                </select2>
                             </div>
                         </div>
                         <div v-show="services.edit.type == 'url'">
-                            <div class="form-group">
-                                <label>Name</label>
-                                <input type="text" class="form-control" v-model="services.edit.name">
+                            <ul class="nav nav-tabs" role="tablist">
+                                <li
+                                        v-for="(language, key) in languages"
+                                        role="presentation"
+                                        :class="{'active': key == 0}"
+                                >
+                                    <a
+                                            :href="'#' + language.iso_code"
+                                            :aria-controls="language.iso_code"
+                                            role="tab"
+                                            data-toggle="tab"
+                                            v-text="language.title_localized"
+                                    >
+                                    </a>
+                                </li>
+                            </ul>
+                            <div class="tab-content">
+                                <div v-for="(language, key) in languages" role="tabpanel" class="tab-pane"
+                                     :class="{'active': key == 0}" :id="language.iso_code">
+                                    <div class="form-group">
+                                        <label>Name</label>
+                                        <input type="text" class="form-control" v-model="services.edit.name">
+                                    </div>
+                                    <div class="form-group" :class="{'has-error': services.edit.errors.url.visible}">
+                                        <label>URL:</label>
+                                        <input type="text" class="form-control" v-model="services.edit.url">
+                                        <span v-if="services.edit.errors.url.visible" class="help-block"><% services.edit.errors.url.value %></span>
+                                    </div>
+                                </div>
                             </div>
+
                             <div class="form-group">
                                 <label>Icon</label>
-                                <select2 :data="all_icons" :placeholder="'Please Select'" v-model="services.edit.icon"></select2>
-                            </div>
-                            <div class="form-group" :class="{'has-error': services.edit.errors.url.visible}">
-                                <label>URL:</label>
-                                <input type="text" class="form-control" v-model="services.edit.url">
-                                <span v-if="services.edit.errors.url.visible" class="help-block"><% services.edit.errors.url.value %></span>
+                                <select2 :data="all_icons" :placeholder="'Please Select'"
+                                         v-model="services.edit.icon">
+                                </select2>
                             </div>
                             <div class="form-group">
                                 <label>Target</label>
-                                <select2 :data="[{id: '_self', text: '_self'}, {id: '_blank', text: '_blank'}]" v-model="services.edit.target"></select2>
+                                <select2 :data="[{id: '_self', text: '_self'}, {id: '_blank', text: '_blank'}]"
+                                         v-model="services.edit.target">
+                                </select2>
                             </div>
                         </div>
                         <div v-show="services.edit.type == 'page'">
@@ -117,32 +155,42 @@
                             </div>
                             <div class="form-group">
                                 <label>Icon</label>
-                                <select2 :data="all_icons" :placeholder="'Please Select'" v-model="services.edit.icon"></select2>
+                                <select2 :data="all_icons" :placeholder="'Please Select'"
+                                         v-model="services.edit.icon">
+                                </select2>
                             </div>
                             <div class="form-group" :class="{'has-error': services.edit.errors.page_id.visible}">
                                 <label>Page</label>
-                                <select2 :data="getPageList()" :placeholder="'Please Select'" v-model="services.edit.page_id"></select2>
+                                <select2 :data="getPageList()" :placeholder="'Please Select'"
+                                         v-model="services.edit.page_id">
+                                </select2>
                                 <span v-if="services.edit.errors.page_id.visible" class="help-block"><% services.edit.errors.page_id.value %></span>
                             </div>
                             <div class="form-group">
                                 <label>Target</label>
-                                <select2 :data="[{id: '_self', text: '_self'}, {id: '_blank', text: '_blank'}]" v-model="services.edit.target"></select2>
+                                <select2 :data="[{id: '_self', text: '_self'}, {id: '_blank', text: '_blank'}]"
+                                         v-model="services.edit.target">
+                                </select2>
                             </div>
                         </div>
 
                         <div v-if="services.edit.type != '' && services.edit.type">
                             <div class="form-group">
                                 <label>State</label>
-                                <select2 :data="[{id: '1', text: 'Enabled'}, {id: '0', text: 'Disabled'}]" v-model="services.edit.is_active"></select2>
+                                <select2 :data="[{id: '1', text: 'Enabled'}, {id: '0', text: 'Disabled'}]"
+                                         v-model="services.edit.is_active">
+                                </select2>
                             </div>
 
                             <div class="form-group">
                                 <div class="col-xs-6" style="padding:0">
-                                    <button :disabled="services.edit.loading" type="button" class="btn btn-success" v-on:click="services.edit.save()">
+                                    <button :disabled="services.edit.loading" type="button" class="btn btn-success"
+                                            v-on:click="services.edit.save()">
                                         <span v-if="services.edit.loading">
                                             <i class="fa fa-refresh fa-spin"></i>
                                         </span>
-                                            <span v-else>
+                                        <span v-else>
+                                            <i class="fa fa-save"></i>
                                             <span v-if="services.edit.id">
                                                 Save
                                             </span>
@@ -153,7 +201,9 @@
                                     </button>
                                 </div>
                                 <div class="col-xs-6 text-right" style="padding:0">
-                                    <button type="button" class="btn btn-default" v-on:click="services.edit.cancel()">Cancel</button>
+                                    <button type="button" class="btn btn-default" v-on:click="services.edit.cancel()">
+                                        <i class="fa fa-undo"></i> Cancel
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -169,7 +219,9 @@
                 <template v-if="item.type == 'separator' || item.type == 'empty'">
                     <div class="pull-right">
                         <div class="btn-group pull-right">
-                            <button type="button" class="btn btn-sm btn-danger" v-on:click="deleteItem(item)">Delete</button>
+                            <button type="button" class="btn btn-sm btn-danger" v-on:click="deleteItem(item)">
+                                <i class="fa fa-trash"></i> Delete
+                            </button>
                         </div>
                     </div>
                     <div class="dd-handle">
@@ -180,8 +232,12 @@
                 <template v-else>
                     <div class="pull-right">
                         <div class="dd-actions btn-group pull-right">
-                            <button type="button" class="btn btn-sm btn-primary" v-on:click="editItem(item)">Edit</button>
-                            <button type="button" class="btn btn-sm btn-danger" v-on:click="deleteItem(item)">Delete</button>
+                            <button type="button" class="btn btn-sm btn-primary" v-on:click="editItem(item)">
+                                <i class="fa fa-edit"></i> Edit
+                            </button>
+                            <button type="button" class="btn btn-sm btn-danger" v-on:click="deleteItem(item)">
+                                <i class="fa fa-trash"></i> Delete
+                            </button>
                         </div>
                     </div>
                     <div class="dd-handle">
@@ -189,16 +245,15 @@
                             <i class="fa" :class="item.icon"></i>
                         </span>
                         <span v-html="item.name"></span>
-                        {{--<small class="url"></small>--}}
                     </div>
-                    <draggable-menu-items v-if="item.children" :items="item.children" v-on:change="saveOrder" v-on:delete-item="deleteItem" v-on:edit-item="editItem"></draggable-menu-items>
+                    <draggable-menu-items v-if="item.children" :items="item.children" v-on:change="saveOrder"
+                                          v-on:delete-item="deleteItem"
+                                          v-on:edit-item="editItem">
+                    </draggable-menu-items>
                 </template>
             </li>
         </draggable>
     </div>
-
-
-
 @endsection
 
 @section('scripts')
@@ -210,11 +265,13 @@
 
     <script>
         $(document).ready(function () {
+            var languages = '{{ $languages->toJson() }}';
+            languages = JSON.parse(languages.replace(/&quot;/g, '"'));
 
-            var EditorService = function(parent, params){
+            var EditorService = function (parent, params) {
                 var self = this;
 
-                if(typeof params === 'undefined') params = {};
+                if (typeof params === 'undefined') params = {};
 
                 this.$parent = parent;
 
@@ -258,13 +315,13 @@
                     parameters: {}
                 };
 
-                if(params.parameters){
+                if (params.parameters) {
                     Vue.set(self, 'parameters', params.parameters);
 
-                    jQuery.each(params.parameters, function(key, param){
+                    jQuery.each(params.parameters, function (key, param) {
                         Vue.set(self.errors.parameters, key, {
                             visible: false,
-                            value:  ''
+                            value: ''
                         });
                     });
                 } else {
@@ -273,7 +330,7 @@
             };
 
             EditorService.prototype = {
-                save: function(){
+                save: function () {
                     var self = this;
 
                     self.clearErrors();
@@ -293,14 +350,14 @@
 
                     var validate;
 
-                    switch(newMenuItem.type) {
+                    switch (newMenuItem.type) {
                         case 'route':
                             validate = self.validate(['name', 'value', 'parameters']);
                             break;
                         case 'url':
                             validate = self.validate(['url']);
 
-                            if(newMenuItem.name === '' && !newMenuItem.name.trim()){
+                            if (newMenuItem.name === '' && !newMenuItem.name.trim()) {
                                 newMenuItem.name = newMenuItem.url;
                             }
 
@@ -316,20 +373,20 @@
                             newMenuItem.value = 'javascript:;';
                     }
 
-                    if(validate) {
+                    if (validate) {
                         self.loading = true;
 
-                        jQuery.post('{{route('admin::menu.save-item', $menu->id)}}', newMenuItem, function(response){
-                            if(response.status !== 'success'){
+                        jQuery.post('{{ route('admin::menu.save-item', $menu->id) }}', newMenuItem, function (response) {
+                            if (response.status !== 'success') {
                                 self.loading = false;
                                 toastr.error('Something went wrong...');
                                 return false;
                             }
 
-                            if(newMenuItem.id){
+                            if (newMenuItem.id) {
                                 var item = self.$parent.findItem(newMenuItem.id, self.$parent.menu_items);
 
-                                if(item){
+                                if (item) {
                                     item.name = response.item.name;
                                     item.icon = response.item.icon;
                                     item.type = response.item.type;
@@ -353,32 +410,32 @@
                             }
 
                             self.loading = false;
-                        }).fail(function(){
+                        }).fail(function () {
                             toastr.error('Something went wrong...');
                             self.loading = false;
                         });
                     }
                 },
-                cancel: function(){
+                cancel: function () {
                     this.$parent.services.edit = new EditorService(this.$parent);
                 },
-                clear: function(){
+                clear: function () {
                     var type = this.type;
 
                     this.$parent.services.edit = new EditorService(this.$parent, {
                         type: type
                     });
                 },
-                validate: function(fields){
+                validate: function (fields) {
                     var self = this;
                     var valid = true;
 
-                    if(typeof fields === 'undefined') throw Error('Missing fields');
+                    if (typeof fields === 'undefined') throw Error('Missing fields');
 
-                    fields.forEach(function(field){
-                        if(field === 'parameters'){
-                            jQuery.each(self.errors.parameters, function(key, parameter){
-                                if(self.parameters[key] !== '' && self.parameters[key].trim()){
+                    fields.forEach(function (field) {
+                        if (field === 'parameters') {
+                            jQuery.each(self.errors.parameters, function (key, parameter) {
+                                if (self.parameters[key] !== '' && self.parameters[key].trim()) {
                                     parameter.visible = false;
                                 } else {
                                     parameter.visible = true;
@@ -387,7 +444,7 @@
                                 }
                             });
                         } else {
-                            if(self[field] !== '' && self[field].trim()){
+                            if (self[field] !== '' && self[field].trim()) {
                                 self.errors[field].visible = false;
                             } else {
                                 self.errors[field].visible = true;
@@ -399,13 +456,13 @@
 
                     return valid;
                 },
-                clearErrors: function(field){
-                    if(typeof field !== 'undefined'){
+                clearErrors: function (field) {
+                    if (typeof field !== 'undefined') {
                         this.errors[field].visible = false;
                     } else {
-                        jQuery.each(this.errors, function(key, field){
-                            if(key === 'parameters'){
-                                jQuery.each(field, function(key, parameter){
+                        jQuery.each(this.errors, function (key, field) {
+                            if (key === 'parameters') {
+                                jQuery.each(field, function (key, parameter) {
                                     parameter.visible = false;
                                 });
                             } else {
@@ -414,15 +471,15 @@
                         });
                     }
                 },
-                checkParameters: function(){
+                checkParameters: function () {
                     var self = this;
 
                     var route = this.$parent.all_routes[this.value];
 
-                    if(route){
+                    if (route) {
                         this.parameters = {};
 
-                        route.parameters.forEach(function(param){
+                        route.parameters.forEach(function (param) {
                             Vue.set(self.parameters, param, '');
 
                             self.errors.parameters = {};
@@ -440,13 +497,13 @@
                 props: ['items'],
                 template: "#draggable-menu-items",
                 methods: {
-                    saveOrder: function(){
+                    saveOrder: function () {
                         this.$emit('change');
                     },
-                    deleteItem: function(item){
+                    deleteItem: function (item) {
                         this.$emit('delete-item', item)
                     },
-                    editItem: function(item){
+                    editItem: function (item) {
                         this.$emit('edit-item', item)
                     }
                 },
@@ -459,7 +516,7 @@
                     menu_types: [{
                         id: 'route',
                         text: 'Route'
-                    },{
+                    }, {
                         id: 'url',
                         text: 'Custom Url'
                     }, {
@@ -478,20 +535,21 @@
                     menu_items: [],
                     services: {
                         edit: false
-                    }
+                    },
+                    languages: languages
                 },
-                created: function(){
+                created: function () {
                     var self = this;
 
                     var items = JSON.parse(jQuery('.loaded-items').val());
 
-                    jQuery.each(items, function(key, item){
+                    jQuery.each(items, function (key, item) {
                         Vue.set(self.menu_items, key, item);
                     });
 
                     var routes = JSON.parse(jQuery('.all-routes').val());
 
-                    jQuery.each(routes, function(key, route){
+                    jQuery.each(routes, function (key, route) {
                         Vue.set(self.all_routes, key, {
                             id: route.name,
                             name: route.name,
@@ -501,23 +559,23 @@
 
                     var icons = JSON.parse(jQuery('.all-icons').val());
 
-                    jQuery.each(icons, function(key, icon){
+                    jQuery.each(icons, function (key, icon) {
                         Vue.set(self.all_icons, key, icon);
                     });
 
                     var pages = JSON.parse(jQuery('.all-pages').val());
 
-                    jQuery.each(pages, function(key, page){
+                    jQuery.each(pages, function (key, page) {
                         Vue.set(self.all_pages, key, page);
                     });
 
                     Vue.set(self.services, 'edit', new EditorService(self))
                 },
                 methods: {
-                    getRouteList: function(){
+                    getRouteList: function () {
                         var routeList = [];
 
-                        jQuery.each(this.all_routes, function(key, route){
+                        jQuery.each(this.all_routes, function (key, route) {
                             routeList.push({
                                 id: route.name,
                                 text: route.name
@@ -526,10 +584,10 @@
 
                         return routeList;
                     },
-                    getPageList: function(){
+                    getPageList: function () {
                         var pageList = [];
 
-                        jQuery.each(this.all_pages, function(key, page){
+                        jQuery.each(this.all_pages, function (key, page) {
                             pageList.push({
                                 id: page.id.toString(),
                                 text: page.text
@@ -538,20 +596,20 @@
 
                         return pageList;
                     },
-                    findItem: function(id, items){
+                    findItem: function (id, items) {
                         var self = this;
                         var findableItem = false;
                         var stopLoop = false;
 
-                        items.forEach(function(item){
-                            if(!stopLoop){
-                                if(item.id === id){
+                        items.forEach(function (item) {
+                            if (!stopLoop) {
+                                if (item.id === id) {
                                     findableItem = item;
                                     stopLoop = true;
                                 } else {
-                                    if(item.children.length > 0){
+                                    if (item.children.length > 0) {
                                         findableItem = self.findItem(id, item.children);
-                                        if(findableItem){
+                                        if (findableItem) {
                                             stopLoop = true;
                                         }
                                     }
@@ -561,7 +619,7 @@
 
                         return findableItem;
                     },
-                    deleteItem: function(item){
+                    deleteItem: function (item) {
                         var self = this;
 
                         swal({
@@ -573,21 +631,21 @@
                             cancelButtonColor: '#8c8b89',
                             confirmButtonText: 'Yes, delete it!'
                         }).then(function () {
-                            var deleteRequest = function(id){
-                                return jQuery.post('{{url('admin/menus/'.$menu->id.'/delete-item')}}/'+id);
+                            var deleteRequest = function (id) {
+                                return jQuery.post('{{url('admin/menus/'.$menu->id.'/delete-item')}}/' + id);
                             };
 
-                            var deleteThis = function(id, items){
-                                items.forEach(function(deletableItem, deletableKey){
-                                    if(deletableItem){
-                                        if(deletableItem.id === item.id){
+                            var deleteThis = function (id, items) {
+                                items.forEach(function (deletableItem, deletableKey) {
+                                    if (deletableItem) {
+                                        if (deletableItem.id === item.id) {
                                             items.splice(deletableKey, 1);
 
-                                            if(self.services.edit.id === item.id){
+                                            if (self.services.edit.id === item.id) {
                                                 self.services.edit.cancel();
                                             }
                                         } else {
-                                            if(deletableItem.children.length > 0){
+                                            if (deletableItem.children.length > 0) {
                                                 deleteThis(id, deletableItem.children);
                                             }
                                         }
@@ -596,18 +654,18 @@
                             };
 
 
-                            if(item.children.length > 0){
+                            if (item.children.length > 0) {
                                 var inputOptions = {
                                     0: '-- Delete Child Items'
                                 };
 
-                                var getMenuItems = function(level, items){
-                                    items.forEach(function(otherItem){
-                                        if(otherItem.id !== item.id && otherItem.type !== 'separator' && otherItem.type !== 'empty'){
-                                            inputOptions[otherItem.id] = Array(level).join('--')+' '+otherItem.name;
+                                var getMenuItems = function (level, items) {
+                                    items.forEach(function (otherItem) {
+                                        if (otherItem.id !== item.id && otherItem.type !== 'separator' && otherItem.type !== 'empty') {
+                                            inputOptions[otherItem.id] = Array(level).join('--') + ' ' + otherItem.name;
 
-                                            if(otherItem.children){
-                                                getMenuItems(level+1, otherItem.children);
+                                            if (otherItem.children) {
+                                                getMenuItems(level + 1, otherItem.children);
                                             }
                                         }
                                     });
@@ -624,27 +682,27 @@
                                     confirmButtonColor: "#DD6B55",
                                     cancelButtonColor: '#8c8b89'
                                 }).then(function (result) {
-                                    if(result){
-                                        if(result > 0){
+                                    if (result) {
+                                        if (result > 0) {
                                             var newParent = self.findItem(parseInt(result), self.menu_items);
-                                            if(newParent){
-                                                item.children.forEach(function(child){
+                                            if (newParent) {
+                                                item.children.forEach(function (child) {
                                                     newParent.children.push(child);
                                                 });
                                             }
 
                                             item.children = [];
 
-                                            self.saveOrder().done(function(){
-                                                deleteRequest(item.id).done(function(response){
-                                                    if(response.status === 'success'){
+                                            self.saveOrder().done(function () {
+                                                deleteRequest(item.id).done(function (response) {
+                                                    if (response.status === 'success') {
                                                         deleteThis(item.id, self.menu_items);
                                                     }
                                                 });
                                             });
                                         } else {
-                                            deleteRequest(item.id).done(function(response){
-                                                if(response.status === 'success'){
+                                            deleteRequest(item.id).done(function (response) {
+                                                if (response.status === 'success') {
                                                     deleteThis(item.id, self.menu_items);
                                                 }
                                             });
@@ -652,8 +710,8 @@
                                     }
                                 }).catch(swal.noop);
                             } else {
-                                deleteRequest(item.id).done(function(response){
-                                    if(response.status === 'success'){
+                                deleteRequest(item.id).done(function (response) {
+                                    if (response.status === 'success') {
                                         deleteThis(item.id, self.menu_items);
                                     }
                                 });
@@ -661,21 +719,21 @@
                         }).catch(swal.noop);
 
                     },
-                    editItem: function(item){
+                    editItem: function (item) {
                         this.services.edit = new EditorService(this, item);
                     },
-                    saveOrder: function(){
+                    saveOrder: function () {
                         var self = this;
                         var orders = [];
 
-                        var getCurrentOrder = function(orders, items){
-                            items.forEach(function(item, key){
+                        var getCurrentOrder = function (orders, items) {
+                            items.forEach(function (item, key) {
                                 orders[key] = {
                                     id: item.id,
                                     children: []
                                 };
 
-                                if(item.children){
+                                if (item.children) {
                                     getCurrentOrder(orders[key].children, item.children)
                                 }
                             });
@@ -692,30 +750,30 @@
                 },
                 watch: {
                     menu_items: {
-                        handler: function(){
-                            if(typeof window['{{$menu->name}}'] === 'undefined') return false;
+                        handler: function () {
+                            if (typeof window['{{$menu->name}}'] === 'undefined') return false;
 
-                            var getNewMenuItems = function(items){
+                            var getNewMenuItems = function (items) {
                                 var menuItems = [];
 
-                                items.forEach(function(item, key){
-                                    if(parseInt(item.is_active)){
+                                items.forEach(function (item, key) {
+                                    if (parseInt(item.is_active)) {
 
                                         item.child_active = false;
 
-                                        var isActive = function(items){
-                                            items.forEach(function(childItem){
-                                                if(childItem.active){
+                                        var isActive = function (items) {
+                                            items.forEach(function (childItem) {
+                                                if (childItem.active) {
                                                     item.child_active = true;
                                                 } else {
-                                                    if(childItem.children.length > 0){
+                                                    if (childItem.children.length > 0) {
                                                         isActive(childItem.children)
                                                     }
                                                 }
                                             });
                                         };
 
-                                        if(item.children.length > 0){
+                                        if (item.children.length > 0) {
                                             isActive(item.children);
                                         }
 

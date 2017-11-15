@@ -10,6 +10,7 @@ use Modules\Admin\Http\Requests\SaveMenuItemRequest;
 use Modules\Admin\Models\Menu;
 use Modules\Admin\Models\MenuItem;
 use Modules\Content\Models\Entry;
+use Netcore\Translator\Helpers\TransHelper;
 use Nwidart\Modules\Facades\Module;
 
 class MenuController extends Controller
@@ -21,10 +22,9 @@ class MenuController extends Controller
      */
     public function index()
     {
-        $adminMenus = Menu::where('type', 'admin')->get();
-        $publicMenus = Menu::where('type', 'public')->get();
+        $menusGrouped = Menu::with('items')->get()->groupBy('type');
 
-        return view('admin::menu.index', compact('adminMenus', 'publicMenus'));
+        return view('admin::menu.index', compact('menusGrouped'));
     }
 
     /**
@@ -55,16 +55,17 @@ class MenuController extends Controller
      */
     public function show($id)
     {
+        $languages = TransHelper::getAllLanguages();
         $menu = Menu::findOrFail($id);
         $items = $menu->items()->defaultOrder()->get()->toTree();
 
         $routes = [];
 
-        foreach (Route::getRoutes() as $route){
-            if(in_array('GET', $route->methods())){
-                if($route->getName()) {
+        foreach (Route::getRoutes() as $route) {
+            if (in_array('GET', $route->methods())) {
+                if ($route->getName()) {
                     $routes[$route->getName()] = [
-                        'name' => $route->getName(),
+                        'name'       => $route->getName(),
                         'parameters' => $route->parameterNames()
                     ];
                 }
@@ -73,32 +74,31 @@ class MenuController extends Controller
 
         $routes = collect($routes);
 
-
         $icons = [];
-
-        foreach (getFontAwesomeList() as $key => $value){
+        foreach (getFontAwesomeList() as $key => $value) {
             $icons[] = [
-                'id' => $value,
+                'id'   => $value,
                 'text' => $value,
-                'html' => '<i class="fa '.$value.'"></i> '.$value
+                'html' => '<i class="fa ' . $value . '"></i> ' . $value
             ];
         }
 
         $icons = collect($icons);
 
         $pages = collect([]);
-        if(Module::has('Content')){
-            $pages = Entry::whereIsActive(1)->get()->map(function($entry){
+        if (Module::has('Content')) {
+            $pages = Entry::whereIsActive(1)->get()->map(function ($entry) {
                 $firstTranslation = $entry->translations->first();
                 $title = $firstTranslation ? $firstTranslation->title : '';
+
                 return [
-                    'id' => $entry->id,
+                    'id'   => $entry->id,
                     'text' => $title
                 ];
             });
         }
 
-        return view('admin::menu.show', compact('menu', 'items', 'routes', 'icons', 'pages'));
+        return view('admin::menu.show', compact('menu', 'items', 'routes', 'icons', 'pages', 'languages'));
     }
 
     /**
@@ -149,30 +149,31 @@ class MenuController extends Controller
     /**
      * @param Request $request
      */
-    public function saveMenuItem(SaveMenuItemRequest $request, $id){
+    public function saveMenuItem(SaveMenuItemRequest $request, $id)
+    {
         $menu = Menu::findOrFail($id);
 
         $menuItem = MenuItem::find($request->get('id', 0));
 
-        if(!$menuItem){
+        if (!$menuItem) {
             $menuItem = new MenuItem();
         }
 
         $type = $request->get('type');
 
         $module = '';
-        if($type == 'route'){
+        if ($type == 'route') {
             $module = ucfirst(preg_replace('/(.+)\:\:(.+)\.(.+)/', '$2', $request->get('value')));
         }
 
         $menuItem->name = $request->get('name') ? $request->get('name') : '';
         $menuItem->module = $module;
-        $menuItem->icon = $request->get('icon') ? $request->get('icon') : '';
+        $menuItem->icon = $request->get('icon', '');
         $menuItem->type = $type;
         $menuItem->value = $request->get('value');
         $menuItem->target = $request->get('target', '_self');
         $menuItem->is_active = $request->get('is_active', 0);
-        $menuItem->parameters = json_encode($request->get('parameters') ? $request->get('parameters') : []);
+        $menuItem->parameters = json_encode($request->get('parameters', []));
         $menuItem->menu_id = $menu->id;
         $menuItem->save();
 
@@ -182,13 +183,20 @@ class MenuController extends Controller
         ]);
     }
 
-    public function deleteMenuItem(Request $request, $id, $itemId){
+    /**
+     * @param Request $request
+     * @param         $id
+     * @param         $itemId
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function deleteMenuItem(Request $request, $id, $itemId)
+    {
         $response = ['status' => 'error'];
 
         $menu = Menu::findOrFail($id);
 
         $menuItem = $menu->items()->where('id', $itemId)->first();
-        if($menuItem){
+        if ($menuItem) {
             $menuItem->delete();
 
             $response = ['status' => 'success'];

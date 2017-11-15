@@ -5,6 +5,7 @@ namespace Modules\Admin\Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Database\Eloquent\Model;
 use Modules\Admin\Models\Menu;
+use Netcore\Translator\Helpers\TransHelper;
 
 class MenuTableSeeder extends Seeder
 {
@@ -18,54 +19,63 @@ class MenuTableSeeder extends Seeder
         Model::unguard();
 
         $menus = [
-            'leftAdminMenu' => [
+            'leftAdminMenu'    => [
                 [
-                    'name'   => 'Dashboard',
-                    'icon'   => 'ion-ios-pulse-strong',
-                    'type'   => 'route',
-                    'value'  => 'admin::dashboard.index',
-                    'module' => 'Admin',
-                    'is_active' => 1,
+                    'name'       => 'Dashboard',
+                    'icon'       => 'ion-ios-pulse-strong',
+                    'type'       => 'route',
+                    'value'      => 'admin::dashboard.index',
+                    'module'     => 'Admin',
+                    'is_active'  => 1,
                     'parameters' => json_encode([])
                 ],
                 [
-                    'name'   => 'Menus',
-                    'icon'   => 'ion-navicon-round',
-                    'type'   => 'route',
-                    'value'  => 'admin::menu.index',
-                    'module' => 'Admin',
-                    'is_active' => 1,
+                    'name'            => 'Menus',
+                    'icon'            => 'ion-navicon-round',
+                    'type'            => 'route',
+                    'value'           => 'admin::menu.index',
+                    'module'          => 'Admin',
+                    'is_active'       => 1,
                     'active_resolver' => 'admin::menu.*',
-                    'parameters' => json_encode([])
+                    'parameters'      => json_encode([])
                 ]
             ],
             'topleftAdminMenu' => [
                 [
-                    'name'   => 'Homepage',
+                    'name'       => 'Homepage',
                     //'icon'   => 'ion-android-unlock',
-                    'type'   => 'url',
-                    'value'  => '/',
+                    'type'       => 'url',
+                    'value'      => '/',
                     //'module' => 'User',
                     'parameters' => json_encode([])
                 ],
             ],
-            'main' => [
+            'main'             => [
                 [
-                    'name'  => 'Home',
-                    'type'  => 'url',
-                    'value' => '/',
+                    'name'       => 'Home',
+                    'type'       => 'url',
+                    'value'      => '/',
                     'parameters' => json_encode([])
                 ]
             ]
         ];
 
-        foreach( $menus as $name => $items ) {
+        foreach ($menus as $name => $items) {
             $menu = Menu::firstOrCreate([
                 'name' => $name
             ]);
 
-            foreach( $items as $item ){
-                $menu->items()->firstOrCreate($item);
+            foreach ($items as $item) {
+                $row = $menu->items()->firstOrCreate(array_except($item, ['name', 'value']));
+
+                $translations = [];
+                foreach (TransHelper::getAllLanguages() as $language) {
+                    $translations[$language->iso_code] = [
+                        'name'  => $item['name'],
+                        'value' => $item['value']
+                    ];
+                }
+                $row->updateTranslations($translations);
             }
         }
     }

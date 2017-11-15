@@ -12,7 +12,7 @@ class isAdmin
      * Handle an incoming request.
      *
      * @param  \Illuminate\Http\Request $request
-     * @param  \Closure $next
+     * @param  \Closure                 $next
      * @return mixed
      */
     public function handle(Request $request, Closure $next)
@@ -23,7 +23,7 @@ class isAdmin
 
 
         if (auth()->check()) {
-            if(auth()->user()->hasPermission($request)) {
+            if (auth()->user()->hasPermission($request)) {
                 return $next($request);
             }
 

@@ -7,8 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 class Menu extends Model
 {
 
+    /**
+     * @var string
+     */
     protected $table = 'netcore_admin__menus';
 
+    /**
+     * @var array
+     */
     protected $fillable = ['name'];
 
     /**
@@ -32,6 +38,7 @@ class Menu extends Model
              * https://www.hieule.info/products/laravel-active-version-3-released
              */
 
+
             foreach ($items as $item) {
                 //@TODO: submenu item resolvers for active class
 
@@ -53,9 +60,7 @@ class Menu extends Model
 
         $itemTree = [];
         if ($items = $this->items()->active()->where('is_active', 1)->defaultOrder()->get()) {
-            $itemTree = $tree(
-                $items->toTree()
-            );
+            $itemTree = $tree($items->toTree());
         }
 
         return $itemTree;
