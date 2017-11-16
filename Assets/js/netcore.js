@@ -116,6 +116,11 @@ $(document).ready(function () {
                                 $(fadeOutSelector).closest(hideOnEmpty).hide();
                             }
                         }
+
+                        var removeOnDelete = $(btn).data('remove-on-delete');
+                        if(removeOnDelete !== undefined && removeOnDelete !== false) {
+                            $(fadeOutSelector).remove();
+                        }
                     });
                 }
                 return;
