@@ -25,7 +25,6 @@ class CreateMenuItemsTable extends Migration
             $table->string('active_resolver')->nullable();
             $table->boolean('is_active')->default(0);
             NestedSet::columns($table);
-            $table->text('parameters')->nullable();
             $table->timestamps();
         });
         Schema::create('netcore_admin__menu_item_translations', function (Blueprint $table) {
@@ -35,6 +34,7 @@ class CreateMenuItemsTable extends Migration
             $table->string('locale')->index();
             $table->string('name');
             $table->string('value')->nullable();
+            $table->text('parameters')->nullable();
         });
     }
 

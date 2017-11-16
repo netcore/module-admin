@@ -24,6 +24,7 @@
         <div class="v-cloak--hidden">
             <div id="variables" style="display: none">
                 <input class="loaded-items" type="hidden" value="{{ $items->toJson() }}">
+                <input class="all-languages" type="hidden" value="{{ $languages->toJson() }}">
                 <input class="all-routes" type="hidden" value="{{ $routes->toJson() }}">
                 <input class="all-icons" type="hidden" value="{{ $icons->toJson() }}">
                 <input class="all-pages" type="hidden" value="{{ $pages->toJson() }}">
@@ -69,102 +70,133 @@
                         <hr>
 
                         <div v-show="services.edit.type == 'route'">
-                            <div class="form-group" :class="{'has-error': services.edit.errors.name.visible}">
-                                <label>Name</label>
-                                <input type="text" class="form-control" v-model="services.edit.name">
-                                <span v-if="services.edit.errors.name.visible" class="help-block"><% services.edit.errors.name.value %></span>
-                            </div>
-                            <div class="form-group" :class="{'has-error': services.edit.errors.icon.visible}">
-                                <label>Icon</label>
-                                <select2 :data="all_icons" :placeholder="'Please Select'"
-                                         v-model="services.edit.icon">
-                                </select2>
-                                <span v-if="services.edit.errors.icon.visible" class="help-block"><% services.edit.errors.icon.value %></span>
-                            </div>
-                            <div class="form-group" :class="{'has-error': services.edit.errors.value.visible}">
-                                <label>Route</label>
-                                <select2 :data="getRouteList()" :placeholder="'Please Select'"
-                                         v-on:select="services.edit.checkParameters()"
-                                         v-model="services.edit.value">
-                                </select2>
-                                <span v-if="services.edit.errors.value.visible" class="help-block"><% services.edit.errors.value.value %></span>
-                            </div>
-                            <div v-for="(param, index) in services.edit.parameters" class="form-group"
-                                 :class="{'has-error': services.edit.errors.parameters[index].visible}">
-                                <label><% index | capitalize %></label>
-                                <input type="text" class="form-control" v-model="services.edit.parameters[index]">
-                                <span v-if="services.edit.errors.parameters[index].visible" class="help-block"><% services.edit.errors.parameters[index].value %></span>
-                            </div>
-                            <div class="form-group">
-                                <label>Target</label>
-                                <select2 :data="[{id: '_self', text: '_self'}, {id: '_blank', text: '_blank'}]"
-                                         v-model="services.edit.target">
-                                </select2>
+                            <ul class="nav nav-tabs" role="tablist">
+                                <li v-for="(language, iso_code) in languages"
+                                    :class="{'active': iso_code == services.edit.active_translation}"
+                                    v-on:click="services.edit.active_translation = iso_code">
+                                    <a href="#">
+                                        <% language.title_localized %>
+                                    </a>
+                                </li>
+                            </ul>
+                            <div class="tab-content" style="padding-bottom: 0;">
+                                <div v-if="iso_code == services.edit.active_translation" v-for="(language, iso_code) in languages" class="tab-pane active">
+                                    <template v-if="services.edit.errors.translations[iso_code]">
+                                        <div class="form-group"
+                                             :class="{'has-error': services.edit.errors.translations[iso_code].name.visible}">
+                                            <label>Name</label>
+                                            <input type="text" class="form-control"
+                                                   v-model="services.edit.translations[iso_code].name">
+                                            <span v-if="services.edit.errors.translations[iso_code].name.visible"
+                                                  class="help-block">
+                                                <% services.edit.errors.translations[iso_code].name.value %>
+                                            </span>
+                                        </div>
+                                        <div class="form-group"
+                                             :class="{'has-error': services.edit.errors.translations[iso_code].value.visible}">
+                                            <label>Route</label>
+                                            <select2 :data="getRouteList()" :placeholder="'Please Select'"
+                                                     v-on:select="services.edit.checkParameters()"
+                                                     v-model="services.edit.translations[iso_code].value">
+                                            </select2>
+                                            <span v-if="services.edit.errors.translations[iso_code].value.visible"
+                                                  class="help-block">
+                                                <% services.edit.errors.translations[iso_code].value.value %>
+                                            </span>
+                                        </div>
+
+                                        <div v-for="(param, index) in services.edit.translations[iso_code].parameters" class="form-group"
+                                             :class="{'has-error': services.edit.errors.translations[iso_code].parameters[index].visible}">
+                                            <label><% index | capitalize %></label>
+                                            <input type="text" class="form-control" v-model="services.edit.translations[iso_code].parameters[index]">
+                                            <span v-if="services.edit.errors.translations[iso_code].parameters[index].visible" class="help-block"><% services.edit.errors.translations[iso_code].parameters[index].value %></span>
+                                        </div>
+                                    </template>
+                                </div>
                             </div>
                         </div>
                         <div v-show="services.edit.type == 'url'">
                             <ul class="nav nav-tabs" role="tablist">
-                                <li
-                                        v-for="(language, key) in languages"
-                                        role="presentation"
-                                        :class="{'active': key == 0}"
-                                >
-                                    <a
-                                            :href="'#' + language.iso_code"
-                                            :aria-controls="language.iso_code"
-                                            role="tab"
-                                            data-toggle="tab"
-                                            v-text="language.title_localized"
-                                    >
+                                <li v-for="(language, iso_code) in languages"
+                                    :class="{'active': iso_code == services.edit.active_translation}"
+                                    v-on:click="services.edit.active_translation = iso_code">
+                                    <a href="#">
+                                        <% language.title_localized %>
                                     </a>
                                 </li>
                             </ul>
-                            <div class="tab-content">
-                                <div v-for="(language, key) in languages" role="tabpanel" class="tab-pane"
-                                     :class="{'active': key == 0}" :id="language.iso_code">
-                                    <div class="form-group">
-                                        <label>Name</label>
-                                        <input type="text" class="form-control" v-model="services.edit.name">
-                                    </div>
-                                    <div class="form-group" :class="{'has-error': services.edit.errors.url.visible}">
-                                        <label>URL:</label>
-                                        <input type="text" class="form-control" v-model="services.edit.url">
-                                        <span v-if="services.edit.errors.url.visible" class="help-block"><% services.edit.errors.url.value %></span>
-                                    </div>
+                            <div class="tab-content" style="padding-bottom: 0;">
+                                <div v-if="iso_code == services.edit.active_translation" v-for="(language, iso_code) in languages" class="tab-pane active">
+                                    <template v-if="services.edit.errors.translations[iso_code]">
+                                        <div class="form-group"
+                                             :class="{'has-error': services.edit.errors.translations[iso_code].name.visible}">
+                                            <label>Name</label>
+                                            <input type="text" class="form-control"
+                                                   v-model="services.edit.translations[iso_code].name">
+                                            <span v-if="services.edit.errors.translations[iso_code].name.visible"
+                                                  class="help-block">
+                                                <% services.edit.errors.translations[iso_code].name.value %>
+                                            </span>
+                                        </div>
+                                        <div class="form-group"
+                                             :class="{'has-error': services.edit.errors.translations[iso_code].value.visible}">
+                                            <label>URL:</label>
+                                            <input type="text" class="form-control" v-model="services.edit.translations[iso_code].url">
+                                            <span v-if="services.edit.errors.translations[iso_code].url.visible"
+                                                  class="help-block">
+                                                <% services.edit.errors.translations[iso_code].url.value %>
+                                            </span>
+                                        </div>
+                                    </template>
                                 </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label>Icon</label>
-                                <select2 :data="all_icons" :placeholder="'Please Select'"
-                                         v-model="services.edit.icon">
-                                </select2>
-                            </div>
-                            <div class="form-group">
-                                <label>Target</label>
-                                <select2 :data="[{id: '_self', text: '_self'}, {id: '_blank', text: '_blank'}]"
-                                         v-model="services.edit.target">
-                                </select2>
                             </div>
                         </div>
                         <div v-show="services.edit.type == 'page'">
-                            <div class="form-group" :class="{'has-error': services.edit.errors.name.visible}">
-                                <label>Name</label>
-                                <input type="text" class="form-control" v-model="services.edit.name">
-                                <span v-if="services.edit.errors.name.visible" class="help-block"><% services.edit.errors.name.value %></span>
+                            <ul class="nav nav-tabs" role="tablist">
+                                <li v-for="(language, iso_code) in languages"
+                                    :class="{'active': iso_code == services.edit.active_translation}"
+                                    v-on:click="services.edit.active_translation = iso_code">
+                                    <a href="#">
+                                        <% language.title_localized %>
+                                    </a>
+                                </li>
+                            </ul>
+                            <div class="tab-content" style="padding-bottom: 0;">
+                                <div v-if="iso_code == services.edit.active_translation" v-for="(language, iso_code) in languages" class="tab-pane active">
+                                    <template v-if="services.edit.errors.translations[iso_code]">
+                                        <div class="form-group"
+                                             :class="{'has-error': services.edit.errors.translations[iso_code].name.visible}">
+                                            <label>Name</label>
+                                            <input type="text" class="form-control"
+                                                   v-model="services.edit.translations[iso_code].name">
+                                            <span v-if="services.edit.errors.translations[iso_code].name.visible"
+                                                  class="help-block">
+                                                <% services.edit.errors.translations[iso_code].name.value %>
+                                            </span>
+                                        </div>
+                                        <div class="form-group"
+                                             :class="{'has-error': services.edit.errors.translations[iso_code].value.visible}">
+                                            <label>Page</label>
+                                            <select2 :data="getPageList()" :placeholder="'Please Select'"
+                                                     v-model="services.edit.translations[iso_code].page_id">
+                                            </select2>
+                                            <span v-if="services.edit.errors.translations[iso_code].value.visible"
+                                                  class="help-block">
+                                                <% services.edit.errors.translations[iso_code].value.value %>
+                                            </span>
+                                        </div>
+                                    </template>
+                                </div>
                             </div>
+                        </div>
+
+                        <template v-if="services.edit.type == 'route' || services.edit.type == 'url' || services.edit.type == 'page'">
+                            <hr>
                             <div class="form-group">
                                 <label>Icon</label>
                                 <select2 :data="all_icons" :placeholder="'Please Select'"
                                          v-model="services.edit.icon">
                                 </select2>
-                            </div>
-                            <div class="form-group" :class="{'has-error': services.edit.errors.page_id.visible}">
-                                <label>Page</label>
-                                <select2 :data="getPageList()" :placeholder="'Please Select'"
-                                         v-model="services.edit.page_id">
-                                </select2>
-                                <span v-if="services.edit.errors.page_id.visible" class="help-block"><% services.edit.errors.page_id.value %></span>
                             </div>
                             <div class="form-group">
                                 <label>Target</label>
@@ -172,7 +204,7 @@
                                          v-model="services.edit.target">
                                 </select2>
                             </div>
-                        </div>
+                        </template>
 
                         <div v-if="services.edit.type != '' && services.edit.type">
                             <div class="form-group">
@@ -265,8 +297,6 @@
 
     <script>
         $(document).ready(function () {
-            var languages = '{{ $languages->toJson() }}';
-            languages = JSON.parse(languages.replace(/&quot;/g, '"'));
 
             var EditorService = function (parent, params) {
                 var self = this;
@@ -277,30 +307,54 @@
 
                 this.loading = false;
 
+                this.active_translation = Object.keys(parent.languages)[0];
+
                 this.id = params.id ? params.id : 0;
-                this.name = params.name ? params.name : '';
+                this.translations = {};
+
+                jQuery.each(parent.languages, function (iso_code, language) {
+                    Vue.set(self.translations, iso_code, {
+                        locale: iso_code,
+                        name: '',
+                        value: '',
+                        url: '',
+                        page_id: '',
+                        parameters: {}
+                    })
+                });
+
+                jQuery.each(params.translations, function (translation_key, translation) {
+                    Vue.set(self.translations, translation.locale, {
+                        locale: translation.locale,
+                        name: translation.name,
+                        value: translation.value,
+                        url: translation.value,
+                        page_id: translation.value ? translation.value.toString() : '',
+                        parameters: translation.parameters
+                    })
+                });
+
                 this.icon = params.icon ? params.icon : '';
                 this.type = params.type ? params.type : '';
-                this.value = params.value ? params.value : '';
                 this.url = params.value ? params.value : '';
                 this.page_id = params.value ? params.value.toString() : '';
                 this.target = params.target ? params.target : '_self';
                 this.is_active = typeof params.is_active !== 'undefined' ? params.is_active : 1;
 
                 this.errors = {
-                    name: {
-                        visible: false,
-                        value: ''
-                    },
                     icon: {
                         visible: false,
                         value: ''
                     },
-                    type: {
+                    name: {
                         visible: false,
                         value: ''
                     },
                     value: {
+                        visible: false,
+                        value: ''
+                    },
+                    type: {
                         visible: false,
                         value: ''
                     },
@@ -312,21 +366,48 @@
                         visible: false,
                         value: ''
                     },
+                    translations: {},
                     parameters: {}
                 };
 
-                if (params.parameters) {
-                    Vue.set(self, 'parameters', params.parameters);
+                jQuery.each(parent.languages, function (language_key, language) {
+                    jQuery.each(self.translations, function (translation_key, translation) {
+                        if(language_key === translation_key){
+                            Vue.set(self.errors.translations, language_key, {
+                                name: {
+                                    visible: false,
+                                    value: ''
+                                },
+                                value: {
+                                    visible: false,
+                                    value: ''
+                                },
+                                page_id: {
+                                    visible: false,
+                                    value: ''
+                                },
+                                url: {
+                                    visible: false,
+                                    value: ''
+                                },
+                                parameters: {}
+                            });
 
-                    jQuery.each(params.parameters, function (key, param) {
-                        Vue.set(self.errors.parameters, key, {
-                            visible: false,
-                            value: ''
-                        });
+                            if(translation.parameters){
+                                jQuery.each(params.parameters, function (key, param) {
+                                    Vue.set(self.errors.translations[language_key].parameters, key, {
+                                        visible: false,
+                                        value: ''
+                                    });
+                                });
+                            } else {
+                                self.errors.translations[language_key].parameters = {}
+                            }
+                        }
                     });
-                } else {
-                    self.parameters = {};
-                }
+
+
+                });
             };
 
             EditorService.prototype = {
@@ -337,43 +418,49 @@
 
                     var newMenuItem = {
                         id: this.id,
-                        name: this.name,
                         icon: this.icon,
                         type: this.type,
-                        value: this.value,
-                        url: this.url,
-                        page_id: this.page_id,
                         target: this.target,
                         is_active: this.is_active,
-                        parameters: this.parameters
+                        translations: jQuery.extend(true, {}, this.translations)
                     };
 
                     var validate;
 
                     switch (newMenuItem.type) {
                         case 'route':
-                            validate = self.validate(['name', 'value', 'parameters']);
+                            validate = self.validate(['translations.name', 'translations.value', 'translations.parameters']);
                             break;
                         case 'url':
-                            validate = self.validate(['url']);
+                            validate = self.validate(['translations.url']);
 
-                            if (newMenuItem.name === '' && !newMenuItem.name.trim()) {
-                                newMenuItem.name = newMenuItem.url;
-                            }
+                            jQuery.each(newMenuItem.translations, function(iso_code, translation){
+                                if (translation.name === '' && !translation.name.trim()) {
+                                    translation.name = translation.url;
+                                }
 
-                            newMenuItem.value = newMenuItem.url;
+                                translation.value = translation.url;
+                            });
+
                             break;
                         case 'page':
-                            validate = self.validate(['page_id', 'name']);
+                            validate = self.validate(['translations.page_id', 'translations.name']);
 
-                            newMenuItem.value = newMenuItem.page_id;
+                            jQuery.each(newMenuItem.translations, function(iso_code, translation){
+                                translation.value = translation.page_id;
+                            });
+
                             break;
                         default:
                             validate = true;
-                            newMenuItem.value = 'javascript:;';
+
+                            jQuery.each(newMenuItem.translations, function(iso_code, translation){
+                                translation.value = 'javascript:;';
+                            });
                     }
 
                     if (validate) {
+
                         self.loading = true;
 
                         jQuery.post('{{ route('admin::menu.save-item', $menu->id) }}', newMenuItem, function (response) {
@@ -392,6 +479,7 @@
                                     item.type = response.item.type;
                                     item.value = response.item.value;
                                     item.target = response.item.target;
+                                    item.translations = response.item.translations;
                                     item.is_active = parseInt(response.item.is_active);
 
                                     self.$parent.services.edit = new EditorService(self.$parent);
@@ -433,16 +521,37 @@
                     if (typeof fields === 'undefined') throw Error('Missing fields');
 
                     fields.forEach(function (field) {
-                        if (field === 'parameters') {
-                            jQuery.each(self.errors.parameters, function (key, parameter) {
-                                if (self.parameters[key] !== '' && self.parameters[key].trim()) {
-                                    parameter.visible = false;
+                        if(field.indexOf('translations') > -1){
+                            var subField = field.split('.')[1];
+
+                            jQuery.each(self.translations, function(iso_code, translation){
+                                if(subField === 'parameters'){
+                                    jQuery.each(self.errors.translations[iso_code].parameters, function (key, parameter) {
+                                        if(typeof translation.parameters[key] !== 'undefined'){
+                                            if (translation.parameters[key] !== '' && translation.parameters[key].trim()) {
+                                                parameter.visible = false;
+                                            } else {
+                                                parameter.visible = true;
+                                                parameter.value = 'This field is required';
+                                                valid = false;
+                                            }
+                                        }
+                                    });
                                 } else {
-                                    parameter.visible = true;
-                                    parameter.value = 'This field is required';
-                                    valid = false;
+                                    if(translation[subField] === null){
+                                        translation[subField] = '';
+                                    }
+
+                                    if (translation[subField] !== '' && translation[subField].trim()) {
+                                        self.errors.translations[iso_code][subField].visible = false;
+                                    } else {
+                                        self.errors.translations[iso_code][subField].visible = true;
+                                        self.errors.translations[iso_code][subField].value = 'This field is required';
+                                        valid = false;
+                                    }
                                 }
                             });
+
                         } else {
                             if (self[field] !== '' && self[field].trim()) {
                                 self.errors[field].visible = false;
@@ -474,22 +583,23 @@
                 checkParameters: function () {
                     var self = this;
 
-                    var route = this.$parent.all_routes[this.value];
+                    jQuery.each(this.$parent.languages, function (iso_code, language) {
+                        var route = self.$parent.all_routes[self.translations[iso_code].value];
 
-                    if (route) {
-                        this.parameters = {};
+                        if (route) {
+                            Vue.set(self.translations[iso_code], 'parameters', {});
+                            Vue.set(self.errors.translations[iso_code], 'parameters', {});
 
-                        route.parameters.forEach(function (param) {
-                            Vue.set(self.parameters, param, '');
+                            route.parameters.forEach(function (param) {
+                                Vue.set(self.translations[iso_code].parameters, param, '');
 
-                            self.errors.parameters = {};
-
-                            Vue.set(self.errors.parameters, param, {
-                                visible: false,
-                                value: ''
-                            })
-                        });
-                    }
+                                Vue.set(self.errors.translations[iso_code].parameters, param, {
+                                    visible: false,
+                                    value: ''
+                                })
+                            });
+                        }
+                    });
                 }
             };
 
@@ -536,7 +646,7 @@
                     services: {
                         edit: false
                     },
-                    languages: languages
+                    languages: {}
                 },
                 created: function () {
                     var self = this;
@@ -567,6 +677,12 @@
 
                     jQuery.each(pages, function (key, page) {
                         Vue.set(self.all_pages, key, page);
+                    });
+
+                    var languages = JSON.parse(jQuery('.all-languages').val());
+
+                    jQuery.each(languages, function (key, language) {
+                        Vue.set(self.languages, language.iso_code, language);
                     });
 
                     Vue.set(self.services, 'edit', new EditorService(self))

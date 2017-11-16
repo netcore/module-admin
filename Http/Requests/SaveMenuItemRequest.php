@@ -20,16 +20,16 @@ class SaveMenuItemRequest extends FormRequest
             switch ($this->get('type')) {
                 case 'route':
                     $rules = [
-                        'name'  => 'required',
-                        'value' => 'required',
+                        'translations.*.name'  => 'required',
+                        'translations.*.value' => 'required',
                     ];
 
                     //TODO currently works, but if possible should think of something more efficient
-                    if ($this->has('value')) {
+                    foreach ($this->get('translations', []) as $key => $translation) {
                         foreach (Route::getRoutes() as $route) {
-                            if ($route->getName() == $this->get('value')) {
+                            if ($route->getName() == $translation['value']) {
                                 foreach ($route->parameterNames() as $param) {
-                                    $rules['parameters.' . $param] = 'required';
+                                    $rules['translations.'.$key.'.parameters.' . $param] = 'required';
                                 }
                             }
                         }
@@ -38,12 +38,12 @@ class SaveMenuItemRequest extends FormRequest
                     break;
                 case 'url':
                     $rules = [
-                        'value' => 'required',
+                        'translations.*.value' => 'required',
                     ];
                     break;
                 case 'page':
                     $rules = [
-                        'value' => 'required',
+                        'translations.*.value' => 'required',
                     ];
                     break;
             }

@@ -10,6 +10,7 @@ use Modules\Admin\Translations\MenuItemTranslation;
 use Modules\Admin\Traits\SyncTranslations;
 use Modules\Content\Models\Channel;
 use Modules\Content\Models\Entry;
+use Netcore\Translator\Models\Language;
 use Nwidart\Modules\Facades\Module;
 
 class MenuItem extends Model
@@ -51,7 +52,8 @@ class MenuItem extends Model
      */
     public $translatedAttributes = [
         'name',
-        'value'
+        'value',
+        'parameters'
     ];
 
     /**
@@ -86,10 +88,12 @@ class MenuItem extends Model
     {
         $url = 'javascript:;';
 
+        $value = trans_model($this, Language::where('iso_code', app()->getLocale())->first(), 'value');
+
         if ($this->type == 'route') {
-            $url = route($this->value, (array)$this->parameters);
+            $url = route($value, (array)$this->parameters);
         } elseif ($this->type == 'url') {
-            $url = $this->value;
+            $url = $value;
         } elseif ($this->type == 'page') {
 
             /**
@@ -99,7 +103,7 @@ class MenuItem extends Model
 
             $url = url('/');
 
-            $entry = Entry::whereIsActive(1)->find($this->value);
+            $entry = Entry::whereIsActive(1)->find($value);
             if ($entry) {
                 $entryTranslation = $entry->translations->first();
                 $entrySlug = $entryTranslation ? $entryTranslation->slug : '';
@@ -140,14 +144,5 @@ class MenuItem extends Model
         }
 
         return $active;
-    }
-
-    /**
-     * @param $value
-     * @return object
-     */
-    public function getParametersAttribute($value)
-    {
-        return (object)json_decode($value);
     }
 }

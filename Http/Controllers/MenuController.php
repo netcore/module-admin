@@ -163,23 +163,22 @@ class MenuController extends Controller
 
         $module = '';
         if ($type == 'route') {
-            $module = ucfirst(preg_replace('/(.+)\:\:(.+)\.(.+)/', '$2', $request->get('value')));
+            $module = ucfirst(preg_replace('/(.+)\:\:(.+)\.(.+)/', '$2', $request->get('value', '')));
         }
 
-        $menuItem->name = $request->get('name') ? $request->get('name') : '';
         $menuItem->module = $module;
         $menuItem->icon = $request->get('icon', '');
         $menuItem->type = $type;
-        $menuItem->value = $request->get('value');
         $menuItem->target = $request->get('target', '_self');
         $menuItem->is_active = $request->get('is_active', 0);
-        $menuItem->parameters = json_encode($request->get('parameters', []));
         $menuItem->menu_id = $menu->id;
         $menuItem->save();
 
+        $menuItem->updateTranslations($request->get('translations', []));
+
         return response()->json([
             'status' => 'success',
-            'item'   => $menuItem
+            'item'   => MenuItem::find($menuItem->id) // TODO hack, but currently works, someone please remind me to fix this
         ]);
     }
 

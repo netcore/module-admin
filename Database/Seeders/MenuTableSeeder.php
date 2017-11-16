@@ -66,13 +66,14 @@ class MenuTableSeeder extends Seeder
             ]);
 
             foreach ($items as $item) {
-                $row = $menu->items()->firstOrCreate(array_except($item, ['name', 'value']));
+                $row = $menu->items()->firstOrCreate(array_except($item, ['name', 'value', 'parameters']));
 
                 $translations = [];
                 foreach (TransHelper::getAllLanguages() as $language) {
                     $translations[$language->iso_code] = [
                         'name'  => $item['name'],
-                        'value' => $item['value']
+                        'value' => $item['value'],
+                        'parameters' => $item['parameters']
                     ];
                 }
                 $row->updateTranslations($translations);

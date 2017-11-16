@@ -17,11 +17,35 @@ class MenuItemTranslation extends Model
     protected $fillable = [
         'locale',
         'name',
-        'value'
+        'value',
+        'parameters'
     ];
 
     /**
      * @var bool
      */
     public $timestamps = false;
+
+    /**
+     * @param $value
+     * @return object
+     */
+    public function getParametersAttribute($value)
+    {
+        return (object)json_decode($value);
+    }
+
+
+    public function setParametersAttribute($value)
+    {
+        if(!$value){
+            $this->attributes['parameters'] = json_encode([]);
+        } else {
+            if(is_string($value)){
+                $this->attributes['parameters'] = $value;
+            } elseif(is_array($value)){
+                $this->attributes['parameters'] = json_encode($value);
+            }
+        }
+    }
 }
