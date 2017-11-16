@@ -71,8 +71,8 @@ class MenuTableSeeder extends Seeder
                 $translations = [];
                 foreach (TransHelper::getAllLanguages() as $language) {
                     $translations[$language->iso_code] = [
-                        'name'  => $item['name'],
-                        'value' => $item['value'],
+                        'name'       => $item['name'],
+                        'value'      => $item['value'],
                         'parameters' => $item['parameters']
                     ];
                 }
