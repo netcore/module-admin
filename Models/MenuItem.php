@@ -62,6 +62,21 @@ class MenuItem extends Model
     protected $with = ['translations'];
 
     /**
+     * @var
+     */
+    private static $cachedLanguages;
+
+    /**
+     * MenuItem constructor.
+     */
+    public function __construct()
+    {
+        if(is_null(self::$cachedLanguages)) {
+            self::$cachedLanguages = Language::all();
+        }
+    }
+
+    /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function menu()
@@ -81,6 +96,8 @@ class MenuItem extends Model
         return $query->whereNotIn('module', $disabledModules);
     }
 
+
+
     /**
      * @return mixed|string
      */
@@ -88,7 +105,9 @@ class MenuItem extends Model
     {
         $url = 'javascript:;';
 
-        $value = trans_model($this, Language::where('iso_code', app()->getLocale())->first(), 'value');
+        $activeLocale = app()->getLocale();
+        $activeLanguage = self::$cachedLanguages->where('iso_code', $activeLocale)->first();
+        $value = trans_model($this, $activeLanguage, 'value');
 
         if ($this->type == 'route') {
             $url = route($value, (array)$this->parameters);
