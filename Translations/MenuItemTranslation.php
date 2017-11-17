@@ -35,15 +35,18 @@ class MenuItemTranslation extends Model
         return (object)json_decode($value);
     }
 
-
+    /**
+     * @param $value
+     * @return void
+     */
     public function setParametersAttribute($value)
     {
-        if(!$value){
+        if (!$value) {
             $this->attributes['parameters'] = json_encode([]);
         } else {
-            if(is_string($value)){
+            if (is_string($value)) {
                 $this->attributes['parameters'] = $value;
-            } elseif(is_array($value)){
+            } elseif (is_array($value)) {
                 $this->attributes['parameters'] = json_encode($value);
             }
         }

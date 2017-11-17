@@ -6,7 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Route;
-use Modules\Admin\Http\Requests\SaveMenuItemRequest;
+use Modules\Admin\Http\Requests\Admin\MenuRequest;
+use Modules\Admin\Http\Requests\Admin\SaveMenuItemRequest;
 use Modules\Admin\Models\Menu;
 use Modules\Admin\Models\MenuItem;
 use Modules\Content\Models\Entry;
@@ -28,35 +29,14 @@ class MenuController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return Response
-     */
-    public function create()
-    {
-        return view('admin::menu.create');
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  Request $request
-     * @return Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
      * Show the specified resource.
      *
-     * @return Response
+     * @param Menu $menu
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function show($id)
+    public function show(Menu $menu)
     {
         $languages = TransHelper::getAllLanguages();
-        $menu = Menu::findOrFail($id);
         $items = $menu->items()->defaultOrder()->get()->toTree();
 
         $routes = [];
@@ -104,11 +84,12 @@ class MenuController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @return Response
+     * @param Menu $menu
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function edit()
+    public function edit(Menu $menu)
     {
-        return view('admin::menu.edit');
+        return view('admin::menu.edit', compact('menu'));
     }
 
     /**
@@ -117,23 +98,16 @@ class MenuController extends Controller
      * @param  Request $request
      * @return Response
      */
-    public function update(Request $request)
+    public function update(MenuRequest $request, Menu $menu)
     {
-        //
-    }
+        $menu->updateTranslations($request->get('translations', []));
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @return Response
-     */
-    public function destroy()
-    {
-        //
+        return back()->withSuccess('Menu successfully saved!');
     }
 
     /**
      * @param Request $request
+     * @return void
      */
     public function saveOrder(Request $request)
     {
@@ -147,12 +121,12 @@ class MenuController extends Controller
     }
 
     /**
-     * @param Request $request
+     * @param SaveMenuItemRequest $request
+     * @param Menu                $menu
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function saveMenuItem(SaveMenuItemRequest $request, $id)
+    public function saveMenuItem(SaveMenuItemRequest $request, Menu $menu)
     {
-        $menu = Menu::findOrFail($id);
-
         $menuItem = MenuItem::find($request->get('id', 0));
 
         if (!$menuItem) {
@@ -178,28 +152,27 @@ class MenuController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'item'   => MenuItem::find($menuItem->id) // TODO hack, but currently works, someone please remind me to fix this
+            'item'   => MenuItem::find($menuItem->id)
+            // TODO hack, but currently works, someone please remind me to fix this
         ]);
     }
 
     /**
      * @param Request $request
-     * @param         $id
+     * @param Menu    $menu
      * @param         $itemId
      * @return \Illuminate\Http\JsonResponse
      */
-    public function deleteMenuItem(Request $request, $id, $itemId)
+    public function deleteMenuItem(Request $request, Menu $menu, $itemId)
     {
-        $response = ['status' => 'error'];
-
-        $menu = Menu::findOrFail($id);
-
-        $menuItem = $menu->items()->where('id', $itemId)->first();
-        if ($menuItem) {
-            $menuItem->delete();
-
-            $response = ['status' => 'success'];
+        $menuItem = $menu->items()->find($itemId);
+        if (!$menuItem) {
+            $response = ['status' => 'error'];
         }
+
+        $menuItem->delete();
+
+        $response = ['status' => 'success'];
 
         return response()->json($response);
     }

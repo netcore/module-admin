@@ -27,6 +27,7 @@ class CreateMenuItemsTable extends Migration
             NestedSet::columns($table);
             $table->timestamps();
         });
+
         Schema::create('netcore_admin__menu_item_translations', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('menu_item_id')->unsigned();

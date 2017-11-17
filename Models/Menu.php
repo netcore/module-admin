@@ -2,10 +2,14 @@
 
 namespace Modules\Admin\Models;
 
+use Dimsav\Translatable\Translatable;
 use Illuminate\Database\Eloquent\Model;
+use Modules\Admin\Translations\MenuTranslation;
+use Modules\Translate\Traits\SyncTranslations;
 
 class Menu extends Model
 {
+    use Translatable, SyncTranslations;
 
     /**
      * @var string
@@ -15,7 +19,24 @@ class Menu extends Model
     /**
      * @var array
      */
-    protected $fillable = ['name'];
+    protected $fillable = ['key'];
+
+    /**
+     * @var string
+     */
+    public $translationModel = MenuTranslation::class;
+
+    /**
+     * @var array
+     */
+    public $translatedAttributes = [
+        'name'
+    ];
+
+    /**
+     * @var array
+     */
+    protected $with = ['translations'];
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
