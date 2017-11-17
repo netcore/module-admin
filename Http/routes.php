@@ -1,56 +1,52 @@
 <?php
 
-Route::group(['middleware' => 'web', 'prefix' => 'admin', 'namespace' => 'Modules\Admin\Http\Controllers'], function()
-{
+Route::group([
+    'middleware' => 'web',
+    'prefix'     => 'admin',
+    'as'         => 'admin::',
+    'namespace'  => 'Modules\Admin\Http\Controllers'
+], function () {
     Route::group(['middleware' => 'auth.admin'], function () {
 
         Route::get('/', [
             'uses' => 'AdminController@index',
-            'as'   => 'admin::dashboard.index'
+            'as'   => 'dashboard.index'
         ]);
 
-        Route::get('/menus', [
-            'uses' => 'MenuController@index',
-            'as'   => 'admin::menu.index'
-        ]);
+        Route::resource('menus', 'MenuController', ['only' => ['index', 'edit', 'update', 'show']]);
 
-        Route::get('/menus/{id}', [
-            'uses' => 'MenuController@show',
-            'as'   => 'admin::menu.show'
-        ]);
-
-        Route::post('/menus/{id}/save-order', [
+        Route::post('/menus/save-order', [
             'uses' => 'MenuController@saveOrder',
-            'as'   => 'admin::menu.save-order'
+            'as'   => 'menu.save-order'
         ]);
 
-        Route::post('/menus/{id}/save-item', [
+        Route::post('/menus/{menu}/save-item', [
             'uses' => 'MenuController@saveMenuItem',
-            'as'   => 'admin::menu.save-item'
+            'as'   => 'menu.save-item'
         ]);
 
-        Route::post('/menus/{id}/delete-item/{itemId}', [
+        Route::post('/menus/{menu}/delete-item/{itemId}', [
             'uses' => 'MenuController@deleteMenuItem',
-            'as'   => 'admin::menu.delete-item'
+            'as'   => 'menu.delete-item'
         ]);
     });
 
     //Auth routes --------------------------------------------------------------------------------------------
-    Route::get('/login',[
+    Route::get('/login', [
         'uses' => 'Auth\LoginController@showLoginForm',
-        'as'   => 'admin::auth.login'
+        'as'   => 'auth.login'
     ]);
-    Route::get('/logout',[
+    Route::get('/logout', [
         'uses' => 'Auth\LoginController@logout',
-        'as'   => 'admin::auth.logout'
+        'as'   => 'auth.logout'
     ]);
-    Route::get('/auth/reset',[
+    Route::get('/auth/reset', [
         'uses' => 'Auth\ResetPasswordController@showResetForm',
-        'as'   => 'admin::auth.reset'
+        'as'   => 'auth.reset'
     ]);
-    Route::get('/auth/request',[
+    Route::get('/auth/request', [
         'uses' => 'Auth\ForgotPasswordController@showLinkRequestForm',
-        'as'   => 'admin::auth.request'
+        'as'   => 'auth.request'
     ]);
 
     /**
@@ -58,15 +54,14 @@ Route::group(['middleware' => 'web', 'prefix' => 'admin', 'namespace' => 'Module
      */
     Route::post('/switch-active', [
         'uses' => 'SwitchActiveController@switchActive',
-        'as'   => 'admin::switch-active'
+        'as'   => 'switch-active'
     ]);
-
 
     //custom middleware to disallow common users from authorizing
     Route::group(['middleware' => 'can.admin'], function () {
-        Route::post('/login',[
+        Route::post('/login', [
             'uses' => 'Auth\LoginController@login',
-            'as'   => 'admin::auth.login'
+            'as'   => 'auth.login'
         ]);
     });
 

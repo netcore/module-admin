@@ -33,6 +33,11 @@
             <div class="col-md-8">
                 <div class="panel">
                     <div class="panel-heading">
+                        <div class="panel-heading-btn">
+                            <a href="{{ route('admin::menus.index') }}" class="btn btn-xs btn-primary">
+                                <i class="fa fa-undo"></i> Back to list
+                            </a>
+                        </div>
                         <span class="panel-title">Edit menu: {{ $menu->name }}</span>
                     </div>
 

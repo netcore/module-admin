@@ -33,37 +33,35 @@ class MenuTableSeeder extends Seeder
                     'name'            => 'Menus',
                     'icon'            => 'ion-navicon-round',
                     'type'            => 'route',
-                    'value'           => 'admin::menu.index',
+                    'value'           => 'admin::menus.index',
                     'module'          => 'Admin',
                     'is_active'       => 1,
-                    'active_resolver' => 'admin::menu.*',
+                    'active_resolver' => 'admin::menus.*',
                     'parameters'      => json_encode([])
                 ]
             ],
             'topleftAdminMenu' => [
                 [
                     'name'       => 'Homepage',
-                    //'icon'   => 'ion-android-unlock',
                     'type'       => 'url',
                     'value'      => '/',
-                    //'module' => 'User',
                     'parameters' => json_encode([])
                 ],
-            ],
-            'main'             => [
-                [
-                    'name'       => 'Home',
-                    'type'       => 'url',
-                    'value'      => '/',
-                    'parameters' => json_encode([])
-                ]
             ]
         ];
 
-        foreach ($menus as $name => $items) {
+        foreach ($menus as $key => $items) {
             $menu = Menu::firstOrCreate([
-                'name' => $name
+                'key' => $key
             ]);
+
+            $translations = [];
+            foreach (TransHelper::getAllLanguages() as $language) {
+                $translations[$language->iso_code] = [
+                    'name' => ucwords(preg_replace(array('/(?<=[^A-Z])([A-Z])/', '/(?<=[^0-9])([0-9])/'), ' $0', $key))
+                ];
+            }
+            $menu->updateTranslations($translations);
 
             foreach ($items as $item) {
                 $row = $menu->items()->firstOrCreate(array_except($item, ['name', 'value', 'parameters']));

@@ -14,7 +14,7 @@ class AdminMenuViewComposer{
      */
     public function compose(View $view)
     {
-        $menu = Menu::whereName('leftAdminMenu')->first();
+        $menu = Menu::where('key', 'leftAdminMenu')->first();
 
         $leftAdminMenu = $menu->getItemTree();
         $mediaModule = Module::find('media');
