@@ -69,19 +69,31 @@
 @section('content')
     {!! Breadcrumbs::render('admin') !!}
 
-    @if (isset($google_analytics_client_id) && !empty($google_analytics_client_id))
-        <div class="Dashboard">
-            <div id="embed-api-auth-container"></div>
-            <div id="chart-container"></div>
-            <div id="view-selector-container"></div>
+    @if(view()->exists('admin.dashboard'))
+        <div>
+            <ul class="nav nav-tabs" role="tablist">
+                <li role="presentation" class="active">
+                    <a href="#tab-analytics" aria-controls="tab-analytics" role="tab" data-toggle="tab">Google Analytics</a>
+                </li>
+
+                <li role="presentation">
+                    <a href="#tab-dashboard" aria-controls="tab-dashboard" role="tab" data-toggle="tab">Site dashboard</a>
+                </li>
+            </ul>
+
+            <!-- Tab panes -->
+            <div class="tab-content">
+                <div role="tabpanel" class="tab-pane fade in active" id="tab-analytics">
+                    @include('admin::_partials._analytics')
+                </div>
+                <div role="tabpanel" class="tab-pane fade" id="tab-dashboard">
+                    @include('admin.dashboard')
+                </div>
+            </div>
+
         </div>
     @else
-        <p style="border-radius:4px; padding:20px; background:#fff; margin:0; color:#999; text-align:center;">
-            Google Analytics Client ID is not set.<br/>
-            Get it from
-            <a href="https://console.developers.google.com" target="_blank">https://console.developers.google.com</a>
-            and set it in Settings.
-        </p>
+        @include('admin::_partials._analytics')
     @endif
 @endsection
 
