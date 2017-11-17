@@ -4,13 +4,12 @@ namespace Modules\Admin\Models;
 
 use Dimsav\Translatable\Translatable;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Log;
 use Kalnoy\Nestedset\NodeTrait;
 use Modules\Admin\Translations\MenuItemTranslation;
-use Modules\Admin\Traits\SyncTranslations;
+use Modules\Translate\Traits\SyncTranslations;
 use Modules\Content\Models\Channel;
 use Modules\Content\Models\Entry;
-use Netcore\Translator\Models\Language;
+use Netcore\Translator\Helpers\TransHelper;
 use Nwidart\Modules\Facades\Module;
 
 class MenuItem extends Model
@@ -88,7 +87,7 @@ class MenuItem extends Model
     {
         $url = 'javascript:;';
 
-        $value = trans_model($this, Language::where('iso_code', app()->getLocale())->first(), 'value');
+        $value = trans_model($this, TransHelper::getLanguage(), 'value');
 
         if ($this->type == 'route') {
             $url = route($value, (array)$this->parameters);
