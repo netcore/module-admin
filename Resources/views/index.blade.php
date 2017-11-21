@@ -72,21 +72,21 @@
     @if(view()->exists('admin.dashboard'))
         <div>
             <ul class="nav nav-tabs" role="tablist">
-                <li role="presentation" class="active">
+                <li role="presentation">
                     <a href="#tab-analytics" aria-controls="tab-analytics" role="tab" data-toggle="tab">Google Analytics</a>
                 </li>
 
-                <li role="presentation">
+                <li role="presentation" class="active">
                     <a href="#tab-dashboard" aria-controls="tab-dashboard" role="tab" data-toggle="tab">Site dashboard</a>
                 </li>
             </ul>
 
             <!-- Tab panes -->
             <div class="tab-content">
-                <div role="tabpanel" class="tab-pane fade in active" id="tab-analytics">
+                <div role="tabpanel" class="tab-pane fade" id="tab-analytics">
                     @include('admin::_partials._analytics')
                 </div>
-                <div role="tabpanel" class="tab-pane fade" id="tab-dashboard">
+                <div role="tabpanel" class="tab-pane fade in active" id="tab-dashboard">
                     @include('admin.dashboard')
                 </div>
             </div>
