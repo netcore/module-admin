@@ -95,7 +95,7 @@
             <img src="{{ auth()->user()->gravatar() }}" alt="" class="pull-xs-left m-r-2 border-round" style="width: 54px; height: 54px;">
             <div class="font-size-16">
                 <span class="font-weight-light">Welcome,<br> </span>
-                <strong>{{ auth()->user()->first_name }}</strong>
+                <strong>{{ auth()->user()->fullName }}</strong>
             </div>
         </li>
 
