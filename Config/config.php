@@ -2,16 +2,22 @@
 
 return [
     // Admin theme
-    'theme' => env('ADMIN_THEME', 'candy-red'),
+    'theme'     => env('ADMIN_THEME', 'candy-red'),
 
     // Default login field to work with
-    'login' => [
+    'login'     => [
         'username' => 'email'
     ],
 
     // User table and model
-    'user' => [
+    'user'      => [
         'table' => 'users',
         'model' => \App\User::class
+    ],
+
+    // IP whitelist
+    'whitelist' => [
+        'enabled'     => false,
+        'fallback_ip' => env('WHITELIST_FALLBACK_IP', '')
     ]
 ];

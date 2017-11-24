@@ -29,6 +29,12 @@ Route::group([
             'uses' => 'MenuController@deleteMenuItem',
             'as'   => 'menu.delete-item'
         ]);
+
+        Route::resource('whitelist', 'WhitelistController', [
+            'except' => [
+                'show'
+            ]
+        ]);
     });
 
     //Auth routes --------------------------------------------------------------------------------------------
