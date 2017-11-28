@@ -357,9 +357,9 @@
 
             this.parsed_options = this.parseOptions(this.options);
 
-            this.parsed_options.data = this.data;
+            this.parsed_options.data = this.parseData(this.data);
 
-            if (this.data.length <= 10) {
+            if (this.parsed_options.data.length <= 10) {
                 this.parsed_options.dropdownCssClass = 'no-search';
             }
 
@@ -395,6 +395,21 @@
                 };
 
                 return options;
+            },
+            parseData: function(data){
+                var parsedData = data;
+
+                if(Netcore.isObject(parsedData)){
+                    parsedData = [];
+
+                    for (var key in data) {
+                        if (data.hasOwnProperty(key)) {
+                            parsedData.push(data[key]);
+                        }
+                    }
+                }
+
+                return data;
             }
         },
         watch: {
@@ -419,7 +434,7 @@
                 $(this.$el).empty().select2(this.parsed_options);
             },
             data: function (data) {
-                this.parsed_options.data = data;
+                this.parsed_options.data = this.parseData(data);
 
                 $(this.$el).select2(this.parsed_options)
             }
