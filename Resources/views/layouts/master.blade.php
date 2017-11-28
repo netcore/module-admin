@@ -337,9 +337,7 @@
                     return {};
                 }
             },
-            data: {
-                type: Array
-            },
+            data: {},
             value: {},
             placeholder: {},
             name: {},
