@@ -303,9 +303,18 @@ var Netcore = (function(){
         return str;
     };
 
+    /**
+     * @param item
+     * @returns {boolean}
+     */
+    var isObject = function(item) {
+        return (typeof item === "object" && !Array.isArray(item) && item !== null);
+    };
+
     return {
         slugify: slugify,
-        removeDiacritics: removeDiacritics
+        removeDiacritics: removeDiacritics,
+        isObject: isObject
     };
 })();
 
