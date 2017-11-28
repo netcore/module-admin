@@ -17,7 +17,7 @@
     <link rel="stylesheet" href="/assets/admin/css/widgets.min.css">
     <link rel="stylesheet" href="/assets/admin/css/themes/{{ config('admin.theme') }}.min.css">
     <link rel="stylesheet" href="/assets/admin/css/sweetalert.min.css">
-    <link rel="stylesheet" href="/assets/admin/css/netcore.css">
+    <link rel="stylesheet" href="{{ versionedAsset('/assets/admin/css/netcore.css') }}">
     <link rel="stylesheet" href="/assets/admin/css/switchery.min.css">
     <link href="/assets/admin/plugins/x-editable/css/bootstrap-editable.css" rel="stylesheet">
 
@@ -283,7 +283,7 @@
 <script>
     var csrf_token = '{{ csrf_token() }}';
 </script>
-<script src="/assets/admin/js/netcore.js"></script>
+<script src="{{ versionedAsset('/assets/admin/js/netcore.js') }}"></script>
 @if($mediaModule && $mediaModule->enabled())
     <script src="/assets/media/js/media.js"></script>
 @endif
