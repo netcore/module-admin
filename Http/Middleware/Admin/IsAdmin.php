@@ -4,6 +4,7 @@ namespace Modules\Admin\Http\Middleware\Admin;
 
 use Closure;
 use Illuminate\Http\Request;
+use Modules\Admin\Models\IpWhitelist;
 
 class isAdmin
 {
@@ -21,9 +22,19 @@ class isAdmin
             return redirect()->route('admin::auth.login');
         }
 
-
         if (auth()->check()) {
-            if (auth()->user()->hasPermission($request)) {
+            // IP whitelist check
+            $whitelisted = true;
+            if (config('netcore.module-admin.whitelist.enabled')) {
+                $ips = IpWhitelist::pluck('ip')->toArray();
+                $whitelisted = checkWhitelistIp($request->ip(), $ips);
+
+                if (!$whitelisted && $ip = config('netcore.module-admin.whitelist.fallback_ip')) {
+                    $whitelisted = $request->ip() === $ip;
+                }
+            }
+
+            if (auth()->user()->hasPermission($request) && $whitelisted) {
                 return $next($request);
             }
 

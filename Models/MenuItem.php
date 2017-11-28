@@ -92,7 +92,7 @@ class MenuItem extends Model
         if ($this->type == 'route') {
             $url = route($value, (array)$this->parameters);
         } elseif ($this->type == 'url') {
-            $url = $value;
+            $url = url($value);
         } elseif ($this->type == 'page') {
 
             /**
