@@ -19,4 +19,26 @@ class AdminController extends Controller
 
         return view('admin::index', compact('google_analytics_client_id'));
     }
+
+    /**
+     * @return mixed
+     */
+    public function denied()
+    {
+        $user = auth()->user();
+        $routes = [];
+
+        if(\Nwidart\Modules\Facades\Module::find('Permission')) {
+            $levels = $user->role->levels;
+            foreach ($levels as $level) {
+                foreach ($level->routes as $route) {
+                    $routes[] = $route;
+
+                }
+            }
+        }
+
+
+        return view('admin::access-denied', compact('routes'));
+    }
 }
