@@ -38,7 +38,7 @@ class isAdmin
                 return $next($request);
             }
 
-            return redirect()->route('admin::permission.access-denied');
+            return redirect()->route('admin::auth.login')->withError('This area is for administrators only');
         }
 
     }

@@ -23,8 +23,10 @@ class WhitelistRequest extends FormRequest
      */
     public function rules()
     {
+        $whitelist = $this->route('whitelist');
+
         $rules = [
-            'ip'   => 'required',
+            'ip'   => 'required|unique:netcore_admin__ip_whitelist,ip' . ($whitelist ? ',' . $whitelist->id : ''),
             'type' => 'required|in:exact,wildcard'
         ];
 

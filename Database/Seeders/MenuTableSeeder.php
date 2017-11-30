@@ -50,6 +50,19 @@ class MenuTableSeeder extends Seeder
             ]
         ];
 
+        if (config('netcore.module-admin.whitelist.enabled')) {
+            $menus['leftAdminMenu'][] = [
+                'name'            => 'IP Whitelist',
+                'icon'            => 'fa fa-server',
+                'type'            => 'route',
+                'value'           => 'admin::whitelist.index',
+                'module'          => 'Admin',
+                'is_active'       => 1,
+                'active_resolver' => 'admin::whitelist.*',
+                'parameters'      => json_encode([])
+            ];
+        }
+
         foreach ($menus as $key => $items) {
             $menu = Menu::firstOrCreate([
                 'key' => $key

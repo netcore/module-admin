@@ -71,5 +71,10 @@ Route::group([
         ]);
     });
 
+    Route::get('/access-denied', [
+        'uses' => 'AdminController@denied',
+        'as'   => 'access-denied'
+    ]);
+
     //EOF Auth routes ----------------------------------------------------------------------------------------
 });
