@@ -1,6 +1,4 @@
-
 <!DOCTYPE html>
-
 <html>
 <head>
     <meta charset="utf-8">
@@ -22,7 +20,7 @@
     <!-- Custom styling -->
     <style>
         .page-signin-header {
-            box-shadow: 0 2px 2px rgba(0,0,0,.05), 0 1px 0 rgba(0,0,0,.05);
+            box-shadow: 0 2px 2px rgba(0, 0, 0, .05), 0 1px 0 rgba(0, 0, 0, .05);
         }
 
         html[dir="rtl"] .page-signin-header .btn {
@@ -37,7 +35,7 @@
 
         .page-signin-container form {
             border: 0;
-            box-shadow: 0 2px 2px rgba(0,0,0,.05), 0 1px 0 rgba(0,0,0,.05);
+            box-shadow: 0 2px 2px rgba(0, 0, 0, .05), 0 1px 0 rgba(0, 0, 0, .05);
         }
 
         @media (min-width: 544px) {
@@ -52,33 +50,27 @@
 </head>
 <body>
 <div class="page-signin-header p-a-2 text-sm-center bg-white">
-    <a class="px-demo-brand px-demo-brand-lg text-default" href="{{route('admin::auth.login')}}"><span class="px-demo-logo bg-primary m-t-0"><span class="px-demo-logo-1"></span><span class="px-demo-logo-2"></span><span class="px-demo-logo-3"></span><span class="px-demo-logo-4"></span><span class="px-demo-logo-5"></span><span class="px-demo-logo-6"></span><span class="px-demo-logo-7"></span><span class="px-demo-logo-8"></span><span class="px-demo-logo-9"></span></span>{{ config('app.name') }}</a>
+    <a class="px-demo-brand px-demo-brand-lg text-default" href="{{ route('admin::auth.login') }}">
+        <span class="px-demo-logo bg-primary m-t-0">
+            <span class="px-demo-logo-1"></span>
+            <span class="px-demo-logo-2"></span>
+            <span class="px-demo-logo-3"></span>
+            <span class="px-demo-logo-4"></span>
+            <span class="px-demo-logo-5"></span>
+            <span class="px-demo-logo-6"></span>
+            <span class="px-demo-logo-7"></span>
+            <span class="px-demo-logo-8"></span>
+            <span class="px-demo-logo-9"></span>
+        </span>
+        {{ config('app.name') }}
+    </a>
 </div>
 
 @yield('content')
 
 <!-- jQuery -->
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-
+<script src="/assets/admin/js/jquery.min.js"></script>
 <script src="/assets/admin/js/bootstrap.min.js"></script>
 <script src="/assets/admin/js/pixeladmin.min.js"></script>
-
-<script>
-    // -------------------------------------------------------------------------
-    // Initialize page components
-
-    $(function() {
-        pxDemo.initializeBgsDemo('body', 0, '#000', function(isBgSet) {
-            $('h2')[isBgSet ? 'addClass' : 'removeClass']('text-white font-weight-bold');
-
-            $('h4')
-                    .addClass(isBgSet ? 'text-white' : 'text-muted')
-                    .removeClass(isBgSet ? 'text-muted' : 'text-white');
-        });
-
-
-        $('[data-toggle="tooltip"]').tooltip();
-    });
-</script>
 </body>
 </html>
