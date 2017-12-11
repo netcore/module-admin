@@ -1,4 +1,4 @@
-## Administration Panel
+## Administration system
 
 This module adds an administration panel to the site, which gives access to other module administration and menu editing. From here you will be able to edit the site content if Content module is present, add/change the menu items etc. 
 
