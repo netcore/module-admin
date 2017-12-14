@@ -9,10 +9,10 @@
 
     <title>{{ config('app.name') }} : Admin</title>
 
-    <link href="http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,400,600,700,300&subset=latin"
+    <link href="//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,400,600,700,300&subset=latin"
           rel="stylesheet" type="text/css">
-    <link href="http://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css" rel="stylesheet" type="text/css">
-    <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"
+    <link href="//code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css" rel="stylesheet" type="text/css">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"
           integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
 
     <link rel="stylesheet" href="/assets/admin/css/bootstrap.min.css">
@@ -24,7 +24,7 @@
     <link rel="stylesheet" href="/assets/admin/css/switchery.min.css">
     <link href="/assets/admin/plugins/x-editable/css/bootstrap-editable.css" rel="stylesheet">
 
-    <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/holder/2.9.0/holder.js"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/holder/2.9.0/holder.js"></script>
     <script src="/assets/admin/pace/pace.min.js"></script>
     <style>
         @media (min-width: 992px) {
@@ -84,7 +84,7 @@
     <script>var init = [];</script>
 </head>
 <body>
-<input type="hidden" class="left-admin-menu-items" value="{{$leftAdminMenu->toJson()}}">
+<input type="hidden" class="left-admin-menu-items" value="{{ $leftAdminMenu->toJson() }}">
 
 <nav id="left-admin-menu" v-cloak class="px-nav px-nav-left">
     <button type="button" class="px-nav-toggle" data-toggle="px-nav">
@@ -394,10 +394,10 @@
 
                 return options;
             },
-            parseData: function(data){
+            parseData: function (data) {
                 var parsedData = data;
 
-                if(Netcore.isObject(parsedData)){
+                if (Netcore.isObject(parsedData)) {
                     parsedData = [];
 
                     for (var key in data) {
