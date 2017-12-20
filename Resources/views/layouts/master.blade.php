@@ -218,8 +218,7 @@
 </div>
 
 <footer class="px-footer px-footer-bottom p-t-5">
-    <span class="text-muted">Copyright © {{ date('Y') }} {{ config('app.name') }}. All rights reserved. Development from <a
-                href="http://netcore.lv/">netcore</a>.</span>
+    Copyright © {{ date('Y') }} {{ config('app.name') }}. All rights reserved. Development from <a href="http://netcore.lv/" class="developed"><strong>netcore</strong></a>.
 </footer>
 
 <div id="menu-child-items" style="display:none">
