@@ -81,6 +81,7 @@
         }
     </style>
     @yield('styles')
+    @stack('styles')
     <script>var init = [];</script>
 </head>
 <body>
@@ -503,5 +504,7 @@
 </script>
 
 @yield('scripts')
+@stack('scripts')
+
 </body>
 </html>
