@@ -12,12 +12,15 @@ return [
     // User table and model
     'user'      => [
         'table' => 'users',
-        'model' => \App\User::class
+        'model' => \App\Models\User::class
     ],
 
     // IP whitelist
     'whitelist' => [
         'enabled'     => false,
         'fallback_ip' => env('WHITELIST_FALLBACK_IP', '')
-    ]
+    ],
+
+    // Show/hide copyrights text in footer
+    'show_copyrights' => true
 ];

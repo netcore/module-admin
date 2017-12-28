@@ -203,10 +203,15 @@
                     <span class="hidden-md">{{ auth()->user()->fullname }}</span>
                 </a>
                 <ul class="dropdown-menu">
-                    <li><a href="{{ route('user::users.edit', auth()->id()) }}">Account</a></li>
+                    <li>
+                        <a href="{{ route('user::users.edit', auth()->id()) }}">Account</a>
+                    </li>
                     <li class="divider"></li>
-                    <li><a href="{{ route('admin::auth.logout') }}"><i class="dropdown-icon fa fa-power-off"></i>&nbsp;&nbsp;Log
-                            Out</a></li>
+                    <li>
+                        <a href="{{ route('admin::auth.logout') }}">
+                            <i class="dropdown-icon fa fa-power-off"></i>&nbsp;&nbsp;Log Out
+                        </a>
+                    </li>
                 </ul>
             </li>
 
@@ -219,7 +224,10 @@
 </div>
 
 <footer class="px-footer px-footer-bottom p-t-5">
-    Copyright © {{ date('Y') }} {{ config('app.name') }}. All rights reserved. Development from <a href="http://netcore.lv/" class="developed"><strong>netcore</strong></a>.
+    Copyright © {{ date('Y') }} {{ config('app.name') }}. All rights reserved.
+    @if (config('netcore.module-admin.show_copyrights'))
+        Development from <a href="http://netcore.lv/" class="developed"><strong>netcore</strong></a>.
+    @endif
 </footer>
 
 <div id="menu-child-items" style="display:none">
