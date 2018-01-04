@@ -15,7 +15,7 @@ Route::group([
 
         Route::resource('menus', 'MenuController', ['only' => ['index', 'edit', 'update', 'show']]);
 
-        Route::post('/menus/save-order', [
+        Route::post('/menus/save-order/{menuId}', [
             'uses' => 'MenuController@saveOrder',
             'as'   => 'menu.save-order'
         ]);

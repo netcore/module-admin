@@ -69,6 +69,15 @@ class MenuItem extends Model
     }
 
     /**
+     * @return array
+     */
+    protected function getScopeAttributes()
+    {
+        return [ 'menu_id' ];
+    }
+
+
+    /**
      * @param $query
      * @return mixed
      */
@@ -102,7 +111,7 @@ class MenuItem extends Model
 
             $url = url('/');
 
-            $entry = Entry::whereIsActive(1)->find($value);
+            $entry = Entry::currentRevision()->active()->find($value);
             if ($entry) {
                 $entryTranslation = $entry->translations->first();
                 $entrySlug = $entryTranslation ? $entryTranslation->slug : '';
