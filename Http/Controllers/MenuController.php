@@ -23,7 +23,7 @@ class MenuController extends Controller
      */
     public function index()
     {
-        $menusGrouped = Menu::with('items')->get()->groupBy('type');
+        $menusGrouped = Menu::with('items')->orderBy('type', 'desc')->get()->groupBy('type');
 
         return view('admin::menu.index', compact('menusGrouped'));
     }
@@ -67,7 +67,7 @@ class MenuController extends Controller
 
         $pages = collect([]);
         if (Module::has('Content')) {
-            $pages = Entry::whereIsActive(1)->get()->map(function ($entry) {
+            $pages = Entry::currentRevision()->active()->get()->map(function ($entry) {
                 $firstTranslation = $entry->translations->first();
                 $title = $firstTranslation ? $firstTranslation->title : '';
 
@@ -109,14 +109,14 @@ class MenuController extends Controller
      * @param Request $request
      * @return void
      */
-    public function saveOrder(Request $request)
+    public function saveOrder(Request $request, $menuId)
     {
         $order = $request->get('order', []);
 
         $newArray = json_decode($order, true);
 
         if (is_array($newArray)) {
-            MenuItem::rebuildTree($newArray);
+            MenuItem::scoped([ 'menu_id' => $menuId ])->rebuildTree($newArray);
         }
     }
 
