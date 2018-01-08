@@ -822,6 +822,22 @@ if (!function_exists('input')) {
     }
 }
 
+if (!function_exists('menu')) {
+
+    /**
+     * @param null $key
+     * @return \Illuminate\Foundation\Application|mixed|\Modules\Admin\Repositories\MenuRepository|MenuRepository
+     */
+    function menu($key = null)
+    {
+        if (!$key) {
+            return app('MenuRepository');
+        }
+
+        return app('MenuRepository')->get($key);
+    }
+}
+
 /**
  * @param $ip
  * @param $ips

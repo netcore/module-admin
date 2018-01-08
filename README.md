@@ -35,6 +35,15 @@ You can edit the admin menu and client menus in the Menus section
 Managing menus:
 ![Menus](https://www.dropbox.com/s/pyu527891vxps6x/Screenshot%202017-11-08%2009.49.15.png?raw=1)
 
+You can access the menu an it's items from a menu() helper function
+```PHP
+menu('leftAdminMenu')->getItemTree();
+```
+
+To get all menus use 
+```PHP
+menu()->get();
+```
 
 ## Seeding
 

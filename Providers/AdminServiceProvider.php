@@ -6,6 +6,7 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Database\Eloquent\Factory;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Foundation\AliasLoader;
+use Modules\Admin\Repositories\MenuRepository;
 
 class AdminServiceProvider extends ServiceProvider
 {
@@ -44,6 +45,10 @@ class AdminServiceProvider extends ServiceProvider
 
         AliasLoader::getInstance()->alias('Form', \Collective\Html\FormFacade::class);
         AliasLoader::getInstance()->alias('Html', \Collective\Html\HtmlFacade::class);
+
+        $this->app->singleton('MenuRepository', function ($app) {
+            return new MenuRepository();
+        });
     }
 
     /**

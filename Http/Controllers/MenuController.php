@@ -167,13 +167,11 @@ class MenuController extends Controller
     {
         $menuItem = $menu->items()->find($itemId);
         if (!$menuItem) {
-            $response = ['status' => 'error'];
+            return response()->json(['status' => 'error']);
         }
 
         $menuItem->delete();
 
-        $response = ['status' => 'success'];
-
-        return response()->json($response);
+        return response()->json(['status' => 'success']);
     }
 }

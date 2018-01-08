@@ -86,4 +86,12 @@ class Menu extends Model
 
         return $itemTree;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getFlattenItems()
+    {
+        return $this->items()->active()->where('is_active', 1)->defaultOrder()->get()->toFlatTree();
+    }
 }
