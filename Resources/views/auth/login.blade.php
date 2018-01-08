@@ -32,9 +32,11 @@
         {{ csrf_field() }}
 
     </form>
+    @if (config('netcore.module-admin.show_copyrights'))
     <div class="text-center m-t-5 font-size-12 text-muted">
         <a href="http://netcore.lv/" target="_blank">netcore development</a>
     </div>
+    @endif
 </div>
 
 <!-- / Sign In form -->

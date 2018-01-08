@@ -22,9 +22,11 @@
             <a href="{{route('admin::auth.login')}}" id="page-signin-forgot-back">&larr; Back</a>
         </div>
     </form>
+    @if (config('netcore.module-admin.show_copyrights'))
     <div class="text-center m-t-5 font-size-12 text-muted">
         <a href="http://netcore.lv/" target="_blank">netcore development</a>
     </div>
+    @endif
 </div>
 
 
