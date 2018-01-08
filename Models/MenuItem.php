@@ -73,7 +73,7 @@ class MenuItem extends Model
      */
     protected function getScopeAttributes()
     {
-        return [ 'menu_id' ];
+        return ['menu_id'];
     }
 
 

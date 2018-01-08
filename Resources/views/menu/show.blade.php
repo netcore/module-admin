@@ -255,7 +255,7 @@
             <li v-for="item in items" class="dd-item">
                 <template v-if="item.type == 'separator' || item.type == 'empty'">
                     <div class="pull-right">
-                        <div class="btn-group pull-right">
+                        <div class="dd-actions btn-group pull-right">
                             <button type="button" class="btn btn-sm btn-danger" v-on:click="deleteItem(item)">
                                 <i class="fa fa-trash"></i> Delete
                             </button>
@@ -282,6 +282,9 @@
                             <i class="fa" :class="item.icon"></i>
                         </span>
                         <span v-html="item.name"></span>
+                        <small v-if="item.url" style="font-weight: 100;">
+                            <em><% item.url %></em>
+                        </small>
                     </div>
                     <draggable-menu-items v-if="item.children" :items="item.children" v-on:change="saveOrder"
                                           v-on:delete-item="deleteItem"
