@@ -63,7 +63,7 @@ class Menu extends Model
             foreach ($items as $item) {
                 //@TODO: submenu item resolvers for active class
 
-                $menuItems[] = [
+                $menuItems[] = (object) [
                     'id'       => $item->id,
                     'name'     => $item->name,
                     'icon'     => $item->icon,
@@ -84,7 +84,7 @@ class Menu extends Model
             $itemTree = $tree($items->toTree());
         }
 
-        return $itemTree;
+        return collect($itemTree);
     }
 
     /**
@@ -93,5 +93,20 @@ class Menu extends Model
     public function getFlattenItems()
     {
         return $this->items()->active()->where('is_active', 1)->defaultOrder()->get()->toFlatTree();
+    }
+
+    /**
+     * @param $template
+     * @param null $fullPath
+     * @return string
+     * @throws \Throwable
+     */
+    public function render($template, $fullPath = null)
+    {
+        if (!$fullPath) {
+            $fullPath = 'templates/menu';
+        }
+
+        return view($fullPath . '.' . $template, ['items' => $this->getItemTree()])->render();
     }
 }

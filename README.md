@@ -45,6 +45,19 @@ To get all menus use
 menu()->get();
 ```
 
+To render a menu from a template use
+```PHP
+menu('<MENU KEY>')->render('<TEMPLATE NAME>');
+```
+By default this function will look in the resources/views/templates/menu directory for the template, but you can also provide a different path
+```PHP
+menu('<MENU KEY>')->render('<TEMPLATE NAME>', '<PATH>');
+```
+For example
+```PHP
+menu('leftAdminMenu')->render('menu', 'client.partials');
+```
+
 ## Seeding
 
 You can add new menus by creating seeders
