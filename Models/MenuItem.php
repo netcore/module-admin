@@ -97,6 +97,9 @@ class MenuItem extends Model
         $url = 'javascript:;';
 
         $value = trans_model($this, TransHelper::getLanguage(), 'value');
+        if(!$value){
+            $value = trans_model($this, TransHelper::getFallbackLanguage(), 'value');
+        }
 
         if ($this->type == 'route') {
             $url = route($value, (array)$this->parameters);
