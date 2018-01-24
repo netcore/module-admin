@@ -6,6 +6,7 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Database\Eloquent\Factory;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Foundation\AliasLoader;
+use Modules\Admin\Console\PublishTests;
 use Modules\Admin\Repositories\MenuRepository;
 
 class AdminServiceProvider extends ServiceProvider
@@ -30,6 +31,10 @@ class AdminServiceProvider extends ServiceProvider
         //$this->registerFactories();
         //$this->registerBladeExtenders();
         $this->registerMiddlewares($router, $kernel);
+
+        $this->commands([
+            PublishTests::class
+        ]);
     }
 
     /**

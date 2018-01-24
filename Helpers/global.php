@@ -838,49 +838,52 @@ if (!function_exists('menu')) {
     }
 }
 
-/**
- * @param $ip
- * @param $ips
- * @return bool
- */
-function checkWhitelistIp($ip, $ips)
-{
-    if (in_array($ip, $ips)) {
-        return true;
-    } else {
-        foreach ($ips as $mask) {
-            if (strpos($mask, '*') === false) {
-                continue; // No simple matching and no wildcard in the mask, leaves no chance to match
-            }
+if (!function_exists('checkWhitelistIp')) {
 
-            // Breaking into triads
-            $maskParts = explode('.', $mask);
-            $ipParts = explode('.', $ip);
-            foreach ($maskParts as $key => $maskPart) {
-                if ($maskPart == '*') {
-                    continue;  // This triad is matching, continue with next triad
-                } elseif (strpos($maskPart, '*') !== false) {
-                    // Case like 1*, 1*2, *1
-                    // Let's use regexp for this
-                    $regExp = str_replace('*', '\d{0,3}', $maskPart);
-                    if (preg_match('/^' . $regExp . '$/', $ipParts[$key])) {
-                        continue;  // Matching, go to check next triad
-                    } else {
-                        continue 2;  // Not matching, Go to check next mask
-                    }
-                } else {
-                    if ($maskPart != $ipParts[$key]) {
-                        continue 2; // If triad has no wildcard and not matching, check next mask
-                    }
-                    // otherwise just continue
-                }
-            }
-
-            // We checked all triads and all matched, hence this mask is matching
+    /**
+     * @param $ip
+     * @param $ips
+     * @return bool
+     */
+    function checkWhitelistIp($ip, $ips)
+    {
+        if (in_array($ip, $ips)) {
             return true;
-        }
+        } else {
+            foreach ($ips as $mask) {
+                if (strpos($mask, '*') === false) {
+                    continue; // No simple matching and no wildcard in the mask, leaves no chance to match
+                }
 
-        // We went through all masks and none has matched.
-        return false;
+                // Breaking into triads
+                $maskParts = explode('.', $mask);
+                $ipParts = explode('.', $ip);
+                foreach ($maskParts as $key => $maskPart) {
+                    if ($maskPart == '*') {
+                        continue;  // This triad is matching, continue with next triad
+                    } elseif (strpos($maskPart, '*') !== false) {
+                        // Case like 1*, 1*2, *1
+                        // Let's use regexp for this
+                        $regExp = str_replace('*', '\d{0,3}', $maskPart);
+                        if (preg_match('/^' . $regExp . '$/', $ipParts[$key])) {
+                            continue;  // Matching, go to check next triad
+                        } else {
+                            continue 2;  // Not matching, Go to check next mask
+                        }
+                    } else {
+                        if ($maskPart != $ipParts[$key]) {
+                            continue 2; // If triad has no wildcard and not matching, check next mask
+                        }
+                        // otherwise just continue
+                    }
+                }
+
+                // We checked all triads and all matched, hence this mask is matching
+                return true;
+            }
+
+            // We went through all masks and none has matched.
+            return false;
+        }
     }
 }
