@@ -18,7 +18,7 @@ class MenuItemTest extends TestCase
     public function testMenuUrlsAsAdmin()
     {
         //Test all URLs as an admin
-        $user = User::where('is_admin', 1)->first();
+        $user = app(config('netcore.module-admin.user.model'))->where('is_admin', 1)->first();
 
         $menus = Menu::get();
         foreach ($menus as $menu) {
