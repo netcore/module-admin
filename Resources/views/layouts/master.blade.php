@@ -75,10 +75,6 @@
             display: none !important;
         }
 
-        /* Hide search box when not needed */
-        .no-search .select2-search {
-            display: none
-        }
     </style>
     @yield('styles')
     @stack('styles')
@@ -86,6 +82,7 @@
 </head>
 <body>
 <input type="hidden" class="left-admin-menu-items" value="{{ $leftAdminMenu->toJson() }}">
+<input type="hidden" class="top-admin-menu-items" value="{{ $topLeftAdminMenu->toJson() }}">
 
 <nav id="left-admin-menu" v-cloak class="px-nav px-nav-left">
     <button type="button" class="px-nav-toggle" data-toggle="px-nav">
@@ -118,7 +115,7 @@
                         <span class="px-nav-label" v-html="item.name"></span>
                     </a>
                     <template v-if="item.children">
-                        <menu-child-items :item="item"></menu-child-items>
+                        <left-menu-child-items :item="item"></left-menu-child-items>
                     </template>
                 </template>
             </li>
@@ -154,46 +151,23 @@
 
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="px-demo-navbar-collapse">
-        {{--<ul class="nav navbar-nav">--}}
-        {{--<li class="dropdown">--}}
-        {{--<a href class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"--}}
-        {{--aria-expanded="false"><i class="fa fa-bookmark m-r-1"></i>Links</a>--}}
-        {{--<ul class="dropdown-menu">--}}
-        {{--<li class="dropdown-toggle">--}}
-        {{--<a href>Products</a>--}}
-        {{--<ul class="dropdown-menu">--}}
-        {{--<li><a href="#">All</a></li>--}}
-        {{--<li><a href="#">Popular</a></li>--}}
-        {{--<li><a href="#">Recent</a></li>--}}
-        {{--<li><a href="#">Featured</a></li>--}}
-        {{--<li class="divider"></li>--}}
-        {{--<li><a href="#"><i class="fa fa-plus m-r-1"></i>Add product</a></li>--}}
-        {{--</ul>--}}
-        {{--</li>--}}
-        {{--<li class="dropdown-toggle">--}}
-        {{--<a href>Users</a>--}}
-        {{--<ul class="dropdown-menu">--}}
-        {{--<li><a href="#">All</a></li>--}}
-        {{--<li><a href="#">Recent</a></li>--}}
-        {{--<li><a href="#">Banned</a></li>--}}
-        {{--<li class="divider"></li>--}}
-        {{--<li><a href="#"><i class="fa fa-user-plus m-r-1"></i>Create user</a></li>--}}
-        {{--</ul>--}}
-        {{--</li>--}}
-        {{--<li class="dropdown-toggle">--}}
-        {{--<a href>Blog</a>--}}
-        {{--<ul class="dropdown-menu">--}}
-        {{--<li><a href="#">All</a></li>--}}
-        {{--<li><a href="#">Popular</a></li>--}}
-        {{--<li class="divider"></li>--}}
-        {{--<li><a href="#"><i class="fa fa-edit m-r-1"></i>New blog post</a></li>--}}
-        {{--</ul>--}}
-        {{--</li>--}}
-        {{--<li class="divider"></li>--}}
-        {{--<li><a href="#">Overview</a></li>--}}
-        {{--</ul>--}}
-        {{--</li>--}}
-        {{--</ul>--}}
+        <div id="top-admin-menu" v-cloak>
+            <div class="v-cloak--hidden">
+                <ul class="nav navbar-nav">
+                    <li v-for="item in menu_items" :class="{'dropdown': item.children.length > 0}" v-if="item.type !== 'seperator' && item.type !== 'empty'">
+                        <a :href="item.url" :data-toggle="item.toggle"
+                           :class="{'dropdown-toggle': item.children.length > 0}">
+                            <i v-if="item.icon" class="fa m-r-1" :class="item.icon"></i>
+                            <span v-html="item.name"></span>
+                        </a>
+
+                        <template v-if="item.children">
+                            <top-menu-child-items :item="item"></top-menu-child-items>
+                        </template>
+                    </li>
+                </ul>
+            </div>
+        </div>
 
         <ul class="nav navbar-nav navbar-right">
             <li class="dropdown">
@@ -230,32 +204,6 @@
     @endif
 </footer>
 
-<div id="menu-child-items" style="display:none">
-    <ul class="px-nav-dropdown-menu" :class="{'px-open': item.child_active}">
-        <li v-for="menuItem in item.children" class="px-nav-item"
-            :class="{'px-nav-dropdown': menuItem.children.length > 0, 'active': menuItem.active, 'px-open': menuItem.child_active}">
-            <template v-if="menuItem.type == 'separator' || menuItem.type == 'empty'">
-                <hr>
-            </template>
-            <template v-else>
-                <a :href="menuItem.url" :target="menuItem.target">
-                    <i v-if="menuItem.icon" class="px-nav-icon fa" :class="menuItem.icon"></i>
-                    <span class="px-nav-label" v-html="menuItem.name"></span>
-                </a>
-                <template v-if="menuItem.children">
-                    <menu-child-items :item="menuItem"></menu-child-items>
-                </template>
-            </template>
-        </li>
-    </ul>
-</div>
-
-<div id="select2-template" style="display: none">
-    <select :id="id" :name="name" :data-placeholder="placeholder" :multiple="multiple">
-        <slot></slot>
-    </select>
-</div>
-
 @if($mediaModule && $mediaModule->enabled())
     @include('media::_partials.file-manager')
 @endif
@@ -288,6 +236,9 @@
 <!-- Vue Validate -->
 <script src="/assets/admin/js/vee-validate.min.js"></script>
 
+<!-- Vue Components -->
+<script src="/assets/admin/js/components.js"></script>
+
 <script>
     Vue.use(VeeValidate);
 </script>
@@ -300,6 +251,7 @@
     var csrf_token = '{{ csrf_token() }}';
 </script>
 <script src="{{ versionedAsset('/assets/admin/js/netcore.js') }}"></script>
+<script src="{{ versionedAsset('/assets/admin/js/menu.js') }}"></script>
 @if($mediaModule && $mediaModule->enabled())
     <script src="/assets/media/js/media.js"></script>
 @endif
@@ -312,21 +264,6 @@
     // Initialize DEMO
 
     $(function () {
-        $.each($('body > .px-nav .px-nav-item a'), function (i, el) {
-
-            var href = $(el).attr('href');
-
-            url = currentURI.replace(/^.*\/\/[^\/]+/, '').substr(1);
-            href = href.replace(/^.*\/\/[^\/]+/, '').substr(1);
-
-            var urlSegments = url.split('/');
-            var hrefSegments = href.split('/');
-
-            if (urlSegments[1] === hrefSegments[1]) {
-                $(el).parent().addClass('active');
-            }
-        });
-
         $('body > .px-footer').pxFooter();
 
         $('#navbar-notifications').perfectScrollbar();
@@ -334,171 +271,9 @@
     });
 
     // -------------------------------------------------------------------------
-    // Initialize Vue Select2 Plugin
-    // TODO should probably move to a separate .vue file
-
-    Vue.component('select2', {
-        props: {
-            options: {
-                type: Object,
-                default: function () {
-                    return {};
-                }
-            },
-            data: {},
-            value: {},
-            placeholder: {},
-            name: {},
-            id: {},
-            multiple: {}
-        },
-        data: function () {
-            return {
-                parsed_options: {}
-            }
-        },
-        template: '#select2-template',
-        mounted: function () {
-            var vm = this;
-
-            this.parsed_options = this.parseOptions(this.options);
-
-            this.parsed_options.data = this.parseData(this.data);
-
-            if (this.parsed_options.data.length <= 10) {
-                this.parsed_options.dropdownCssClass = 'no-search';
-            }
-
-            $(this.$el)
-                .select2(this.parsed_options)
-                .val(this.value)
-                .trigger('change')
-                .on('change', function (e) {
-                    vm.$emit('change');
-
-                    vm.$emit('input', $(vm.$el).val())
-                })
-                .on('select2:select', function () {
-                    vm.$emit('select', $(vm.$el).val());
-                })
-        },
-        methods: {
-            parseOptions: function (options) {
-                options.templateResult = function (data) {
-                    if (data.html) {
-                        return data.html;
-                    } else {
-                        return data.text;
-                    }
-                };
-
-                options.escapeMarkup = function (m) {
-                    return m;
-                };
-
-                options.templateSelection = function (data) {
-                    return data.text;
-                };
-
-                return options;
-            },
-            parseData: function (data) {
-                var parsedData = data;
-
-                if (Netcore.isObject(parsedData)) {
-                    parsedData = [];
-
-                    for (var key in data) {
-                        if (data.hasOwnProperty(key)) {
-                            parsedData.push(data[key]);
-                        }
-                    }
-                }
-
-                return data;
-            }
-        },
-        watch: {
-            value: function (value) {
-                if (this.multiple) {
-                    if (Array.from(value).sort().join(",") !== Array.from($(this.$el).val()).sort().join(",")) {
-                        $(this.$el).val(value).trigger('change');
-                    }
-                } else {
-                    $(this.$el).val(value).trigger('change');
-                }
-            },
-            options: function (options) {
-                this.parsed_options = this.parseOptions(options);
-
-                this.parsed_options.data = this.data;
-
-                if (this.data.length <= 10) {
-                    this.parsed_options.dropdownCssClass = 'no-search';
-                }
-
-                $(this.$el).empty().select2(this.parsed_options);
-            },
-            data: function (data) {
-                this.parsed_options.data = this.parseData(data);
-
-                $(this.$el).select2(this.parsed_options)
-            }
-        },
-        destroyed: function () {
-            $(this.$el).off().select2('destroy')
-        }
-    });
-
-    // -------------------------------------------------------------------------
     // Initialize leftAdminMenu
 
-    var leftAdminMenu;
-
     jQuery(document).ready(function () {
-        Vue.component('menu-child-items', {
-            props: ['item'],
-            template: "#menu-child-items",
-            delimiters: ['<%', '%>']
-        });
-
-        leftAdminMenu = new Vue({
-            el: '#left-admin-menu',
-            data: {
-                menu_items: []
-            },
-            created: function () {
-                var self = this;
-                var items = JSON.parse(jQuery('.left-admin-menu-items').val());
-
-                jQuery.each(items, function (key, item) {
-                    item.child_active = false;
-
-                    var isActive = function (items) {
-                        items.forEach(function (childItem) {
-                            if (childItem.active) {
-                                item.child_active = true;
-                            } else {
-                                if (childItem.children.length > 0) {
-                                    isActive(childItem.children)
-                                }
-                            }
-                        });
-                    };
-
-                    if (item.children.length > 0) {
-                        isActive(item.children);
-                    }
-
-                    Vue.set(self.menu_items, key, item);
-                });
-
-                Vue.nextTick(function () {
-                    $('body > .px-nav').pxNav();
-                });
-            },
-            delimiters: ['<%', '%>']
-        });
 
         if (typeof init !== 'undefined') {
             $.each(init, function (index, f) {
