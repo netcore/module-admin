@@ -101,10 +101,14 @@ class Menu extends Model
      * @return string
      * @throws \Throwable
      */
-    public function render($template, $fullPath = null)
+    public function render($template = null, $fullPath = null)
     {
         if (!$fullPath) {
             $fullPath = 'templates/menu';
+        }
+
+        if (!$template) {
+            $template = $this->key;
         }
 
         return view($fullPath . '.' . $template, [
