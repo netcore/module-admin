@@ -63,7 +63,7 @@ class Menu extends Model
             foreach ($items as $item) {
                 //@TODO: submenu item resolvers for active class
 
-                $menuItems[] = (object) [
+                $menuItems[] = (object)[
                     'id'       => $item->id,
                     'name'     => $item->name,
                     'icon'     => $item->icon,
@@ -107,6 +107,9 @@ class Menu extends Model
             $fullPath = 'templates/menu';
         }
 
-        return view($fullPath . '.' . $template, ['items' => $this->getItemTree()])->render();
+        return view($fullPath . '.' . $template, [
+            'items' => $this->getItemTree(),
+            'menu'  => $this
+        ])->render();
     }
 }
