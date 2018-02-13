@@ -13,6 +13,14 @@
             margin-top: 12px;
             margin-right: 12px;
         }
+
+        .error {
+            color: red !important;
+        }
+
+        .active .error {
+            color: #ffffff !important;
+        }
     </style>
 @append
 
@@ -73,50 +81,55 @@
                             </select2>
                         </div>
                         <hr>
-
-                        <div v-show="services.edit.type == 'route'">
+                        <div v-if="services.edit.type == 'route'">
                             <ul class="nav nav-tabs" role="tablist">
                                 <li v-for="(language, iso_code) in languages"
                                     :class="{'active': iso_code == services.edit.active_translation}"
                                     v-on:click="services.edit.active_translation = iso_code">
-                                    <a href="#">
+                                    <a href="#" :class="{'error': services.edit.translation_errors[iso_code]}">
                                         <% language.title_localized %>
                                     </a>
                                 </li>
                             </ul>
                             <div class="tab-content" style="padding-bottom: 0;">
-                                <div v-if="iso_code == services.edit.active_translation" v-for="(language, iso_code) in languages" class="tab-pane active">
-                                    <template v-if="services.edit.errors.translations[iso_code]">
-                                        <div class="form-group"
-                                             :class="{'has-error': services.edit.errors.translations[iso_code].name.visible}">
-                                            <label>Name</label>
-                                            <input type="text" class="form-control"
-                                                   v-model="services.edit.translations[iso_code].name">
-                                            <span v-if="services.edit.errors.translations[iso_code].name.visible"
-                                                  class="help-block">
-                                                <% services.edit.errors.translations[iso_code].name.value %>
-                                            </span>
-                                        </div>
-                                        <div class="form-group"
-                                             :class="{'has-error': services.edit.errors.translations[iso_code].value.visible}">
-                                            <label>Route</label>
-                                            <select2 :data="getRouteList()" :placeholder="'Please Select'"
-                                                     v-on:select="services.edit.checkParameters()"
-                                                     v-model="services.edit.translations[iso_code].value">
-                                            </select2>
-                                            <span v-if="services.edit.errors.translations[iso_code].value.visible"
-                                                  class="help-block">
-                                                <% services.edit.errors.translations[iso_code].value.value %>
-                                            </span>
-                                        </div>
+                                <div v-show="iso_code == services.edit.active_translation"
+                                     v-for="(language, iso_code) in languages" class="tab-pane active">
+                                    <div class="form-group"
+                                         :class="{'has-error': services.edit.errors.translations[iso_code].name.visible}">
+                                        <label>Name</label>
+                                        <input type="text" class="form-control"
+                                               v-model="services.edit.translations[iso_code].name">
+                                        <span v-if="services.edit.errors.translations[iso_code].name.visible"
+                                              class="help-block">
+                                            <% services.edit.errors.translations[iso_code].name.value %>
+                                        </span>
+                                    </div>
+                                    <div class="form-group"
+                                         :class="{'has-error': services.edit.errors.translations[iso_code].value.visible}">
+                                        <label>Route</label>
+                                        <select2 :data="services.edit.route_list"
+                                                 :name="'route-select-'+iso_code"
+                                                 :placeholder="'Please Select'"
+                                                 v-on:select="services.edit.checkParameters()"
+                                                 v-model="services.edit.translations[iso_code].value">
+                                        </select2>
+                                        <span v-if="services.edit.errors.translations[iso_code].value.visible"
+                                              class="help-block">
+                                            <% services.edit.errors.translations[iso_code].value.value %>
+                                        </span>
+                                    </div>
 
-                                        <div v-for="(param, index) in services.edit.translations[iso_code].parameters" class="form-group"
-                                             :class="{'has-error': services.edit.errors.translations[iso_code].parameters[index].visible}">
-                                            <label><% index | capitalize %></label>
-                                            <input type="text" class="form-control" v-model="services.edit.translations[iso_code].parameters[index]">
-                                            <span v-if="services.edit.errors.translations[iso_code].parameters[index].visible" class="help-block"><% services.edit.errors.translations[iso_code].parameters[index].value %></span>
-                                        </div>
-                                    </template>
+                                    <div v-for="(param, index) in services.edit.translations[iso_code].parameters"
+                                         class="form-group"
+                                         :class="{'has-error': services.edit.errors.translations[iso_code].parameters[index].visible}">
+                                        <label><% index | capitalize %></label>
+                                        <input type="text" class="form-control"
+                                               v-model="services.edit.translations[iso_code].parameters[index]">
+                                        <span v-if="services.edit.errors.translations[iso_code].parameters[index].visible"
+                                              class="help-block">
+                                            <% services.edit.errors.translations[iso_code].parameters[index].value %>
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -125,13 +138,14 @@
                                 <li v-for="(language, iso_code) in languages"
                                     :class="{'active': iso_code == services.edit.active_translation}"
                                     v-on:click="services.edit.active_translation = iso_code">
-                                    <a href="#">
+                                    <a href="#" :class="{'error': services.edit.translation_errors[iso_code]}">
                                         <% language.title_localized %>
                                     </a>
                                 </li>
                             </ul>
                             <div class="tab-content" style="padding-bottom: 0;">
-                                <div v-if="iso_code == services.edit.active_translation" v-for="(language, iso_code) in languages" class="tab-pane active">
+                                <div v-if="iso_code == services.edit.active_translation"
+                                     v-for="(language, iso_code) in languages" class="tab-pane active">
                                     <template v-if="services.edit.errors.translations[iso_code]">
                                         <div class="form-group"
                                              :class="{'has-error': services.edit.errors.translations[iso_code].name.visible}">
@@ -144,9 +158,10 @@
                                             </span>
                                         </div>
                                         <div class="form-group"
-                                             :class="{'has-error': services.edit.errors.translations[iso_code].value.visible}">
+                                             :class="{'has-error': services.edit.errors.translations[iso_code].url.visible}">
                                             <label>URL:</label>
-                                            <input type="text" class="form-control" v-model="services.edit.translations[iso_code].url">
+                                            <input type="text" class="form-control"
+                                                   v-model="services.edit.translations[iso_code].url">
                                             <span v-if="services.edit.errors.translations[iso_code].url.visible"
                                                   class="help-block">
                                                 <% services.edit.errors.translations[iso_code].url.value %>
@@ -161,13 +176,14 @@
                                 <li v-for="(language, iso_code) in languages"
                                     :class="{'active': iso_code == services.edit.active_translation}"
                                     v-on:click="services.edit.active_translation = iso_code">
-                                    <a href="#">
+                                    <a href="#" :class="{'error': services.edit.translation_errors[iso_code]}">
                                         <% language.title_localized %>
                                     </a>
                                 </li>
                             </ul>
                             <div class="tab-content" style="padding-bottom: 0;">
-                                <div v-if="iso_code == services.edit.active_translation" v-for="(language, iso_code) in languages" class="tab-pane active">
+                                <div v-if="iso_code == services.edit.active_translation"
+                                     v-for="(language, iso_code) in languages" class="tab-pane active">
                                     <template v-if="services.edit.errors.translations[iso_code]">
                                         <div class="form-group"
                                              :class="{'has-error': services.edit.errors.translations[iso_code].name.visible}">
@@ -195,7 +211,8 @@
                             </div>
                         </div>
 
-                        <template v-if="services.edit.type == 'route' || services.edit.type == 'url' || services.edit.type == 'page'">
+                        <template
+                                v-if="services.edit.type == 'route' || services.edit.type == 'url' || services.edit.type == 'page'">
                             <hr>
                             <div class="form-group">
                                 <label>Icon</label>

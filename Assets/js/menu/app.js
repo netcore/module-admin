@@ -89,6 +89,9 @@ $(document).ready(function () {
 
         this.active_translation = Object.keys(parent.languages)[0];
 
+        this.route_list = parent.getRouteList();
+        this.translation_errors = {};
+
         this.id = params.id ? params.id : 0;
         this.translations = {};
 
@@ -101,6 +104,8 @@ $(document).ready(function () {
                 page_id: '',
                 parameters: {}
             });
+
+            Vue.set(self.translation_errors, iso_code, false);
         });
 
         jQuery.each(params.translations, function (translation_key, translation) {
@@ -186,6 +191,8 @@ $(document).ready(function () {
                 }
             });
         });
+
+        parent.$forceUpdate();
     };
 
     EditorService.prototype = {
@@ -298,6 +305,10 @@ $(document).ready(function () {
 
             if (typeof fields === 'undefined') throw Error('Missing fields');
 
+            jQuery.each(this.translation_errors, function (key, error) {
+                self.translation_errors[key] = false;
+            });
+
             fields.forEach(function (field) {
                 if (field.indexOf('translations') > -1) {
                     var subField = field.split('.')[1];
@@ -312,6 +323,8 @@ $(document).ready(function () {
                                         parameter.visible = true;
                                         parameter.value = 'This field is required';
                                         valid = false;
+
+                                        self.translation_errors[iso_code] = true;
                                     }
                                 }
                             });
@@ -326,6 +339,8 @@ $(document).ready(function () {
                                 self.errors.translations[iso_code][subField].visible = true;
                                 self.errors.translations[iso_code][subField].value = 'This field is required';
                                 valid = false;
+
+                                self.translation_errors[iso_code] = true;
                             }
                         }
                     });
