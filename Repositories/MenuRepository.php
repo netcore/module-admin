@@ -33,10 +33,13 @@ class MenuRepository
 
     /**
      * @param $key
+     * @return $this
      */
     public function setKey($key)
     {
         $this->key = $key;
+
+        return $this;
     }
 
     /**
