@@ -18,11 +18,25 @@ class MenuRepository
     private $menu;
 
     /**
+     * @var string
+     */
+    private $key;
+
+    /**
      * MenuRepository constructor.
      */
     public function __construct()
     {
         $this->menu = new Menu();
+        $this->key = '';
+    }
+
+    /**
+     * @param $key
+     */
+    public function setKey($key)
+    {
+        $this->key = $key;
     }
 
     /**
@@ -44,6 +58,20 @@ class MenuRepository
     public function getAll()
     {
         return $this->menu->get();
+    }
+
+    /**
+     * @return string
+     */
+    public function render()
+    {
+        if ($this->key) {
+            logger()->warning('Couldn\'t render the menu, because the menu ' . $this->key . ' doesn\'t exist');
+        } else {
+            logger()->warning('Couldn\'t render the menu without a key');
+        }
+
+        return '';
     }
 
     /**
