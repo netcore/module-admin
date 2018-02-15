@@ -834,7 +834,12 @@ if (!function_exists('menu')) {
             return app('MenuRepository');
         }
 
-        return app('MenuRepository')->get($key);
+        $menu = app('MenuRepository')->get($key);
+        if ($menu) {
+            return $menu;
+        } else {
+            return app('MenuRepository')->setKey($key);
+        }
     }
 }
 
