@@ -12,11 +12,15 @@ class Menu extends Model
     use Translatable, SyncTranslations;
 
     /**
+     * Table name
+     *
      * @var string
      */
     protected $table = 'netcore_admin__menus';
 
     /**
+     * Fillable fields
+     *
      * @var array
      */
     protected $fillable = ['key'];
@@ -96,7 +100,7 @@ class Menu extends Model
     }
 
     /**
-     * @param $template
+     * @param      $template
      * @param null $fullPath
      * @return string
      * @throws \Throwable

@@ -15,7 +15,7 @@ class AdminController extends Controller
      */
     public function index()
     {
-        $google_analytics_client_id = setting()->get('google_analytics_client_id');
+        $google_analytics_client_id = setting()->get('scripts.google_analytics_client_id');
 
         return view('admin::index', compact('google_analytics_client_id'));
     }
@@ -28,7 +28,7 @@ class AdminController extends Controller
         $user = auth()->user();
         $routes = [];
 
-        if(\Nwidart\Modules\Facades\Module::find('Permission')) {
+        if (\Nwidart\Modules\Facades\Module::find('Permission')) {
             $levels = $user->role->levels;
             foreach ($levels as $level) {
                 foreach ($level->routes as $route) {
@@ -37,7 +37,6 @@ class AdminController extends Controller
                 }
             }
         }
-
 
         return view('admin::access-denied', compact('routes'));
     }

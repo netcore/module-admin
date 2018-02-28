@@ -29,6 +29,7 @@ class MenuRequest extends FormRequest
         foreach (TransHelper::getAllLanguages() as $language) {
             $rules['translations.' . $language->iso_code . '.name'] = 'required';
         }
+
         return $rules;
     }
 

@@ -24,7 +24,8 @@
         "laravelcollective/html": "^5.4.0",
         "doctrine/dbal": "^2.6",
         "codesleeve/laravel-stapler": "1.0.*",
-        "davejamesmiller/laravel-breadcrumbs": "^4.2"
+        "davejamesmiller/laravel-breadcrumbs": "^4.2",
+        "netcore/module-setting": "^2.0"
     },
     "minimum-stability": "dev"
 }

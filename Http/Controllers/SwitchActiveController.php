@@ -34,7 +34,7 @@ class SwitchActiveController extends Controller
         $menuItemClass = '\Modules\Admin\Models\MenuItem';
         if ($model == 'Modules\Content\Models\Entry' AND class_exists($menuItemClass)) {
             $slug = '/' . trim($instance->slug, '/');
-            app($menuItemClass)->whereHas('translations', function($subQuery) use ($slug) {
+            app($menuItemClass)->whereHas('translations', function ($subQuery) use ($slug) {
                 return $subQuery->whereValue($slug);
             })->update([
                 'is_active' => $instance->is_active

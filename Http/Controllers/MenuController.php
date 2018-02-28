@@ -116,7 +116,7 @@ class MenuController extends Controller
         $newArray = json_decode($order, true);
 
         if (is_array($newArray)) {
-            MenuItem::scoped([ 'menu_id' => $menuId ])->rebuildTree($newArray);
+            MenuItem::scoped(['menu_id' => $menuId])->rebuildTree($newArray);
         }
     }
 

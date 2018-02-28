@@ -17,11 +17,15 @@ class MenuItem extends Model
     use Translatable, SyncTranslations, NodeTrait;
 
     /**
+     * Table name
+     *
      * @var string
      */
     protected $table = 'netcore_admin__menu_items';
 
     /**
+     * Fillable fields
+     *
      * @var array
      */
     protected $fillable = [
@@ -76,7 +80,6 @@ class MenuItem extends Model
         return ['menu_id'];
     }
 
-
     /**
      * @param $query
      * @return mixed
@@ -97,7 +100,7 @@ class MenuItem extends Model
         $url = 'javascript:;';
 
         $value = trans_model($this, TransHelper::getLanguage(), 'value');
-        if(!$value){
+        if (!$value) {
             $value = trans_model($this, TransHelper::getFallbackLanguage(), 'value');
         }
 

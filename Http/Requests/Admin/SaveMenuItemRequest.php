@@ -29,7 +29,7 @@ class SaveMenuItemRequest extends FormRequest
                         foreach (Route::getRoutes() as $route) {
                             if ($route->getName() == $translation['value']) {
                                 foreach ($route->parameterNames() as $param) {
-                                    $rules['translations.'.$key.'.parameters.' . $param] = 'required';
+                                    $rules['translations.' . $key . '.parameters.' . $param] = 'required';
                                 }
                             }
                         }
