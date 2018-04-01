@@ -28,5 +28,11 @@
         "davejamesmiller/laravel-breadcrumbs": "^5.0",
         "netcore/module-setting": "^2.0"
     },
+    "repositories": [
+        {
+            "type": "git",
+            "url": "https://github.com/rbruhn/stapler.git"
+        }
+    ],
     "minimum-stability": "dev"
 }
