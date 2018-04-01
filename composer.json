@@ -1,6 +1,6 @@
 {
     "name": "netcore/module-admin",
-    "description": "Administration panel base.",
+    "description": "Netcore CMS :: Administration panel base",
     "keywords": ["laravel", "netcore", "modules", "admin"],
     "type": "module",
     "license": "MIT",
@@ -16,15 +16,15 @@
         }
     },
     "require": {
-        "php": ">=7.0",
-        "illuminate/support": "5.5.x",
-        "kalnoy/nestedset": "^4.2",
-        "dimsav/laravel-translatable": "^8.0",
-        "hieu-le/active": "^3.4",
+        "php": ">=7.1",
+        "illuminate/support": "5.6.x",
+        "kalnoy/nestedset": "^4.3",
+        "dimsav/laravel-translatable": "^9.0",
+        "hieu-le/active": "^3.5",
         "laravelcollective/html": "^5.4.0",
         "doctrine/dbal": "^2.6",
-        "codesleeve/laravel-stapler": "1.0.*",
-        "davejamesmiller/laravel-breadcrumbs": "^4.2",
+        "codesleeve/laravel-stapler": "^",
+        "davejamesmiller/laravel-breadcrumbs": "^5.0",
         "netcore/module-setting": "^2.0"
     },
     "minimum-stability": "dev"
