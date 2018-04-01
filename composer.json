@@ -24,8 +24,15 @@
         "laravelcollective/html": "^5.4.0",
         "doctrine/dbal": "^2.6",
         "codesleeve/laravel-stapler": "^1.0",
+        "codesleeve/stapler": "dev-master as 1.2.0",
         "davejamesmiller/laravel-breadcrumbs": "^5.0",
         "netcore/module-setting": "^2.0"
     },
+    "repositories": [
+        {
+            "type": "git",
+            "url": "https://github.com/rbruhn/stapler.git"
+        }
+    ],
     "minimum-stability": "dev"
 }
