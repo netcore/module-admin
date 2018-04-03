@@ -86,7 +86,7 @@ class MenuItem extends Model
      */
     public function scopeActive($query)
     {
-        $modules = Module::disabled();
+        $modules = Module::allDisabled();
         $disabledModules = array_keys($modules);
 
         return $query->whereNotIn('module', $disabledModules);
