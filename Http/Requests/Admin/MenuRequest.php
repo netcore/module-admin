@@ -7,6 +7,7 @@ use Netcore\Translator\Helpers\TransHelper;
 
 class MenuRequest extends FormRequest
 {
+
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -26,9 +27,10 @@ class MenuRequest extends FormRequest
     {
         $rules = [];
 
-        foreach (TransHelper::getAllLanguages() as $language) {
+        foreach (languages() as $language) {
             $rules['translations.' . $language->iso_code . '.name'] = 'required';
         }
+
         return $rules;
     }
 
@@ -41,7 +43,7 @@ class MenuRequest extends FormRequest
     {
         $messages = [];
 
-        foreach (TransHelper::getAllLanguages() as $language) {
+        foreach (languages() as $language) {
             $messages['translations.' . $language->iso_code . '.name.required'] = 'Name (' . $language->title_localized . ') is required';
         }
 

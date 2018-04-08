@@ -36,7 +36,7 @@ class MenuController extends Controller
      */
     public function show(Menu $menu)
     {
-        $languages = TransHelper::getAllLanguages();
+        $languages = languages();
         $items = $menu->items()->defaultOrder()->get()->toTree();
 
         $routes = [];
@@ -94,9 +94,9 @@ class MenuController extends Controller
 
     /**
      * Update the specified resource in storage.
-     *
-     * @param  Request $request
-     * @return Response
+     * @param MenuRequest $request
+     * @param Menu $menu
+     * @return
      */
     public function update(MenuRequest $request, Menu $menu)
     {
@@ -107,6 +107,7 @@ class MenuController extends Controller
 
     /**
      * @param Request $request
+     * @param $menuId
      * @return void
      */
     public function saveOrder(Request $request, $menuId)
