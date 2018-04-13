@@ -7,7 +7,11 @@ $(document).ready(function () {
             'X-CSRF-Token': csrf_token,
         },
         error: function (jqXHR, exception) {
-            toastr.error("Something went wrong, while processing your request");
+            if (jqXHR.status === 422 && jqXHR.responseJSON.message) {
+                toastr.error(jqXHR.responseJSON.message);
+            } else {
+                toastr.error("Something went wrong, while processing your request");
+            }
         }
     });
 
@@ -35,14 +39,13 @@ $(document).ready(function () {
             attribute: attribute,
             _token: csrf_token
         }, function (response) {
-            if (response.state == 'success') {
-
+            if (response.state === 'success') {
                 $.growl({
                     title: 'Success!',
                     message: 'Status changed'
                 });
             }
-            if (response.state == 'error') {
+            if (response.state === 'error') {
                 swal("Error!", response.message, "error");
             }
         });
@@ -64,7 +67,7 @@ $(document).ready(function () {
             confirmButtonText: "Delete!"
         }).then(function () {
             $.post(btn.attr('href'), {"_method": "DELETE"}).done(function (response) {
-                if (response.state == 'success') {
+                if (response.state === 'success') {
                     window.setTimeout(function () {
                         swal("Success", "Data successfully deleted!", "success");
                     }, 300)
@@ -79,7 +82,7 @@ $(document).ready(function () {
                     }
                 }
 
-                if (response.state == 'error') {
+                if (response.state === 'error') {
                     swal("Error", response.message, "error");
                 }
             }).fail(function () {

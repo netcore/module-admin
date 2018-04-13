@@ -26,6 +26,7 @@
         "codesleeve/laravel-stapler": "1.0.*",
         "codesleeve/stapler": "dev-master as 1.2.0",
         "davejamesmiller/laravel-breadcrumbs": "^5.0",
+		"netcore/module-translatable": "^1.0"
         "netcore/module-setting": "^2.0"
     },
     "repositories": [
