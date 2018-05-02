@@ -147,5 +147,6 @@ class AdminServiceProvider extends ServiceProvider
         //
         $router->aliasMiddleware('can.admin', \Modules\Admin\Http\Middleware\Admin\canAuthorizeInAdmin::class);
         $router->aliasMiddleware('auth.admin', \Modules\Admin\Http\Middleware\Admin\isAdmin::class);
+        $router->aliasMiddleware('whitelist', \Modules\Admin\Http\Middleware\Admin\Whitelist::class);
     }
 }

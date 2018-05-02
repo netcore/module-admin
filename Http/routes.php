@@ -1,7 +1,7 @@
 <?php
 
 Route::group([
-    'middleware' => 'web',
+    'middleware' => ['web', 'whitelist'],
     'prefix'     => 'admin',
     'as'         => 'admin::',
     'namespace'  => 'Modules\Admin\Http\Controllers'

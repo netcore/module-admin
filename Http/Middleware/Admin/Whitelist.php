@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Modules\Admin\Models\IpWhitelist;
 
-class isAdmin
+class Whitelist
 {
 
     /**
@@ -30,10 +30,6 @@ class isAdmin
             if (!$whitelisted) {
                 abort(404);
             }
-        }
-
-        if (!auth()->check() || !auth()->user()->hasPermission($request)) {
-            return redirect()->route('admin::auth.login')->withError('This area is for administrators only');
         }
 
         return $next($request);
