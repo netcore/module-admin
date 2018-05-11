@@ -109,31 +109,7 @@ class MenuItem extends Model
         } elseif ($this->type == 'url') {
             $url = url($value);
         } elseif ($this->type == 'page') {
-
-            /**
-             * Quick and dirty
-             * TODO should be changed to some global url getter method when module-content is ready
-             */
-
-            $url = url('/');
-
-            $entry = Entry::currentRevision()->active()->find($value);
-            if ($entry) {
-                $entryTranslation = $entry->translations->first();
-                $entrySlug = $entryTranslation ? $entryTranslation->slug : '';
-
-                $url = url($entrySlug);
-
-                if ($entry->channel_id) {
-                    $channel = Channel::find($entry->channel_id);
-                    if ($channel) {
-                        $channelTranslation = $channel->translations->first();
-                        $channelSlug = $channelTranslation ? $channelTranslation->slug : '';
-
-                        $url = url($channelSlug . '/' . $entrySlug);
-                    }
-                }
-            }
+            $url = content()->getUrl($value, true);
         }
 
         return $url;
