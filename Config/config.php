@@ -28,5 +28,16 @@ return [
     'date_format'     => 'd.m.Y H:i',
 
     // Determine if project implements mail sending functionality
-    'sends_emails' => true,
+    'sends_emails'    => true,
+
+    //Used for Testing
+    'test'            => [
+        'file_upload' => [
+            'active' => true, //Should we run the test?
+            'size'   => 50000 //Size in bytes that should be checked
+        ],
+        'export'      => [
+            'active' => true //Should we run the test?
+        ]
+    ]
 ];
