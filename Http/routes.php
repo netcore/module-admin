@@ -78,3 +78,20 @@ Route::group([
 
     //EOF Auth routes ----------------------------------------------------------------------------------------
 });
+
+Route::group([
+    'middleware' => ['web'],
+    'namespace'  => 'Modules\Admin\Http\Controllers\Api',
+    'prefix'     => 'api',
+    'as'         => 'api.'
+], function () {
+    Route::get('/admin/get-menus/{locale?}', [
+        'as'   => 'admin.get-menus',
+        'uses' => 'MenuController@getMenus'
+    ]);
+
+    Route::get('/admin/get-menu/{key}/{locale?}', [
+        'as'   => 'admin.get-menu',
+        'uses' => 'MenuController@getMenu'
+    ]);
+});

@@ -120,4 +120,24 @@ class Menu extends Model
             'menu'  => $this
         ])->render();
     }
+
+    /**
+     * @param $locale
+     * @return array
+     */
+    public function formatResponse($locale)
+    {
+        $menu = $this;
+
+        $translation = $menu->translateOrNew($locale);
+
+        return [
+            'id'    => $menu->id,
+            'key'   => $menu->key,
+            'name'  => $translation->name,
+            'items' => $menu->items->map(function ($item) use ($locale) {
+                return $item->formatResponse($locale);
+            })
+        ];
+    }
 }
