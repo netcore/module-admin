@@ -7,8 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 use Kalnoy\Nestedset\NodeTrait;
 use Modules\Admin\Translations\MenuItemTranslation;
 use Modules\Translate\Traits\SyncTranslations;
-use Modules\Content\Models\Channel;
-use Modules\Content\Models\Entry;
 use Netcore\Translator\Helpers\TransHelper;
 use Nwidart\Modules\Facades\Module;
 
@@ -134,5 +132,26 @@ class MenuItem extends Model
         }
 
         return $active;
+    }
+
+    /**
+     * @param $locale
+     * @return array
+     */
+    public function formatResponse($locale)
+    {
+        $item = $this;
+
+        $translation = $item->translateOrNew($locale);
+
+        return [
+            'id'              => $item->id,
+            'icon'            => $item->icon,
+            'type'            => $item->type,
+            'target'          => $item->target,
+            'active_resolver' => $item->active_resolver,
+            'name'            => $translation->name,
+            'value'           => $translation->value
+        ];
     }
 }
