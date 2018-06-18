@@ -6,12 +6,14 @@ use Dimsav\Translatable\Translatable;
 use Illuminate\Database\Eloquent\Model;
 use Kalnoy\Nestedset\NodeTrait;
 use Modules\Admin\Translations\MenuItemTranslation;
+use Modules\Content\Models\Entry;
 use Modules\Translate\Traits\SyncTranslations;
 use Netcore\Translator\Helpers\TransHelper;
 use Nwidart\Modules\Facades\Module;
 
 class MenuItem extends Model
 {
+
     use Translatable, SyncTranslations, NodeTrait;
 
     /**
@@ -144,6 +146,27 @@ class MenuItem extends Model
 
         $translation = $item->translateOrNew($locale);
 
+        $value = $translation->value;
+        $apiUrl = null;
+
+        if ($item->type == 'page') {
+            $value = null;
+            $entry = Entry::find($translation->value);
+
+            if ($entry && $entry->key) {
+                $value = '/' . Entry::find($translation->value)->slug;
+                $apiUrl = route('api.content.get-page', $entry->key);
+            }
+        } elseif ($item->type == 'url') {
+            $entry = Entry::whereHas('translations', function ($q) use ($value) {
+                $q->where('slug', str_replace('/', '', $value));
+            })->first();
+            if ($entry && $entry->key) {
+                $apiUrl = route('api.content.get-page', $entry->key);
+            }
+        }
+
+
         return [
             'id'              => $item->id,
             'icon'            => $item->icon,
@@ -151,7 +174,8 @@ class MenuItem extends Model
             'target'          => $item->target,
             'active_resolver' => $item->active_resolver,
             'name'            => $translation->name,
-            'value'           => $translation->value
+            'value'           => $value,
+            'api'             => $apiUrl
         ];
     }
 }
