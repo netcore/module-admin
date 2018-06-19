@@ -4,6 +4,8 @@ namespace Modules\Admin\Models;
 
 use Dimsav\Translatable\Translatable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Collection;
 use Modules\Admin\Translations\MenuTranslation;
 use Modules\Translate\Traits\SyncTranslations;
 
@@ -12,48 +14,73 @@ class Menu extends Model
     use Translatable, SyncTranslations;
 
     /**
-     * Table name
+     * Cache key.
+     *
+     * @var string
+     */
+    public static $cacheKey = 'menu::menus';
+
+    /**
+     * The table associated with the model.
      *
      * @var string
      */
     protected $table = 'netcore_admin__menus';
 
     /**
-     * Fillable fields
+     * The attributes that are mass assignable.
      *
      * @var array
      */
-    protected $fillable = ['key'];
+    protected $fillable = [
+        'key',
+    ];
 
     /**
+     * Translation model class.
+     *
      * @var string
      */
     public $translationModel = MenuTranslation::class;
 
     /**
+     * Attributes that are translatable.
+     *
      * @var array
      */
     public $translatedAttributes = [
-        'name'
+        'name',
     ];
 
     /**
+     * The relations to eager load on every query.
+     *
      * @var array
      */
-    protected $with = ['translations'];
+    protected $with = [
+        'translations',
+    ];
+
+    /** -------------------- Relations -------------------- */
 
     /**
+     * Menu has many items.
+     *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function items()
+    public function items(): HasMany
     {
         return $this->hasMany(MenuItem::class);
     }
 
+    /** -------------------- Helper methods -------------------- */
+
     /**
-     * @return array
+     * Get menu items tree.
+     *
+     * @return \Illuminate\Support\Collection
      */
-    public function getItemTree()
+    public function getItemTree(): Collection
     {
         $tree = function ($items) use (&$tree) {
             $menuItems = [];
@@ -62,8 +89,6 @@ class Menu extends Model
              * About menu 'active' class resolver
              * https://www.hieule.info/products/laravel-active-version-3-released
              */
-
-
             foreach ($items as $item) {
                 //@TODO: submenu item resolvers for active class
 
@@ -76,7 +101,7 @@ class Menu extends Model
                     'url'      => $item->url,
                     'active'   => $item->active,
                     'module'   => $item->module,
-                    'children' => $item->children->count() ? $tree($item->children) : []
+                    'children' => $item->children->count() ? $tree($item->children) : [],
                 ];
             }
 
@@ -84,14 +109,17 @@ class Menu extends Model
         };
 
         $itemTree = [];
-        if ($items = $this->items()->active()->where('is_active', 1)->defaultOrder()->get()) {
-            $itemTree = $tree($items->toTree());
+
+        if ($this->items->count()) {
+            $itemTree = $tree($this->items->toTree());
         }
 
         return collect($itemTree);
     }
 
     /**
+     * Get menu items flat tree.
+     *
      * @return mixed
      */
     public function getFlattenItems()
@@ -100,8 +128,10 @@ class Menu extends Model
     }
 
     /**
-     * @param      $template
-     * @param null $fullPath
+     * Render menu.
+     *
+     * @param string|null $template
+     * @param string|null $fullPath
      * @return string
      * @throws \Throwable
      */
@@ -117,27 +147,25 @@ class Menu extends Model
 
         return view($fullPath . '.' . $template, [
             'items' => $this->getItemTree(),
-            'menu'  => $this
+            'menu'  => $this,
         ])->render();
     }
 
     /**
+     * Format menu for response.
+     *
      * @param $locale
      * @return array
      */
-    public function formatResponse($locale)
+    public function formatResponse($locale): array
     {
-        $menu = $this;
-
-        $translation = $menu->translateOrNew($locale);
-
         return [
-            'id'    => $menu->id,
-            'key'   => $menu->key,
-            'name'  => $translation->name,
-            'items' => $menu->items->map(function ($item) use ($locale) {
+            'id'    => $this->id,
+            'key'   => $this->key,
+            'name'  => optional($this->translateOrNew($locale))->name,
+            'items' => $this->items->map(function ($item) use ($locale) {
                 return $item->formatResponse($locale);
-            })
+            }),
         ];
     }
 }

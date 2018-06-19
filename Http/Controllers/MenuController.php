@@ -2,10 +2,14 @@
 
 namespace Modules\Admin\Http\Controllers;
 
+use Exception;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Route;
+use Illuminate\View\View;
 use Modules\Admin\Http\Requests\Admin\MenuRequest;
 use Modules\Admin\Http\Requests\Admin\SaveMenuItemRequest;
 use Modules\Admin\Models\Menu;
@@ -19,9 +23,9 @@ class MenuController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return Response
+     * @return \Illuminate\View\View
      */
-    public function index()
+    public function index(): View
     {
         $menusGrouped = Menu::with('items')->orderBy('type', 'desc')->get()->groupBy('type');
 
@@ -32,9 +36,9 @@ class MenuController extends Controller
      * Show the specified resource.
      *
      * @param Menu $menu
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return \Illuminate\View\View
      */
-    public function show(Menu $menu)
+    public function show(Menu $menu): View
     {
         $languages = TransHelper::getAllLanguages();
         $items = $menu->items()->defaultOrder()->get()->toTree();
@@ -46,26 +50,26 @@ class MenuController extends Controller
                 if ($route->getName()) {
                     $routes[$route->getName()] = [
                         'name'       => $route->getName(),
-                        'parameters' => $route->parameterNames()
+                        'parameters' => $route->parameterNames(),
                     ];
                 }
             }
         }
 
         $routes = collect($routes);
-
         $icons = [];
+
         foreach (getFontAwesomeList() as $key => $value) {
             $icons[] = [
                 'id'   => $value,
                 'text' => $value,
-                'html' => '<i class="fa ' . $value . '"></i> ' . $value
+                'html' => '<i class="fa ' . $value . '"></i> ' . $value,
             ];
         }
 
         $icons = collect($icons);
-
         $pages = collect([]);
+
         if (Module::has('Content')) {
             $pages = Entry::currentRevision()->active()->get()->map(function ($entry) {
                 $firstTranslation = $entry->translations->first();
@@ -73,7 +77,7 @@ class MenuController extends Controller
 
                 return [
                     'id'   => $entry->id,
-                    'text' => $title
+                    'text' => $title,
                 ];
             });
         }
@@ -85,9 +89,9 @@ class MenuController extends Controller
      * Show the form for editing the specified resource.
      *
      * @param Menu $menu
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return \Illuminate\View\View
      */
-    public function edit(Menu $menu)
+    public function edit(Menu $menu): View
     {
         return view('admin::menu.edit', compact('menu'));
     }
@@ -95,21 +99,29 @@ class MenuController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  Request $request
-     * @return Response
+     * @param \Modules\Admin\Http\Requests\Admin\MenuRequest $request
+     * @param \Modules\Admin\Models\Menu $menu
+     * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(MenuRequest $request, Menu $menu)
+    public function update(MenuRequest $request, Menu $menu): RedirectResponse
     {
-        $menu->updateTranslations($request->get('translations', []));
+        $menu->updateTranslations(
+            $request->get('translations', [])
+        );
+
+        $this->clearCache();
 
         return back()->withSuccess('Menu successfully saved!');
     }
 
     /**
+     * Save tree order.
+     *
      * @param Request $request
+     * @param int $menuId
      * @return void
      */
-    public function saveOrder(Request $request, $menuId)
+    public function saveOrder(Request $request, int $menuId): void
     {
         $order = $request->get('order', []);
 
@@ -118,14 +130,16 @@ class MenuController extends Controller
         if (is_array($newArray)) {
             MenuItem::scoped(['menu_id' => $menuId])->rebuildTree($newArray);
         }
+
+        $this->clearCache();
     }
 
     /**
      * @param SaveMenuItemRequest $request
-     * @param Menu                $menu
+     * @param Menu $menu
      * @return \Illuminate\Http\JsonResponse
      */
-    public function saveMenuItem(SaveMenuItemRequest $request, Menu $menu)
+    public function saveMenuItem(SaveMenuItemRequest $request, Menu $menu): JsonResponse
     {
         $menuItem = MenuItem::find($request->get('id', 0));
 
@@ -150,6 +164,8 @@ class MenuController extends Controller
 
         $menuItem->updateTranslations($request->get('translations', []));
 
+        $this->clearCache();
+
         return response()->json([
             'status' => 'success',
             'item'   => MenuItem::find($menuItem->id)
@@ -158,20 +174,40 @@ class MenuController extends Controller
     }
 
     /**
+     * Delete menu item.
+     *
      * @param Request $request
-     * @param Menu    $menu
-     * @param         $itemId
+     * @param Menu $menu
+     * @param int $itemId
      * @return \Illuminate\Http\JsonResponse
      */
-    public function deleteMenuItem(Request $request, Menu $menu, $itemId)
+    public function deleteMenuItem(Request $request, Menu $menu, $itemId): JsonResponse
     {
-        $menuItem = $menu->items()->find($itemId);
-        if (!$menuItem) {
-            return response()->json(['status' => 'error']);
+        if (!$menuItem = $menu->items()->find($itemId)) {
+            return response()->json([
+                'status' => 'error',
+            ]);
         }
 
         $menuItem->delete();
+        $this->clearCache();
 
-        return response()->json(['status' => 'success']);
+        return response()->json([
+            'status' => 'success',
+        ]);
+    }
+
+    /**
+     * Clear cached menus.
+     *
+     * @return void
+     */
+    protected function clearCache(): void
+    {
+        try {
+            cache()->forget(Menu::$cacheKey);
+        } catch (Exception $e) {
+            logger()->critical('Unable to clear cached menus: ' . $e->getMessage());
+        }
     }
 }
