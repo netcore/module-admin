@@ -823,10 +823,9 @@ if (!function_exists('input')) {
 }
 
 if (!function_exists('menu')) {
-
     /**
      * @param null $key
-     * @return \Illuminate\Foundation\Application|mixed|\Modules\Admin\Repositories\MenuRepository|MenuRepository
+     * @return \Modules\Admin\Repositories\MenuRepository|MenuRepository
      */
     function menu($key = null)
     {
@@ -835,6 +834,7 @@ if (!function_exists('menu')) {
         }
 
         $menu = app('MenuRepository')->get($key);
+
         if ($menu) {
             return $menu;
         } else {

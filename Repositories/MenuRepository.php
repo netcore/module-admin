@@ -2,38 +2,54 @@
 
 namespace Modules\Admin\Repositories;
 
+use Exception;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection;
 use Modules\Admin\Models\Menu;
 use Modules\Admin\Models\MenuItem;
 use Netcore\Translator\Helpers\TransHelper;
 
-/**
- * Class MenuRepository
- * @package Modules\Admin\Repositories
- */
 class MenuRepository
 {
-
     /**
-     * @var Menu
-     */
-    private $menu;
-
-    /**
+     * Menu key.
+     *
      * @var string
      */
-    private $key;
+    protected $key;
+
+    /**
+     * Cached menus collection.
+     *
+     * @var \Illuminate\Support\Collection
+     */
+    protected $cachedMenus;
 
     /**
      * MenuRepository constructor.
+     *
+     * @return void
      */
     public function __construct()
     {
-        $this->menu = new Menu();
+        $loadWith = ['translations', 'items' => function(HasMany $hasMany) {
+            return $hasMany->active()->with('translations')->defaultOrder();
+        }];
+
+        try {
+            $this->cachedMenus = cache()->rememberForever(Menu::$cacheKey, function () use ($loadWith) {
+                return Menu::with($loadWith)->get();
+            });
+        } catch (Exception $e) {
+            $this->cachedMenus = Menu::with($loadWith)->get();
+        }
+
         $this->key = '';
     }
 
     /**
+     * Set the menu key.
+     *
      * @param $key
      * @return $this
      */
@@ -45,8 +61,10 @@ class MenuRepository
     }
 
     /**
-     * @param null $key
-     * @return mixed
+     * Get the menu with given key.
+     *
+     * @param string|null $key
+     * @return \Illuminate\Support\Collection|\Modules\Admin\Models\Menu
      */
     public function get($key = null)
     {
@@ -54,21 +72,25 @@ class MenuRepository
             return $this->getAll();
         }
 
-        return $this->menu->where('key', $key)->first();
+        return $this->cachedMenus->where('key', $key)->first();
     }
 
     /**
-     * @return mixed
+     * Get all menus.
+     *
+     * @return \Illuminate\Support\Collection
      */
-    public function getAll()
+    public function getAll(): Collection
     {
-        return $this->menu->get();
+        return $this->cachedMenus;
     }
 
     /**
+     * Render menu.
+     *
      * @return string
      */
-    public function render()
+    public function render(): string
     {
         if ($this->key) {
             logger()->warning('Couldn\'t render the menu, because the menu ' . $this->key . ' doesn\'t exist');
@@ -80,12 +102,28 @@ class MenuRepository
     }
 
     /**
-     * Seed page menus
+     * Get item tree.
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public function getItemTree(): Collection
+    {
+        return collect();
+    }
+
+    /**
+     * Seed page menus.
      *
      * @param $menus
+     * @return void
+     * @throws \Exception
      */
-    public function seed($menus)
+    public function seed($menus): void
     {
+        if (!is_iterable($menus)) {
+            throw new Exception('Invalid data given!');
+        }
+
         foreach ($menus as $menuData) {
             $menu = Menu::firstOrCreate(array_except($menuData, ['name']));
             $translations = [];
@@ -101,12 +139,18 @@ class MenuRepository
     }
 
     /**
-     * Seed menu items for specific menu
+     * Seed menu items for specific menu.
      *
      * @param $menusWithItems
+     * @return void
+     * @throws \Exception
      */
-    public function seedItems($menusWithItems)
+    public function seedItems($menusWithItems): void
     {
+        if (!is_iterable($menusWithItems)) {
+            throw new Exception('Invalid data given!');
+        }
+
         foreach ($menusWithItems as $menuKey => $items) {
             if ($menu = Menu::where('key', $menuKey)->first()) {
                 $this->seedItemsRecursively($menu, $items);
@@ -122,7 +166,7 @@ class MenuRepository
      * @param null|\Modules\Admin\Models\MenuItem $parent
      * @return void
      */
-    protected function seedItemsRecursively(Menu $menu, array $items, $parent = null)
+    protected function seedItemsRecursively(Menu $menu, array $items, $parent = null): void
     {
         foreach ($items as $item) {
             $row = $menu->items()->create(

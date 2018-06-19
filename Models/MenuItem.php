@@ -2,29 +2,34 @@
 
 namespace Modules\Admin\Models;
 
-use Dimsav\Translatable\Translatable;
+use Exception;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
 use Kalnoy\Nestedset\NodeTrait;
-use Modules\Admin\Translations\MenuItemTranslation;
+use Kalnoy\Nestedset\QueryBuilder;
+use Nwidart\Modules\Facades\Module;
+use Dimsav\Translatable\Translatable;
+
 use Modules\Content\Models\Entry;
 use Modules\Translate\Traits\SyncTranslations;
+use Modules\Admin\Translations\MenuItemTranslation;
+
 use Netcore\Translator\Helpers\TransHelper;
-use Nwidart\Modules\Facades\Module;
 
 class MenuItem extends Model
 {
-
     use Translatable, SyncTranslations, NodeTrait;
 
     /**
-     * Table name
+     * The table associated with the model.
      *
      * @var string
      */
     protected $table = 'netcore_admin__menu_items';
 
     /**
-     * Fillable fields
+     * The attributes that are mass assignable.
      *
      * @var array
      */
@@ -37,63 +42,97 @@ class MenuItem extends Model
         'is_active',
         'active_resolver',
         'parent_id',
-        'parameters'
+        'parameters',
     ];
 
     /**
+     * The accessors to append to the model's array form.
+     *
      * @var array
      */
-    protected $appends = ['url', 'active'];
+    protected $appends = [
+        'url',
+        'active',
+    ];
 
     /**
+     * Translation model class.
+     *
      * @var string
      */
     public $translationModel = MenuItemTranslation::class;
 
     /**
+     * Attributes that are translatable.
+     *
      * @var array
      */
     public $translatedAttributes = [
         'name',
         'value',
-        'parameters'
+        'parameters',
     ];
 
     /**
+     * The relations to eager load on every query.
+     *
      * @var array
      */
-    protected $with = ['translations'];
+    protected $with = [
+        'translations',
+    ];
 
     /**
+     * Menu item belongs to the menu,
+     *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function menu()
+    public function menu(): BelongsTo
     {
         return $this->belongsTo(Menu::class);
     }
 
     /**
+     * Attributes that should be scoped.
+     *
      * @return array
      */
-    protected function getScopeAttributes()
+    protected function getScopeAttributes(): array
     {
         return ['menu_id'];
     }
 
+    /** -------------------- Scopes -------------------- */
+
     /**
+     * Scope only active menu items.
+     *
      * @param $query
-     * @return mixed
+     * @return \Kalnoy\Nestedset\QueryBuilder
      */
-    public function scopeActive($query)
+    public function scopeActive(QueryBuilder $query): QueryBuilder
     {
-        $modules = Module::allDisabled();
+        try {
+            try {
+                $modules = Module::allDisabled();
+            } catch (Exception $exception) {
+                $modules = Module::disabled();
+            }
+        } catch (Exception $exception) {
+            $modules = [];
+        }
+
         $disabledModules = array_keys($modules);
 
         return $query->whereNotIn('module', $disabledModules);
     }
 
+    /** -------------------- Accessors -------------------- */
+
     /**
-     * @return mixed|string
+     * Get URL attribute.
+     *
+     * @return string
      */
     public function getUrlAttribute()
     {
@@ -116,6 +155,8 @@ class MenuItem extends Model
     }
 
     /**
+     * Active class attribute.
+     *
      * @return string
      */
     public function getActiveAttribute()
@@ -124,6 +165,7 @@ class MenuItem extends Model
 
         if ($this->type == 'route') {
             $pattern = [$this->value];
+
             if ($this->active_resolver) {
                 $pattern = array_map(function ($item) {
                     return trim($item);
@@ -136,17 +178,20 @@ class MenuItem extends Model
         return $active;
     }
 
+    /** -------------------- Helper methods -------------------- */
+
     /**
+     * Format item for response.
+     *
      * @param $locale
      * @return array
      */
-    public function formatResponse($locale)
+    public function formatResponse($locale): array
     {
         $item = $this;
-
         $translation = $item->translateOrNew($locale);
-
         $value = $translation->value;
+
         $apiUrl = null;
 
         if ($item->type == 'page') {
@@ -161,11 +206,11 @@ class MenuItem extends Model
             $entry = Entry::whereHas('translations', function ($q) use ($value) {
                 $q->where('slug', str_replace('/', '', $value));
             })->first();
+
             if ($entry && $entry->key) {
                 $apiUrl = route('api.content.get-page', $entry->key);
             }
         }
-
 
         return [
             'id'              => $item->id,
@@ -175,7 +220,7 @@ class MenuItem extends Model
             'active_resolver' => $item->active_resolver,
             'name'            => $translation->name,
             'value'           => $value,
-            'api'             => $apiUrl
+            'api'             => $apiUrl,
         ];
     }
 }
