@@ -4,6 +4,9 @@ return [
     // Admin theme
     'theme'           => env('ADMIN_THEME', 'candy-red'),
 
+    // additional middleware for admin routes
+    'middleware' => [],
+
     // Default login field to work with
     'login'           => [
         'username' => 'email',
