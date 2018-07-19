@@ -1,12 +1,12 @@
 <?php
 
 Route::group([
-    'middleware' => 'web',
+    'middleware' => array_merge(['web'], config('netcore.module-admin.middleware', [])),
     'prefix'     => 'admin',
     'as'         => 'admin::',
     'namespace'  => 'Modules\Admin\Http\Controllers'
 ], function () {
-    Route::group(['middleware' => array_merge(['auth.admin'], config('netcore.module-admin.middleware', []))], function () {
+    Route::group(['middleware' => 'auth.admin'], function () {
 
         Route::get('/', [
             'uses' => 'AdminController@index',
