@@ -40,7 +40,7 @@ class MenuTableSeeder extends Seeder
                     'parameters'      => json_encode([])
                 ]
             ],
-            'topleftAdminMenu' => [
+            'topLeftAdminMenu' => [
                 [
                     'name'       => 'Homepage',
                     'type'       => 'url',
