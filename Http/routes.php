@@ -6,7 +6,7 @@ Route::group([
     'as'         => 'admin::',
     'namespace'  => 'Modules\Admin\Http\Controllers'
 ], function () {
-    Route::group(['middleware' => 'auth.admin'], function () {
+    Route::group(['middleware' => array_merge(['auth.admin'], config('netcore.module-admin.middleware', []))], function () {
 
         Route::get('/', [
             'uses' => 'AdminController@index',
