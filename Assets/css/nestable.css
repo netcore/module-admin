@@ -8,7 +8,7 @@
 .dd-item,
 .dd-empty,
 .dd-placeholder { display: block; position: relative; margin: 0; padding: 0; min-height: 20px; font-size: 13px; line-height: 20px; }
-.dd-handle { display: block; height: 50px; margin: 5px 0; padding: 14px 25px; color: #333; text-decoration: none; font-weight: bold; border: 1px solid #ccc;
+.dd-handle { display: block; height: auto; margin: 5px 0; padding: 14px 25px; color: #333; text-decoration: none; font-weight: bold; border: 1px solid #ccc;
     background: #fafafa;
     -webkit-border-radius: 3px;
     border-radius: 3px;
